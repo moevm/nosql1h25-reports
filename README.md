@@ -16,3 +16,15 @@
 <a href=" ./../../../actions/workflows/6_report.yml" >![6. Пояснительная записка]( ./../../actions/workflows/6_report.yml/badge.svg)</a>
 
 <a href=" ./../../../actions/workflows/7_app_is_ready.yml" >![7. App is ready]( ./../../actions/workflows/7_app_is_ready.yml/badge.svg)</a>
+
+## Запуск БД
+
+1. Запустить `Docker Desktop`, если используется Windows/MacOS
+2. `docker compose up -d` (`docker-compose up -d` для Linux)
+3. БД будет доступна по [bolt://localhost:7687](bolt://localhost:7687), веб-интерфейс по [http://localhost:7474](http://localhost:7474)
+4. `docker compose down` для завершения работы
+5. Если нужно очистить место (при использовании `Docker Desktop`). *очищаются все доп. данные Docker*
+   1. Зайти в `Troubleshoot` (иконка жучка в меню-баре)
+   2. `Clean / Purge Data`
+   3. Выбрать всё - `Delete`
+   4. При необходимости ввести `wsl --shutdown` (на Windows)
