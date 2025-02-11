@@ -1,0 +1,32 @@
+services:
+  db:
+    image: neo4j:ubi9
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    # TODO: закрыть порты после докеризации приложения
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - db-logs:/logs
+      - db-config:/config
+      - db-data:/data
+      - db-plugins:/plugins
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  db-logs: { }
+  db-config: { }
+  db-data: { }
+  db-plugins: { }
+
+networks:
+  backend: { }
