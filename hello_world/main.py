@@ -22,6 +22,10 @@ if __name__ == '__main__':
 
     print(f'Extracted value {result}')
 
+    # deleting value
+    conn.query("MATCH (n: Node {id: %d}) DELETE n" % expected)
+    print('Value deleted')
+
     conn.close()
 
     assert expected == result
