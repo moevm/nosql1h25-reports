@@ -10,10 +10,15 @@ def insert_value(conn, value):
 
 
 # Function to select a value from the database
-def select_value(conn):
-    result = conn.query('MATCH (n: Node) RETURN n.id')[0]["n.id"]
-    print(f'Extracted value {result}')
-    return result
+def select_value(conn, value):
+    result = conn.query("MATCH (n: Node {id: %d}) RETURN n.id" % value)
+    if result:
+        extracted_value = result[0]["n.id"]
+        print(f'Extracted value: {extracted_value}')
+        return extracted_value
+    else:
+        print(f'Value {value} not found')
+        return None
 
 
 # Function to delete a value from the database
@@ -35,16 +40,16 @@ if __name__ == '__main__':
     # inserting value
     insert_value(conn, expected)
     # selecting value
-    result = select_value(conn)
+    result = select_value(conn, expected)
 
     # Generate a random value for deletion
     deleting = random.randint(1, 100)
     # inserting value
     insert_value(conn, deleting)
-
     # deleting value
     delete_value(conn, deleting)
-
+    # selecting value
+    select_value(conn, deleting)
     conn.close()
 
     assert expected == result
