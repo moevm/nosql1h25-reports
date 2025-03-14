@@ -1,5 +1,5 @@
-from docxParser import DocxParser
-from docClasses import Doc, DocSection
+from parsing.docClasses import Doc, DocSection
+from parsing.docxParser import DocxParser
 
 
 def print_section(section: DocSection):
@@ -18,7 +18,8 @@ def print_doc(doc: Doc):
 
 
 if __name__ == '__main__':
-    file_path = '2024ВКР038125ПАВЛОВ.docx'
-    dp = DocxParser(file_path)
+    file_path = './examples/2024ВКР038342ОРЛОВ.docx'
+    file = open(file_path, 'rb') # без 'rb' не работает
+    dp = DocxParser(file)
     doc = dp.read_document()
     print_doc(doc)
