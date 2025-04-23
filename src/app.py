@@ -10,12 +10,13 @@ def index():
 
 @app.get('/diploma')
 def diploma():
-    return render_template('layout.jinja2')
+    return render_template('upload_diploma.jinja2')
 
 
 @app.post('/diploma')
-def upload_diploma():
+def diploma_upload():
     file = request.files['diploma']
+    app.logger.debug(file)
 
     return redirect(url_for('diploma_statistics', diploma_id=0))
 
@@ -31,14 +32,14 @@ def search():
 
 
 @app.get('/search/diploma')
-def diploma_search():
+def search_diploma():
     params = request.args.to_dict()
 
     return render_template('layout.jinja2')
 
 
 @app.get('/search/chapter')
-def chapter_search():
+def search_chapter():
     params = request.args.to_dict()
 
     return render_template('layout.jinja2')

@@ -24,10 +24,12 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/normalize.css') }}" type="text/css"/>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}" type="text/css"/>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/header.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/card.css') }}" type="text/css"/>
     {% endblock %}
 </head>
 <body class="page">
@@ -38,11 +40,11 @@
             <h1 class="logo__title">{{ title }}</h1>
         </a>
         <nav class="navigation">
-            <a class="navigation__button {% if url_for(request.endpoint).startswith('/diploma') %} navigation__button_current {% endif %}"
+            <a class="navigation__button {% if request.endpoint.startswith('diploma') %} navigation__button_current {% endif %}"
                href="{{ url_for('diploma') }}">
                 ЗАГРУЗКА ДИПЛОМА
             </a>
-            <a class="navigation__button {% if url_for(request.endpoint).startswith('/search') %} navigation__button_current {% endif %}"
+            <a class="navigation__button {% if request.endpoint.startswith('search') %} navigation__button_current {% endif %}"
                href="{{ url_for('search') }}">
                 ПОИСК
             </a>
