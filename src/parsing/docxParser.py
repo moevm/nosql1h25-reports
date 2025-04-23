@@ -3,13 +3,14 @@ import os
 from typing import Union, BinaryIO
 from io import BytesIO
 
-from docClasses import Doc, DocSection
+from parsing.docClasses import Doc, DocSection
 
 
 class DocxParser:
     def __init__(self, file: str | Union[BinaryIO, BytesIO]):
         self.file = file
         self.docx_file = None
+        self.doc = None
 
     def _check_file_exists(self):
         """
@@ -71,9 +72,11 @@ class DocxParser:
             raise AttributeError("Файл не был открыт")
 
         doc = Doc()
+        self.doc = doc
 
         self._read_structure(doc)
         self._read_info(doc)
+        self._make_doc_structure_accurate(doc)
 
         return doc
 
@@ -92,16 +95,17 @@ class DocxParser:
         doc.structure.append(current_section)
 
         for paragraph in self.docx_file.paragraphs:
-            text = paragraph.text.strip().lower()
+            text = paragraph.text
             # text = self._cut_code_paragraph(paragraph)
+            text_norm = text.strip().lower()
 
-            if len(text) == 0:
+            if len(text_norm) == 0:
                 continue
 
-            elif "содержание" == text:
+            elif "содержание" == text_norm:
                 found_content_section = True
                 continue
-            elif "список использованных источников" == text:
+            elif "список использованных источников" == text_norm:
                 found_references_section = True
                 break
 
@@ -114,15 +118,15 @@ class DocxParser:
                     else:
                         current_section.text += ' ' + text
 
-                elif current_section.title is None and len(current_section.text) == 0:
+                elif current_section.name is None and len(current_section.text) == 0:
                     current_section.level = level
-                    current_section.title = text
+                    current_section.name = text
 
                 elif current_section.level is None \
                     or level == current_section.level:
                     new_section = DocSection()
                     new_section.level = level
-                    new_section.title = text
+                    new_section.name = text
                     if current_section.upper is not None:
                         new_section.upper = current_section.upper
                         current_section = current_section.upper
@@ -135,7 +139,7 @@ class DocxParser:
                 elif level > current_section.level:
                     new_section = DocSection()
                     new_section.upper = current_section
-                    new_section.title = text
+                    new_section.name = text
                     new_section.level = level
                     current_section.structure.append(new_section)
                     current_section = new_section
@@ -144,7 +148,7 @@ class DocxParser:
                     while current_section.upper is not None and level <= current_section.level:
                         current_section = current_section.upper
                     new_section = DocSection()
-                    new_section.title = text
+                    new_section.name = text
                     new_section.level = level
                     if current_section.level is None or \
                         current_section.upper is None and level <= current_section.level:
@@ -177,6 +181,92 @@ class DocxParser:
     def _read_info(self, doc: Doc):
         """
         Чтение основной информации о документе:
-        doc.title; doc.author; doc.sci_director; doc.count_wolds; doc.count_symbols
+        doc.name; doc.author; doc.academic_supervisor; doc.year
         """
-        pass
+        try:
+            try:
+                theme = None
+                t_i = None
+                year = None
+                y_i = None
+                
+                for i in range(len(self.docx_file.paragraphs)):
+                    p = self.docx_file.paragraphs[i]
+                    if t_i is not None \
+                        and year is None \
+                        and len(p.text.strip()) > 0:
+                        if y_i is None:
+                            y_i = i
+                        else:
+                            year = int(p.text.strip())
+                            y_i = i
+                            break
+                    if theme is None and str(p.text.lower()).startswith('тема'):
+                        t_i = i
+                        theme = str(p.text[p.text.find(':') + 1:]).strip()
+                doc.name = theme
+                doc.year = year
+            except:
+                raise Exception("unable to read name and year")
+
+            if len(self.docx_file.tables) < 2:
+                raise Exception("error checking formating of docx file: len(self.docx_file.tables) < 2")
+            if len(self.docx_file.tables[1].rows) < 3:
+                raise Exception("error checking formating of docx file: len(self.docx_file.tables[1].rows) < 3")
+            if len(self.docx_file.tables[1].columns) < 3:
+                raise Exception("error checking formating of docx file: len(self.docx_file.tables[1].columns) < 3")
+            if self.docx_file.tables[1].rows[0].cells[0].text != 'Студент':
+                raise Exception("error checking formating of docx file: self.docx_file.tables[1].rows[0].cells[0].text != 'Студент'")
+            if self.docx_file.tables[1].rows[2].cells[0].text != 'Руководитель':
+                raise Exception("error checking formating of docx file: self.docx_file.tables[1].rows[2].cells[0].text != 'Руководитель'")
+            
+            try:
+                h = 0
+                author = ''
+                i = len(self.docx_file.tables[1].rows[h].cells) - 1
+                while i >= 0 and len(author) == 0:
+                    author = self.docx_file.tables[1].rows[h].cells[i].text.strip()
+                    i -= 1
+                doc.author = author
+    
+                h = 2
+                academic_supervisor = ''
+                i = len(self.docx_file.tables[1].rows[h].cells) - 1
+                while i >= 0 and len(academic_supervisor) == 0:
+                    academic_supervisor = self.docx_file.tables[1].rows[h].cells[i].text.strip()
+                    i -= 1
+                doc.academic_supervisor = academic_supervisor
+            except:
+                raise Exception("formating check passed, but have a problem during reading author and academic_supervisor")
+            
+        except Exception as e:
+            raise Exception(f"something wrong will reading info of documents (name, year, author, academic_supervisor): \n{e}")
+
+    def _make_doc_structure_accurate(self, doc: Doc):
+        i = 0
+        b = False
+        index_start = -1
+        index_end = -1
+        while i < len(doc.structure):
+            el = doc.structure[i]
+            if not b and 'введение' in str(el.name).lower().strip():
+                b = True
+                index_start = i
+            if b and 'заключение' in str(el.name).lower().strip():
+                b = False
+                index_end = i
+                break
+            i += 1
+        if index_start != -1 and index_end != -1:
+            chapt = DocSection()
+            chapt.name = 'Структура'
+            i = index_start + 1
+            while i < index_end:
+                el = doc.structure[i]
+                el.upper = None
+                chapt.structure.append(el)
+                doc.structure.pop(i)
+                index_end -= 1
+            doc.structure.insert(i, chapt)
+
+
