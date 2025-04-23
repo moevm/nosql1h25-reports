@@ -1,10 +1,15 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
 
 @app.get('/')
 def index():
+    return redirect(url_for('diploma'))
+
+
+@app.get('/diploma')
+def diploma():
     return render_template('layout.jinja2')
 
 
@@ -12,7 +17,7 @@ def index():
 def upload_diploma():
     file = request.files['diploma']
 
-    return 0
+    return redirect(url_for('diploma_statistics', diploma_id=0))
 
 
 @app.get('/diploma/<int:diploma_id>')
