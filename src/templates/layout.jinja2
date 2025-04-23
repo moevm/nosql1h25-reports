@@ -1,3 +1,5 @@
+{% set title = 'ДИПЛОМАЛ' %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,7 +18,7 @@
               href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"/>
         <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}"/>
 
-        <title>ДИПЛОМАЛ</title>
+        <title>{{ title }}</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,11 +27,27 @@
 
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/normalize.css') }}" type="text/css"/>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/header.css') }}" type="text/css"/>
     {% endblock %}
 </head>
 <body class="page">
 <header class="header">
-    {% block header %}{% endblock %}
+    <div class="header__container">
+        <a class="logo" href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='logo.png') }}" class="logo__img" alt="logo"/>
+            <h1 class="logo__title">{{ title }}</h1>
+        </a>
+        <nav class="navigation">
+            <a class="navigation__button {% if url_for(request.endpoint).startswith('/diploma') %} navigation__button_current {% endif %}"
+               href="{{ url_for('diploma') }}">
+                ЗАГРУЗКА ДИПЛОМА
+            </a>
+            <a class="navigation__button {% if url_for(request.endpoint).startswith('/search') %} navigation__button_current {% endif %}"
+               href="{{ url_for('search') }}">
+                ПОИСК
+            </a>
+        </nav>
+    </div>
 </header>
 <main class="main">
     {% block main %}{% endblock %}
