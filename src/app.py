@@ -27,7 +27,7 @@ def diploma_statistics(diploma_id: int):
 
 @app.get('/search')
 def search():
-    return render_template('layout.jinja2')
+    return render_template('search.jinja2')
 
 
 @app.get('/search/diploma')
