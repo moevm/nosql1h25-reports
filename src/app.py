@@ -10,13 +10,12 @@ def index():
 
 @app.get('/diploma')
 def diploma():
-    return render_template('upload_diploma.jinja2')
+    return render_template('diploma_upload.jinja2')
 
 
 @app.post('/diploma')
 def diploma_upload():
     file = request.files['diploma']
-    app.logger.debug(file)
 
     return redirect(url_for('diploma_statistics', diploma_id=0))
 
