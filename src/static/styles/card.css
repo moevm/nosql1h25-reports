@@ -1,0 +1,38 @@
+.card-container {
+    width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    width: 700px;
+    height: 150px;
+    box-sizing: border-box;
+    padding: 0 50px;
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card__header {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.button {
+    display: block;
+    width: 70px;
+    height: 70px;
+}
+
+.button:hover {
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+
