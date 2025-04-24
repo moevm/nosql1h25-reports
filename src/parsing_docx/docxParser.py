@@ -3,7 +3,7 @@ import os
 from typing import Union, BinaryIO
 from io import BytesIO
 
-from parsing.docClasses import Doc, DocSection
+from src.parsing_docx.docClasses import Doc, DocSection
 
 
 class DocxParser:
