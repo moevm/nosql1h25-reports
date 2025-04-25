@@ -5,6 +5,7 @@ import datetime
 @dataclass
 class Chapter:
     id: int
+    id_diploma: int
     name: str
     water_content: int
     words: int

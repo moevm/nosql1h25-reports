@@ -16,6 +16,7 @@ test_diploma = (
         chapters=[
             Chapter(
                 id=0,
+                id_diploma=0,
                 name='ВВЕДЕНИЕ',
                 water_content=85,
                 words=2,
@@ -26,6 +27,7 @@ test_diploma = (
             ),
             Chapter(
                 id=1,
+                id_diploma=0,
                 name='Структура',
                 water_content=60,
                 words=15,
@@ -35,6 +37,7 @@ test_diploma = (
                 chapters=[
                     Chapter(
                         id=3,
+                        id_diploma=0,
                         name='Раздел 1',
                         water_content=70,
                         words=5,
@@ -45,6 +48,7 @@ test_diploma = (
                     ),
                     Chapter(
                         id=4,
+                        id_diploma=0,
                         name='Раздел 2',
                         water_content=50,
                         words=10,
@@ -57,6 +61,7 @@ test_diploma = (
             ),
             Chapter(
                 id=2,
+                id_diploma=0,
                 name='ЗАКЛЮЧЕНИЕ',
                 water_content=80,
                 words=7,
@@ -79,6 +84,7 @@ test_diploma = (
         chapters=[
             Chapter(
                 id=0,
+                id_diploma=1,
                 name='ВВЕДЕНИЕ',
                 water_content=50,
                 words=10,
@@ -89,6 +95,7 @@ test_diploma = (
             ),
             Chapter(
                 id=1,
+                id_diploma=1,
                 name='Структура',
                 water_content=50,
                 words=19,
@@ -98,6 +105,7 @@ test_diploma = (
                 chapters=[
                     Chapter(
                         id=3,
+                        id_diploma=1,
                         name='Раздел 1',
                         water_content=60,
                         words=6,
@@ -108,6 +116,7 @@ test_diploma = (
                     ),
                     Chapter(
                         id=4,
+                        id_diploma=1,
                         name='Раздел 2',
                         water_content=40,
                         words=13,
@@ -120,6 +129,7 @@ test_diploma = (
             ),
             Chapter(
                 id=2,
+                id_diploma=1,
                 name='ЗАКЛЮЧЕНИЕ',
                 water_content=80,
                 words=7,
