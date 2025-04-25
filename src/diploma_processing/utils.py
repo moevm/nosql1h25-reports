@@ -14,6 +14,7 @@ def chapter_to_dict(chapter: Chapter) -> dict:
 
 def chapter_from_dict(chapter: dict) -> Chapter:
     id = chapter['id']
+    id_diploma=chapter['id_diploma']
     name = chapter['name']
     water_content = chapter['water_content']
     words = chapter['words']
@@ -25,6 +26,7 @@ def chapter_from_dict(chapter: dict) -> Chapter:
         chapters.append(chapter_from_dict(e))
     return Chapter(
         id=id,
+        id_diploma=id_diploma,
         name=name,
         water_content=water_content,
         words=words,
