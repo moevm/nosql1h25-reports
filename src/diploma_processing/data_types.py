@@ -1,28 +1,27 @@
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 
 
 @dataclass
 class Chapter:
-    id: int
-    id_diploma: int
+    id: int | None
+    id_diploma: int | None
     name: str
     water_content: int
     words: int
     symbols: int
     commonly_used_words: list[str]
     commonly_used_words_amount: list[int]
-    chapters: list # по идее одлжно быть кншн list[Chapter], но так писать ошибка, решил в общем не париться тут с типизацией
+    chapters: list['Chapter']
 
 
 @dataclass
 class Diploma:
-    id: int
+    id: int | None
     name: str
     author: str
-    academic_supervisor: str
+    academic_supervisor: str | None  # None, если не получилось извлечь руководителя
     year: int
     words: int
     load_date: datetime
     chapters: list[Chapter]
-
