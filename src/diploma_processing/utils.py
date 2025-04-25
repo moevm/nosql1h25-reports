@@ -12,9 +12,10 @@ def chapter_to_dict(chapter: Chapter) -> dict:
         chapter_dict['chapters'].append(chapter_to_dict(e))
     return chapter_dict
 
+
 def chapter_from_dict(chapter: dict) -> Chapter:
     id = chapter['id']
-    id_diploma=chapter['id_diploma']
+    id_diploma = chapter['id_diploma']
     name = chapter['name']
     water_content = chapter['water_content']
     words = chapter['words']
@@ -36,6 +37,7 @@ def chapter_from_dict(chapter: dict) -> Chapter:
         chapters=chapters
     )
 
+
 # serialize/deserialize Diploma
 def diploma_to_dict(diploma: Diploma) -> dict:
     diploma_dict = diploma.__dict__.copy()
@@ -45,6 +47,7 @@ def diploma_to_dict(diploma: Diploma) -> dict:
     for e in diploma.chapters:
         diploma_dict['chapters'].append(chapter_to_dict(e))
     return diploma_dict
+
 
 def diploma_from_dict(diploma: dict) -> Diploma:
     id = diploma['id']
@@ -73,5 +76,5 @@ def diploma_from_dict(diploma: dict) -> Diploma:
 
 
 def save_diploma_json(diploma: Diploma, save_path: str):
-    with open(save_path, 'w', encoding ='utf8') as json_file:
+    with open(save_path, 'w', encoding='utf8') as json_file:
         json.dump(diploma_to_dict(diploma), json_file, indent=4, ensure_ascii=False)
