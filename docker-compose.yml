@@ -1,4 +1,22 @@
 services:
+  app:
+    build: .
+    container_name: app
+    networks:
+      - backend
+    ports:
+      - "127.0.0.1:5000:5000"
+    restart: unless-stopped
+    healthcheck:
+      test: wget http://localhost:5000 || exit 1
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    #depends_on:
+    #  db:
+    #    condition: service_healthy
+
   db:
     image: neo4j:ubi9
     environment:
