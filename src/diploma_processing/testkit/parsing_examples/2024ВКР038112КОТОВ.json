@@ -1,0 +1,917 @@
+{
+    "id": 0,
+    "name": "РАЗРАБОТКА МОДЕЛИ КЛАССИФИКАЦИИ СОБЫТИЙ В ЖУРНАЛАХ ВЕБ-СЕРВЕРОВ",
+    "author": "Котов Д.А.",
+    "academic_supervisor": "Заславский М.М.",
+    "year": 2024,
+    "words": 4319,
+    "load_date": "2025-04-27T11:49:46.322394",
+    "chapters": [
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "ОПРЕДЕЛЕНИЯ, ОБОЗНАЧЕНИЯ И СОКРАЩЕНИЯ",
+            "water_content": 91,
+            "words": 49,
+            "symbols": 428,
+            "commonly_used_words": [
+                "hypertext",
+                "яп",
+                "язык",
+                "программирования",
+                "ide"
+            ],
+            "commonly_used_words_amount": [
+                2,
+                1,
+                1,
+                1,
+                1
+            ],
+            "chapters": []
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "ВВЕДЕНИЕ",
+            "water_content": 78,
+            "words": 123,
+            "symbols": 1105,
+            "commonly_used_words": [
+                "классификации",
+                "событий",
+                "данных",
+                "журналов",
+                "аномалий"
+            ],
+            "commonly_used_words_amount": [
+                5,
+                4,
+                3,
+                3,
+                3
+            ],
+            "chapters": []
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "Структура",
+            "water_content": 44,
+            "words": 4050,
+            "symbols": 33827,
+            "commonly_used_words": [
+                "данных",
+                "расстояние",
+                "кластеризации",
+                "кластеров",
+                "алгоритм"
+            ],
+            "commonly_used_words_amount": [
+                32,
+                18,
+                18,
+                18,
+                15
+            ],
+            "chapters": [
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "1 ОБЗОР ПРЕДМЕТНОЙ ОБЛАСТИ",
+                    "water_content": 42,
+                    "words": 2211,
+                    "symbols": 18326,
+                    "commonly_used_words": [
+                        "расстояние",
+                        "кластеризации",
+                        "кластеров",
+                        "алгоритм",
+                        "алгоритмы"
+                    ],
+                    "commonly_used_words_amount": [
+                        18,
+                        15,
+                        15,
+                        15,
+                        12
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.1 Основные теоретические положения ",
+                            "water_content": 59,
+                            "words": 522,
+                            "symbols": 4157,
+                            "commonly_used_words": [
+                                "log",
+                                "ресурс",
+                                "таблица",
+                                "http",
+                                "коды"
+                            ],
+                            "commonly_used_words_amount": [
+                                6,
+                                4,
+                                4,
+                                4,
+                                4
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.1.1 Работа веб-сервера ",
+                                    "water_content": 72,
+                                    "words": 143,
+                                    "symbols": 1282,
+                                    "commonly_used_words": [
+                                        "ресурс",
+                                        "например",
+                                        "ресурса",
+                                        "запроса",
+                                        "браузер"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        3,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.1.2 Запросы к серверу",
+                                    "water_content": 68,
+                                    "words": 50,
+                                    "symbols": 396,
+                                    "commonly_used_words": [
+                                        "запросы",
+                                        "таблица",
+                                        "протоколе",
+                                        "http",
+                                        "предусмотрено"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        2,
+                                        2,
+                                        1,
+                                        1,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.1.3 Коды ответа HTTP",
+                                    "water_content": 82,
+                                    "words": 41,
+                                    "symbols": 323,
+                                    "commonly_used_words": [
+                                        "коды",
+                                        "ответа",
+                                        "http",
+                                        "таблица",
+                                        "это"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        4,
+                                        3,
+                                        2,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.1.4 Логи сервера Apache",
+                                    "water_content": 77,
+                                    "words": 288,
+                                    "symbols": 2156,
+                                    "commonly_used_words": [
+                                        "log",
+                                        "сервера",
+                                        "apache",
+                                        "записи",
+                                        "запрос"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        6,
+                                        4,
+                                        4,
+                                        4,
+                                        4
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.2 Кластеризация объектов или кластерный анализ",
+                            "water_content": 68,
+                            "words": 1689,
+                            "symbols": 14169,
+                            "commonly_used_words": [
+                                "расстояние",
+                                "кластеризации",
+                                "кластеров",
+                                "алгоритм",
+                                "алгоритмы"
+                            ],
+                            "commonly_used_words_amount": [
+                                18,
+                                15,
+                                15,
+                                15,
+                                12
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.2.1 Понятие кластеризации",
+                                    "water_content": 76,
+                                    "words": 130,
+                                    "symbols": 1101,
+                                    "commonly_used_words": [
+                                        "кластеризации",
+                                        "элементов",
+                                        "анализа",
+                                        "результатов",
+                                        "собой"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        3,
+                                        3,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.2.2 Меры расстояний",
+                                    "water_content": 76,
+                                    "words": 259,
+                                    "symbols": 2213,
+                                    "commonly_used_words": [
+                                        "расстояние",
+                                        "расстояния",
+                                        "это",
+                                        "вычисляется",
+                                        "разностей"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        12,
+                                        6,
+                                        5,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.2.3 Классификация алгоритмов",
+                                    "water_content": 82,
+                                    "words": 98,
+                                    "symbols": 797,
+                                    "commonly_used_words": [
+                                        "алгоритмы",
+                                        "каждому",
+                                        "иерархические",
+                                        "плоские",
+                                        "строят"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.2.4 Объединение кластеров",
+                                    "water_content": 72,
+                                    "words": 239,
+                                    "symbols": 1962,
+                                    "commonly_used_words": [
+                                        "метод",
+                                        "расстояние",
+                                        "двумя",
+                                        "кластеров",
+                                        "методе"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        9,
+                                        6,
+                                        5,
+                                        5,
+                                        4
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.2.5 Обзор алгоритмов кластеризации",
+                                    "water_content": 78,
+                                    "words": 772,
+                                    "symbols": 6503,
+                                    "commonly_used_words": [
+                                        "алгоритм",
+                                        "кластеров",
+                                        "кластеризации",
+                                        "алгоритмы",
+                                        "объектов"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        15,
+                                        10,
+                                        9,
+                                        8,
+                                        8
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.2.6 Сравнение алгоритмов",
+                                    "water_content": 90,
+                                    "words": 21,
+                                    "symbols": 219,
+                                    "commonly_used_words": [
+                                        "таблица",
+                                        "алгоритмов",
+                                        "таблице",
+                                        "вычислительная",
+                                        "сложность"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        5,
+                                        4,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "1.2.7 Выводы",
+                                    "water_content": 74,
+                                    "words": 170,
+                                    "symbols": 1374,
+                                    "commonly_used_words": [
+                                        "dbscan",
+                                        "данных",
+                                        "кластеризации",
+                                        "аномалий",
+                                        "способен"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        6,
+                                        5,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "2 ВЫБОР МЕТОДА РЕШЕНИЯ",
+                    "water_content": 65,
+                    "words": 208,
+                    "symbols": 1787,
+                    "commonly_used_words": [
+                        "модель",
+                        "необходимо",
+                        "данных",
+                        "кластеризации",
+                        "модели"
+                    ],
+                    "commonly_used_words_amount": [
+                        4,
+                        4,
+                        4,
+                        3,
+                        3
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.1 Постановка задачи",
+                            "water_content": 77,
+                            "words": 45,
+                            "symbols": 410,
+                            "commonly_used_words": [
+                                "модель",
+                                "необходимо",
+                                "разработать",
+                                "кластеризации",
+                                "логов"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                1,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.2 Сбор и предобработка данных",
+                            "water_content": 77,
+                            "words": 31,
+                            "symbols": 274,
+                            "commonly_used_words": [
+                                "данных",
+                                "необходимо",
+                                "организовать",
+                                "сбор",
+                                "журналов"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                1,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.3 Исследование и выбор метода кластеризации",
+                            "water_content": 80,
+                            "words": 31,
+                            "symbols": 262,
+                            "commonly_used_words": [
+                                "способность",
+                                "также",
+                                "необходимо",
+                                "провести",
+                                "анализ"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                1,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.4 Разработка модели",
+                            "water_content": 73,
+                            "words": 34,
+                            "symbols": 271,
+                            "commonly_used_words": [
+                                "модель",
+                                "кластеры",
+                                "далее",
+                                "нужно",
+                                "разработать"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                2,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.5 Выявление аномалий",
+                            "water_content": 75,
+                            "words": 29,
+                            "symbols": 254,
+                            "commonly_used_words": [
+                                "необходимо",
+                                "интегрировать",
+                                "механизмы",
+                                "определения",
+                                "отслеживания"
+                            ],
+                            "commonly_used_words_amount": [
+                                1,
+                                1,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.6 Тестирование и валидация модели ",
+                            "water_content": 78,
+                            "words": 38,
+                            "symbols": 316,
+                            "commonly_used_words": [
+                                "модели",
+                                "данных",
+                                "оценка",
+                                "кластеризации",
+                                "способности"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                2,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "3 ОПИСАНИЕ МЕТОДА РЕШЕНИЯ",
+                    "water_content": 51,
+                    "words": 888,
+                    "symbols": 7126,
+                    "commonly_used_words": [
+                        "данных",
+                        "точки",
+                        "модели",
+                        "анализа",
+                        "точка"
+                    ],
+                    "commonly_used_words_amount": [
+                        12,
+                        10,
+                        5,
+                        4,
+                        4
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.1 Генерация набора событий журнала веб-сереров",
+                            "water_content": 77,
+                            "words": 209,
+                            "symbols": 1808,
+                            "commonly_used_words": [
+                                "данных",
+                                "модели",
+                                "классификации",
+                                "сгенерированных",
+                                "набора"
+                            ],
+                            "commonly_used_words_amount": [
+                                8,
+                                5,
+                                3,
+                                3,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.2 Предварительная обработка данных",
+                            "water_content": 74,
+                            "words": 239,
+                            "symbols": 1916,
+                            "commonly_used_words": [
+                                "анализа",
+                                "полей",
+                                "которые",
+                                "указывать",
+                                "выявить"
+                            ],
+                            "commonly_used_words_amount": [
+                                4,
+                                3,
+                                3,
+                                3,
+                                3
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.3 Описание алгоритма",
+                            "water_content": 56,
+                            "words": 440,
+                            "symbols": 3402,
+                            "commonly_used_words": [
+                                "точки",
+                                "данных",
+                                "точка",
+                                "кластеры",
+                                "журналов"
+                            ],
+                            "commonly_used_words_amount": [
+                                10,
+                                4,
+                                4,
+                                4,
+                                4
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.1  DBSCAN",
+                                    "water_content": 69,
+                                    "words": 251,
+                                    "symbols": 1854,
+                                    "commonly_used_words": [
+                                        "точки",
+                                        "данных",
+                                        "точка",
+                                        "кластеры",
+                                        "алгоритм"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        10,
+                                        4,
+                                        4,
+                                        4,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.2  Векторизация TF-IDF",
+                                    "water_content": 80,
+                                    "words": 115,
+                                    "symbols": 955,
+                                    "commonly_used_words": [
+                                        "которые",
+                                        "преобразования",
+                                        "текстовых",
+                                        "журналов",
+                                        "векторы"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        3,
+                                        2,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.3  Векторизация BERT",
+                                    "water_content": 77,
+                                    "words": 74,
+                                    "symbols": 593,
+                                    "commonly_used_words": [
+                                        "также",
+                                        "журналов",
+                                        "bert",
+                                        "модель",
+                                        "слова"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        3,
+                                        2,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "4 АНАЛИЗ ПОЛУЧЕННОГО РЕШЕНИЯ",
+                    "water_content": 52,
+                    "words": 247,
+                    "symbols": 2158,
+                    "commonly_used_words": [
+                        "данных",
+                        "анализа",
+                        "кластеров",
+                        "реальных",
+                        "сгенерированных"
+                    ],
+                    "commonly_used_words_amount": [
+                        11,
+                        5,
+                        3,
+                        3,
+                        2
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "4.1 Анализ решения, используя генерируемые данные",
+                            "water_content": 75,
+                            "words": 192,
+                            "symbols": 1679,
+                            "commonly_used_words": [
+                                "данных",
+                                "анализа",
+                                "кластеров",
+                                "сгенерированных",
+                                "понимание"
+                            ],
+                            "commonly_used_words_amount": [
+                                8,
+                                3,
+                                3,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "4.2 Анализ решения, используя реальные данные",
+                            "water_content": 83,
+                            "words": 55,
+                            "symbols": 479,
+                            "commonly_used_words": [
+                                "реальных",
+                                "данных",
+                                "визуализация",
+                                "кластерного",
+                                "анализа"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                3,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "5 Обеспечение качества разработки, продукции, программного продукта ",
+                    "water_content": 57,
+                    "words": 496,
+                    "symbols": 4430,
+                    "commonly_used_words": [
+                        "данных",
+                        "могут",
+                        "систему",
+                        "требованиям",
+                        "функции"
+                    ],
+                    "commonly_used_words_amount": [
+                        5,
+                        4,
+                        4,
+                        4,
+                        4
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "5.1 Определение потребителей",
+                            "water_content": 76,
+                            "words": 304,
+                            "symbols": 2758,
+                            "commonly_used_words": [
+                                "данных",
+                                "могут",
+                                "систему",
+                                "требованиям",
+                                "функции"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                4,
+                                4,
+                                4,
+                                4
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "5.4 Измерение характеристик качества. Операциональное определение",
+                            "water_content": 75,
+                            "words": 129,
+                            "symbols": 1103,
+                            "commonly_used_words": [
+                                "таблица",
+                                "оо",
+                                "определения",
+                                "испытания",
+                                "системе"
+                            ],
+                            "commonly_used_words_amount": [
+                                4,
+                                3,
+                                3,
+                                3,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "5.5 Выводы",
+                            "water_content": 79,
+                            "words": 63,
+                            "symbols": 569,
+                            "commonly_used_words": [
+                                "модели",
+                                "продукта",
+                                "также",
+                                "описаны",
+                                "определены"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                2,
+                                2,
+                                2,
+                                1
+                            ],
+                            "chapters": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "ЗАКЛЮЧЕНИЕ ",
+            "water_content": 76,
+            "words": 97,
+            "symbols": 826,
+            "commonly_used_words": [
+                "событий",
+                "классификации",
+                "данных",
+                "работы",
+                "также"
+            ],
+            "commonly_used_words_amount": [
+                4,
+                3,
+                3,
+                2,
+                2
+            ],
+            "chapters": []
+        }
+    ]
+}

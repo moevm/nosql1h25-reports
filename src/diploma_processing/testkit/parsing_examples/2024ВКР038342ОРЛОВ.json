@@ -1,0 +1,1007 @@
+{
+    "id": 0,
+    "name": "Реализация алгоритмов многоканальной параллельной обработки случайных сигналов с использованием операций быстрой свертки",
+    "author": "Д.С. Орлов",
+    "academic_supervisor": "О.С. Попова",
+    "year": 2024,
+    "words": 4595,
+    "load_date": "2025-04-27T11:49:46.417765",
+    "chapters": [
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": null,
+            "water_content": 93,
+            "words": 46,
+            "symbols": 428,
+            "commonly_used_words": [
+                "преобразование",
+                "фурье",
+                "люминесцентная",
+                "лампа",
+                "определения"
+            ],
+            "commonly_used_words_amount": [
+                2,
+                2,
+                2,
+                2,
+                1
+            ],
+            "chapters": []
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "ВВЕДЕНИЕ",
+            "water_content": 85,
+            "words": 225,
+            "symbols": 2045,
+            "commonly_used_words": [
+                "обработки",
+                "формирования",
+                "сигналов",
+                "операций",
+                "использованием"
+            ],
+            "commonly_used_words_amount": [
+                7,
+                6,
+                6,
+                6,
+                5
+            ],
+            "chapters": []
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "Структура",
+            "water_content": 47,
+            "words": 4147,
+            "symbols": 34368,
+            "commonly_used_words": [
+                "сигнала",
+                "пэ",
+                "пк",
+                "алгоритмов",
+                "частоты"
+            ],
+            "commonly_used_words_amount": [
+                62,
+                52,
+                22,
+                22,
+                19
+            ],
+            "chapters": [
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "ГЛАВА I. ОБЗОР АНАЛОГОВ",
+                    "water_content": 69,
+                    "words": 442,
+                    "symbols": 3819,
+                    "commonly_used_words": [
+                        "сигнала",
+                        "алгоритм",
+                        "аналогов",
+                        "исходного",
+                        "алгоритма"
+                    ],
+                    "commonly_used_words_amount": [
+                        18,
+                        8,
+                        5,
+                        4,
+                        4
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.1 Принцип отбора аналогов",
+                            "water_content": 77,
+                            "words": 40,
+                            "symbols": 337,
+                            "commonly_used_words": [
+                                "аналогов",
+                                "случайных",
+                                "сигналов",
+                                "обзора",
+                                "данной"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                2,
+                                2,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.2 Метод с применением алгоритмов сортировки [1]",
+                            "water_content": 81,
+                            "words": 48,
+                            "symbols": 405,
+                            "commonly_used_words": [
+                                "сигнала",
+                                "исходного",
+                                "данном",
+                                "методе",
+                                "алгоритмы"
+                            ],
+                            "commonly_used_words_amount": [
+                                4,
+                                2,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.3 Алгоритм адаптации на основе итерационной процедуры [2]",
+                            "water_content": 84,
+                            "words": 65,
+                            "symbols": 618,
+                            "commonly_used_words": [
+                                "сигнала",
+                                "алгоритм",
+                                "ар",
+                                "исходного",
+                                "данный"
+                            ],
+                            "commonly_used_words_amount": [
+                                4,
+                                3,
+                                2,
+                                2,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.4 Алгоритм с применением вейвлет-преобразований [3][4]",
+                            "water_content": 71,
+                            "words": 53,
+                            "symbols": 431,
+                            "commonly_used_words": [
+                                "сигнала",
+                                "работы",
+                                "данном",
+                                "алгоритме",
+                                "анализа"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                2,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.5 Алгоритм с использованием Convolutional Neural Networks [5]",
+                            "water_content": 85,
+                            "words": 56,
+                            "symbols": 494,
+                            "commonly_used_words": [
+                                "модели",
+                                "алгоритма",
+                                "частотная",
+                                "сигнала",
+                                "данный"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                2,
+                                2,
+                                2,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.6 Сравнение аналогов",
+                            "water_content": 72,
+                            "words": 81,
+                            "symbols": 676,
+                            "commonly_used_words": [
+                                "однако",
+                                "сигнала",
+                                "применением",
+                                "алгоритм",
+                                "аналогов"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                3,
+                                3,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.7 Выводы по итогам обзора аналогов",
+                            "water_content": 70,
+                            "words": 50,
+                            "symbols": 398,
+                            "commonly_used_words": [
+                                "результате",
+                                "обзора",
+                                "аналогов",
+                                "сделать",
+                                "вывод"
+                            ],
+                            "commonly_used_words_amount": [
+                                1,
+                                1,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.8 Описание метода решения",
+                            "water_content": 85,
+                            "words": 49,
+                            "symbols": 460,
+                            "commonly_used_words": [
+                                "алгоритм",
+                                "должен",
+                                "критериям",
+                                "алгоритма",
+                                "выполнения"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                3,
+                                2,
+                                2,
+                                1
+                            ],
+                            "chapters": []
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "ГЛАВА II. ОПИСАНИЕ РАЗРАБОТАННОГО АЛГОРИТМА",
+                    "water_content": 65,
+                    "words": 1970,
+                    "symbols": 15833,
+                    "commonly_used_words": [
+                        "пэ",
+                        "сигнала",
+                        "пк",
+                        "алгоритмов",
+                        "частоты"
+                    ],
+                    "commonly_used_words_amount": [
+                        52,
+                        44,
+                        22,
+                        22,
+                        19
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.1 Исходные данные",
+                            "water_content": 52,
+                            "words": 314,
+                            "symbols": 2517,
+                            "commonly_used_words": [
+                                "пэ",
+                                "сигнала",
+                                "шумового",
+                                "угол",
+                                "хн"
+                            ],
+                            "commonly_used_words_amount": [
+                                18,
+                                12,
+                                5,
+                                4,
+                                4
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "2.1.1 Описание цилиндрической антенны",
+                                    "water_content": 77,
+                                    "words": 210,
+                                    "symbols": 1615,
+                                    "commonly_used_words": [
+                                        "пэ",
+                                        "угол",
+                                        "хн",
+                                        "сигнала",
+                                        "сигнал"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        15,
+                                        4,
+                                        4,
+                                        4,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "2.1.2 Описание сигнала",
+                                    "water_content": 79,
+                                    "words": 104,
+                                    "symbols": 902,
+                                    "commonly_used_words": [
+                                        "сигнала",
+                                        "шумового",
+                                        "пэ",
+                                        "модели",
+                                        "цилиндрической"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        8,
+                                        5,
+                                        3,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.2 Общая схема шумопеленгования",
+                            "water_content": 81,
+                            "words": 135,
+                            "symbols": 1195,
+                            "commonly_used_words": [
+                                "сигнала",
+                                "шумопеленгования",
+                                "пэ",
+                                "схема",
+                                "реализованной"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                4,
+                                3,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.3 Вычисление задержек",
+                            "water_content": 77,
+                            "words": 90,
+                            "symbols": 692,
+                            "commonly_used_words": [
+                                "пэ",
+                                "задержки",
+                                "задержанных",
+                                "задержек",
+                                "сигнала"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                3,
+                                3,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.4 Формирование шумового сигнала на выходе ПЭ",
+                            "water_content": 72,
+                            "words": 176,
+                            "symbols": 1296,
+                            "commonly_used_words": [
+                                "пэ",
+                                "сигнала",
+                                "шумового",
+                                "выходе",
+                                "задержки"
+                            ],
+                            "commonly_used_words_amount": [
+                                13,
+                                8,
+                                4,
+                                3,
+                                3
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.5 Формирование пространственных каналов в частотной области",
+                            "water_content": 78,
+                            "words": 130,
+                            "symbols": 1015,
+                            "commonly_used_words": [
+                                "дпф",
+                                "сигнала",
+                                "области",
+                                "фурье",
+                                "сложность"
+                            ],
+                            "commonly_used_words_amount": [
+                                6,
+                                5,
+                                3,
+                                3,
+                                3
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.6 Формирование веера ПК с использованием операций свёртки",
+                            "water_content": 57,
+                            "words": 181,
+                            "symbols": 1485,
+                            "commonly_used_words": [
+                                "сигнала",
+                                "отсчетов",
+                                "импульсной",
+                                "характеристикой",
+                                "пусть"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                4,
+                                3,
+                                3,
+                                3
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": " 2.6.1 Определение свёртки",
+                                    "water_content": 75,
+                                    "words": 64,
+                                    "symbols": 507,
+                                    "commonly_used_words": [
+                                        "импульсной",
+                                        "характеристикой",
+                                        "прохождение",
+                                        "сигнала",
+                                        "t"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        3,
+                                        3,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "2.6.2 Линейная свёртка",
+                                    "water_content": 81,
+                                    "words": 37,
+                                    "symbols": 299,
+                                    "commonly_used_words": [
+                                        "дискретных",
+                                        "линейной",
+                                        "пусть",
+                                        "имеется",
+                                        "сигнала"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        2,
+                                        2,
+                                        1,
+                                        1,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": " 2.6.3 Циклическая свёртка",
+                                    "water_content": 73,
+                                    "words": 80,
+                                    "symbols": 679,
+                                    "commonly_used_words": [
+                                        "отсчетов",
+                                        "циклической",
+                                        "пусть",
+                                        "имеется",
+                                        "сигнала"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.7 Использование свёртки для формирования веера ПК",
+                            "water_content": 76,
+                            "words": 250,
+                            "symbols": 1933,
+                            "commonly_used_words": [
+                                "пэ",
+                                "пк",
+                                "сигнала",
+                                "окно",
+                                "апертурное"
+                            ],
+                            "commonly_used_words_amount": [
+                                13,
+                                7,
+                                7,
+                                6,
+                                5
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.8 Использование быстрой свёртки для формирования веера ПК",
+                            "water_content": 74,
+                            "words": 207,
+                            "symbols": 1760,
+                            "commonly_used_words": [
+                                "фурье",
+                                "массивов",
+                                "преобразование",
+                                "преобразования",
+                                "последовательности"
+                            ],
+                            "commonly_used_words_amount": [
+                                7,
+                                4,
+                                4,
+                                3,
+                                3
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.9 Сравнение алгоритмов формирования веера ПК",
+                            "water_content": 79,
+                            "words": 423,
+                            "symbols": 3435,
+                            "commonly_used_words": [
+                                "алгоритмов",
+                                "частоты",
+                                "пк",
+                                "работы",
+                                "результаты"
+                            ],
+                            "commonly_used_words_amount": [
+                                20,
+                                19,
+                                15,
+                                13,
+                                12
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": " 2.10 Выводы по второй главе",
+                            "water_content": 71,
+                            "words": 64,
+                            "symbols": 505,
+                            "commonly_used_words": [
+                                "свёртки",
+                                "быстрой",
+                                "алгоритмов",
+                                "обработки",
+                                "сигналов"
+                            ],
+                            "commonly_used_words_amount": [
+                                4,
+                                3,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "ГЛАВА III. БЕЗОПАСНОСТЬ ЖИЗНЕДЕЯТЕЛЬНОСТИ ",
+                    "water_content": 55,
+                    "words": 1735,
+                    "symbols": 14716,
+                    "commonly_used_words": [
+                        "могут",
+                        "шума",
+                        "освещения",
+                        "цвета",
+                        "слишком"
+                    ],
+                    "commonly_used_words_amount": [
+                        9,
+                        8,
+                        7,
+                        6,
+                        5
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.1 Общая характеристика условий применения ",
+                            "water_content": 77,
+                            "words": 35,
+                            "symbols": 321,
+                            "commonly_used_words": [
+                                "сигналов",
+                                "вкр",
+                                "посвящена",
+                                "реализации",
+                                "алгоритмов"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                1,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": " 3.2 Анализ опасностей ",
+                            "water_content": 77,
+                            "words": 74,
+                            "symbols": 683,
+                            "commonly_used_words": [
+                                "воздуха",
+                                "разработчика",
+                                "факторам",
+                                "отнести",
+                                "повышенная"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                2,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": " 3.3 Требования к производственным помещениям",
+                            "water_content": 69,
+                            "words": 1626,
+                            "symbols": 13712,
+                            "commonly_used_words": [
+                                "могут",
+                                "шума",
+                                "освещения",
+                                "цвета",
+                                "слишком"
+                            ],
+                            "commonly_used_words_amount": [
+                                9,
+                                8,
+                                7,
+                                6,
+                                5
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.1 Освещённость рабочего места",
+                                    "water_content": 76,
+                                    "words": 233,
+                                    "symbols": 1949,
+                                    "commonly_used_words": [
+                                        "освещения",
+                                        "освещение",
+                                        "естественного",
+                                        "общее",
+                                        "равномерно"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        7,
+                                        4,
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.2 Микроклимат рабочей зоны разработчика [11]",
+                                    "water_content": 78,
+                                    "words": 110,
+                                    "symbols": 912,
+                                    "commonly_used_words": [
+                                        "воздуха",
+                                        "рабочей",
+                                        "влажности",
+                                        "зоне",
+                                        "вызвать"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        3,
+                                        3,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.3 Организация рабочего места разработчика [12]",
+                                    "water_content": 71,
+                                    "words": 166,
+                                    "symbols": 1234,
+                                    "commonly_used_words": [
+                                        "должно",
+                                        "места",
+                                        "должен",
+                                        "также",
+                                        "спину"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.4 Окраска и коэффициенты отражения",
+                                    "water_content": 75,
+                                    "words": 232,
+                                    "symbols": 1868,
+                                    "commonly_used_words": [
+                                        "могут",
+                                        "цвета",
+                                        "слишком",
+                                        "отражения",
+                                        "вызывать"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        9,
+                                        6,
+                                        5,
+                                        4,
+                                        4
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.5 Воздействие шума на программиста. Защита от шума.",
+                                    "water_content": 80,
+                                    "words": 194,
+                                    "symbols": 1634,
+                                    "commonly_used_words": [
+                                        "шума",
+                                        "рабочем",
+                                        "месте",
+                                        "источников",
+                                        "звукового"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        8,
+                                        4,
+                                        4,
+                                        4,
+                                        4
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.6 Опасность повышенного уровня напряженности электромагнитного поля",
+                                    "water_content": 78,
+                                    "words": 274,
+                                    "symbols": 2432,
+                                    "commonly_used_words": [
+                                        "излучения",
+                                        "поля",
+                                        "экраны",
+                                        "нм",
+                                        "работы"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.7 Электробезопасность. Статическое электричество.",
+                                    "water_content": 75,
+                                    "words": 240,
+                                    "symbols": 2135,
+                                    "commonly_used_words": [
+                                        "воздействия",
+                                        "тока",
+                                        "корпус",
+                                        "которые",
+                                        "поражения"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.8 Обеспечение электробезопасности техническими способами и средствами",
+                                    "water_content": 71,
+                                    "words": 63,
+                                    "symbols": 558,
+                                    "commonly_used_words": [
+                                        "электрическим",
+                                        "напряжением",
+                                        "заземления",
+                                        "электрически",
+                                        "проводящие"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        2,
+                                        2,
+                                        2,
+                                        1,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.9 Организационные и технические мероприятия по обеспечению электробезопасности",
+                                    "water_content": 75,
+                                    "words": 72,
+                                    "symbols": 630,
+                                    "commonly_used_words": [
+                                        "работы",
+                                        "ремонт",
+                                        "основными",
+                                        "организационными",
+                                        "мероприятиями"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        2,
+                                        2,
+                                        1,
+                                        1,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.10 Вывод. ",
+                                    "water_content": 80,
+                                    "words": 42,
+                                    "symbols": 360,
+                                    "commonly_used_words": [
+                                        "программиста",
+                                        "работа",
+                                        "вопреки",
+                                        "общему",
+                                        "мнению"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        2,
+                                        1,
+                                        1,
+                                        1,
+                                        1
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "ЗАКЛЮЧЕНИЕ",
+            "water_content": 82,
+            "words": 177,
+            "symbols": 1589,
+            "commonly_used_words": [
+                "алгоритм",
+                "реализован",
+                "описан",
+                "формирования",
+                "работы"
+            ],
+            "commonly_used_words_amount": [
+                6,
+                5,
+                5,
+                5,
+                4
+            ],
+            "chapters": []
+        }
+    ]
+}
