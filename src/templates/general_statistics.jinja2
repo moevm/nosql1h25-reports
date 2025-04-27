@@ -128,10 +128,30 @@
             document.addEventListener("DOMContentLoaded", () => {
                 const headers = document.querySelectorAll(".accordion-header");
 
+                // Функция для закрытия всех дочерних элементов
+                function closeChildren(header) {
+                    const parentItem = header.parentElement; // Найдем родительский элемент (accordion-item)
+                    const subchapters = parentItem.querySelector(".subchapters"); // Найдем дочерние разделы
+
+                    if (subchapters) {
+                        const childHeaders = subchapters.querySelectorAll(".accordion-header");
+                        childHeaders.forEach(childHeader => {
+                            childHeader.setAttribute("aria-expanded", "false"); // Закрываем дочерний заголовок
+                            closeChildren(childHeader); // Рекурсивно закрываем вложенные дочерние элементы
+                        });
+                    }
+                }
+
+                // Обработчик кликов по заголовкам
                 headers.forEach(header => {
                     header.addEventListener("click", () => {
                         const expanded = header.getAttribute("aria-expanded") === "true";
                         header.setAttribute("aria-expanded", !expanded);
+
+                        // Если родительский раздел закрывается, закрываем все дочерние
+                        if (!expanded) {
+                            closeChildren(header);
+                        }
                     });
                 });
             });

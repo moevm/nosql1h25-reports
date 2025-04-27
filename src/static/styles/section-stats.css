@@ -33,9 +33,9 @@
 .accordion-content {
     padding-left: 20px;
     overflow: hidden;
-    max-height: 0; /* Начальное состояние: закрыто */
-    transition: max-height 0.3s ease, opacity 0.3s ease; /* Плавная анимация */
-    opacity: 0; /* Начальное состояние: прозрачно */
+    max-height: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
 }
 
 .accordion-header[aria-expanded="true"] .arrow {
@@ -43,7 +43,7 @@
 }
 
 .accordion-header[aria-expanded="true"] + .accordion-content {
-    max-height: 100%; /* Достаточно большое значение для покрытия содержимого */
+    max-height: 100%;
     opacity: 1; /* Содержимое становится видимым */
 }
 
