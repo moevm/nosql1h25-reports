@@ -132,13 +132,6 @@
                     header.addEventListener("click", () => {
                         const expanded = header.getAttribute("aria-expanded") === "true";
                         header.setAttribute("aria-expanded", !expanded);
-
-                        const content = header.nextElementSibling;
-                        if (!expanded) {
-                            content.style.maxHeight = "100%";
-                        } else {
-                            content.style.maxHeight = "0";
-                        }
                     });
                 });
             });
