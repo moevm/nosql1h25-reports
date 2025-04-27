@@ -5,13 +5,59 @@ from src.diploma_processing.data_types import Chapter, Diploma
 
 class Neo4jDatabase:
     def __init__(self, uri, user, password):
-        pass
+        """
+        Инициализация соединения с базой данных Neo4j.
+        """
+        self._driver = None
+        try:
+            self._driver = GraphDatabase.driver(uri, auth=(user, password))
+            # >>> ПРОВЕРКА ДОСТУПНОСТИ БАЗЫ <<<
+            with self._driver.session() as session:
+                session.run("RETURN 1")  # минимальный запрос
+            print("Подключение к базе данных успешно установлено.")
+        except ServiceUnavailable as e:
+            print(f"Не удалось подключиться к базе данных: {e}")
+            raise
+        except Exception as e:
+            print(f"Ошибка подключения к базе данных: {e}")
+            raise
 
     def close(self):
-        pass
+        """
+        Закрытие соединения с базой данных.
+        """
+        if self._driver:
+            try:
+                self._driver.close()
+                print("Соединение с базой данных успешно закрыто.")
+            except Exception as e:
+                print(f"Ошибка при закрытии соединения: {e}")
 
     def query(self, query, parameters=None):
-        pass
+        """
+        Выполнение Cypher-запроса.
+        :param query: Строка с Cypher-запросом.
+        :param parameters: Параметры для запроса (опционально).
+        :return: Результат выполнения запроса.
+        """
+        assert self._driver is not None, "Driver not initialized!"
+        session = None
+        response = None
+
+        try:
+            session = self._driver.session()
+            if parameters is None:
+                response = list(session.run(query))
+            else:
+                response = list(session.run(query, parameters))  # <-- сюда передать parameters
+            print("Запрос успешно выполнен.")
+        except Exception as e:
+            print(f"Ошибка при выполнении запроса: {e}")
+        finally:
+            if session is not None:
+                session.close()
+
+        return response
 
 
 class DiplomaRepository:
