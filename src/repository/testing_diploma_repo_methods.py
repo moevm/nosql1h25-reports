@@ -90,7 +90,7 @@ class DiplomaRepository:
     def __init__(self, database: Neo4jDatabase):
         self.database = database
 
-    # +
+    # works
     def save_diploma(self, diploma: Diploma) -> int | None:
         query = """
         CREATE (d:Diploma { 
@@ -116,7 +116,7 @@ class DiplomaRepository:
             return diploma.id
         return None
 
-    # +
+    # works
     def save_chapter(self, chapter: Chapter) -> int | None:
         query = """
         CREATE (c:Chapter {
@@ -146,7 +146,7 @@ class DiplomaRepository:
             return chapter.id
         return None
 
-    # +
+    # works
     def link_chapter_to_diploma(self, id_diploma: int) -> None:
         query = """
         MATCH (d:Diploma), (c:Chapter) 
@@ -156,7 +156,7 @@ class DiplomaRepository:
         parameters = {"id_diploma": id_diploma}
         self.database.query(query, parameters)
 
-    # +
+    # works
     def link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
         query = """
         MATCH (c1:Chapter), (c2:Chapter) 
@@ -169,7 +169,7 @@ class DiplomaRepository:
         }
         self.database.query(query, parameters)
 
-    # idk
+    # idk (no field 'shingles' in Diploma added yet)
     def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, str]]:
         query = """
         MATCH (d:Diploma)
@@ -180,7 +180,7 @@ class DiplomaRepository:
         result = self.database.query(query, parameters)
         return [(record[0], record[1]) for record in result]
 
-    # +
+    # works
     def save_similarity(self, id_diploma: int, id_diploma_2: int, similarity: float) -> None:
         query = """
         MATCH (d1:Diploma), (d2:Diploma)
@@ -194,7 +194,7 @@ class DiplomaRepository:
         }
         self.database.query(query, parameters)
 
-    # +
+    # works
     def load_diploma_graph(self, id_diploma: int) -> tuple[list[int], list[list[int]]]:
         query = """
         MATCH p = (d:Diploma)-[r:CONTAINS*0..]->(x) 
@@ -208,7 +208,7 @@ class DiplomaRepository:
         nodes, rels = result[0] if result else ([], [])
         return nodes, rels
 
-    # +
+    # works
     def load_diploma_data(self, id_diploma: int) -> dict:
         query = """
         MATCH (d:Diploma)
@@ -219,7 +219,7 @@ class DiplomaRepository:
         result = self.database.query(query, parameters)
         return dict(result[0]["d"]) if result else {}
 
-    # +
+    # works
     def load_chapters(self, chapter_ids: list[int]) -> list[dict]:
         query = """
         MATCH (c:Chapter)
@@ -332,6 +332,124 @@ def testing():
     print(all_data, all_nodes, sep='\n---------------\n')
     print('\n\n\n', all_relationships, sep='\n\n')
 
+
+# 1. Сохраняем диплом в базу данных
+def test_save_diploma(test_diploma):
+    diploma_id = diploma_repository.save_diploma(test_diploma)
+    print(f"Диплом сохранен с ID: {diploma_id}")
+    return diploma_id
+
+
+# 2. Сохраняем главы диплома в базу данных
+def save_chapter_recursive(chapter: Chapter):
+    """
+    Сохраняет главу и её подразделы рекурсивно.
+    Использует внешнюю переменную test_diploma1.
+    """
+    chapter.id_diploma = test_diploma1.id  # <-- берем id диплома из внешней переменной
+    chapter_id = diploma_repository.save_chapter(chapter)
+    print(f"Глава '{chapter.name}' сохранена с ID: {chapter_id}")
+
+    # Если у главы есть подразделы, рекурсивно сохраняем их
+    if chapter.chapters:
+        for subchapter in chapter.chapters:
+            save_chapter_recursive(subchapter)
+
+
+def test_save_chapters():
+    """
+    Сохраняем все главы диплома, включая все вложенные подразделы.
+    """
+    for chapter in test_diploma1.chapters:
+        save_chapter_recursive(chapter)
+
+
+# 3. Связываем главы с дипломом
+def test_link_chapters_to_diploma():
+    diploma_repository.link_chapter_to_diploma(test_diploma1.id)
+
+
+# 4 Связывание глав
+def test_link_subchapters_recursive(chapter):
+    subchapter_ids = [subchapter.id for subchapter in chapter.chapters]
+    if subchapter_ids:
+        diploma_repository.link_subchapters(chapter.id, subchapter_ids)
+        print(f"Подглавы {subchapter_ids} успешно связаны с главой '{chapter.name}' (ID {chapter.id}).")
+        # Рекурсивно связываем подглавы
+        for subchapter in chapter.chapters:
+            test_link_subchapters_recursive(subchapter)
+    else:
+        print(f"У главы '{chapter.name}' нет подглав для связывания.")
+
+
+def test_link_subchapters():
+    # Начинаем рекурсивно
+    for chapt in test_diploma1.chapters:
+        test_link_subchapters_recursive(chapt)
+
+
+# 5 Извлечение шинглов
+# idk what to do yet
+
+# 6 Выставление параметра схожести
+def test_save_similarity():
+    similarity_value = 0.3  # допустим, какая-то вычисленная схожесть
+    diploma_repository.save_similarity(test_diploma1.id, test_diploma2.id, similarity_value)
+    print(f"Связь схожести между дипломами {test_diploma1.id} и {test_diploma2.id} успешно сохранена (похожесть {similarity_value}).")
+
+
+# 7 Извлечение диплома и его разделов (3 запроса)
+def test_load_diploma_graph(diploma):
+    if diploma.id is not None:
+        nodes, rels = diploma_repository.load_diploma_graph(diploma.id)
+        print(f"У диплома с ID {diploma.id} найдены узлы: {nodes}")
+        print(f"И связи: {rels}")
+    else:
+        print("У тестового диплома нет ID для загрузки графа.")
+
+
+def test_load_diploma_data(diploma):
+    if diploma.id is not None:
+        diploma_data = diploma_repository.load_diploma_data(diploma.id)
+        print(f"Данные диплома с ID {diploma.id}: {diploma_data}")
+    else:
+        print("У тестового диплома нет ID для загрузки данных.")
+
+
+def test_load_chapters(diploma):
+    chapter_ids = [chapter.id for chapter in diploma.chapters if chapter.id is not None]
+    if chapter_ids:
+        chapters_data = diploma_repository.load_chapters(chapter_ids)
+        print(f"Данные глав с ID {chapter_ids}:")
+        for chapter in chapters_data:
+            print(chapter)
+    else:
+        print("Нет доступных глав для загрузки.")
+
+
+neo4j_db.query("MATCH (n) DETACH DELETE n")
+testing()
+
+# 1
+id_dipl1 = test_save_diploma(test_diploma1)
+# 2
+test_save_chapters()
+# 3
+test_link_chapters_to_diploma()
+# 4
+test_link_subchapters()
+# 5
+# no field 'shingles' in Diploma
+# 6
+id_dipl2 = test_save_diploma(test_diploma2)
+test_save_similarity()
+# 7
+test_load_diploma_graph(test_diploma1)
+test_load_diploma_data(test_diploma1)
+test_load_chapters(test_diploma1)
+
+testing()
+print(test_diploma1, test_diploma2, sep='\n')
 
 # Закрываем соединение с базой данных
 neo4j_db.close()
