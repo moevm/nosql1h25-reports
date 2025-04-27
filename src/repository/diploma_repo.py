@@ -62,13 +62,61 @@ class Neo4jDatabase:
 
 class DiplomaRepository:
     def __init__(self, database: Neo4jDatabase):
-        pass
+        self.database = database
 
     def save_diploma(self, diploma: Diploma) -> int | None:
-        pass
+        query = """
+                CREATE (d:Diploma { 
+                    name: $name, 
+                    author: $author, 
+                    academic_supervisor: $academic_supervisor, 
+                    year: $year, 
+                    disclosure_persentage: 0, 
+                    shingles: ''
+                })
+                SET d.id = ID(d)
+                RETURN d.id
+                """
+        parameters = {
+            "name": diploma.name,
+            "author": diploma.author,
+            "academic_supervisor": diploma.academic_supervisor,
+            "year": diploma.year
+        }
+        result = self.database.query(query, parameters)
+        if result:
+            diploma.id = result[0][0]  # Теперь id будет и в объекте, и в БД в поле id
+            return diploma.id
+        return None
 
     def save_chapter(self, chapter: Chapter) -> int | None:
-        pass
+        query = """
+                CREATE (c:Chapter {
+                    id_diploma: $id_diploma, 
+                    name: $name, 
+                    water_content: $water_content, 
+                    words: $words, 
+                    symbols: $symbols, 
+                    commonly_used_words: $commonly_used_words, 
+                    commonly_used_words_amount: $commonly_used_words_amount
+                })
+                SET c.id = ID(c)
+                RETURN ID(c)
+                """
+        parameters = {
+            "id_diploma": chapter.id_diploma,
+            "name": chapter.name,
+            "water_content": chapter.water_content,
+            "words": chapter.words,
+            "symbols": chapter.symbols,
+            "commonly_used_words": chapter.commonly_used_words,
+            "commonly_used_words_amount": chapter.commonly_used_words_amount
+        }
+        result = self.database.query(query, parameters)
+        if result:
+            chapter.id = result[0][0]  # Теперь id будет и в объекте, и в БД в поле id
+            return chapter.id
+        return None
 
     def link_chapter_to_diploma(self, id_diploma: int) -> None:
         pass
@@ -80,7 +128,17 @@ class DiplomaRepository:
         pass
 
     def save_similarity(self, id_diploma: int, id_diploma_2: int, similarity: float) -> None:
-        pass
+        query = """
+                MATCH (d1:Diploma), (d2:Diploma)
+                WHERE ID(d1) = $id_diploma AND ID(d2) = $id_diploma_2
+                CREATE (d1)-[:SIMILAR_TO {similarity: $similarity}]->(d2)
+                """
+        parameters = {
+            "id_diploma": id_diploma,
+            "id_diploma_2": id_diploma_2,
+            "similarity": similarity
+        }
+        self.database.query(query, parameters)
 
     def load_diploma_graph(self, id_diploma: int) -> tuple[list[int], list[list[int]]]:
         pass
