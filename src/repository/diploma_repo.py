@@ -156,11 +156,35 @@ class DiplomaRepository:
         self.database.query(query, parameters)
 
     def load_diploma_graph(self, id_diploma: int) -> tuple[list[int], list[list[int]]]:
-        pass
+        query = """
+                MATCH p = (d:Diploma)-[r:CONTAINS*0..]->(x) 
+                WHERE ID(d) = $id_diploma
+                RETURN 
+                    COLLECT(DISTINCT ID(x)) AS nodes,
+                    [r IN COLLECT(DISTINCT LAST(r)) | [ID(startNode(r)), ID(endNode(r))]] AS rels
+                """
+        parameters = {"id_diploma": id_diploma}
+        result = self.database.query(query, parameters)
+        nodes, rels = result[0] if result else ([], [])
+        return nodes, rels
 
     def load_diploma_data(self, id_diploma: int) -> dict:
-        pass
+        query = """
+                MATCH (d:Diploma)
+                WHERE ID(d) = $id_diploma
+                RETURN d
+                """
+        parameters = {"id_diploma": id_diploma}
+        result = self.database.query(query, parameters)
+        return dict(result[0]["d"]) if result else {}
 
     def load_chapters(self, chapter_ids: list[int]) -> list[dict]:
-        pass
+        query = """
+                MATCH (c:Chapter)
+                WHERE ID(c) IN $chapter_ids
+                RETURN c
+                """
+        parameters = {"chapter_ids": chapter_ids}
+        result = self.database.query(query, parameters)
+        return [dict(record["c"]) for record in result] if result else []
 
