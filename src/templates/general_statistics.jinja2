@@ -3,7 +3,7 @@
 {% block main %}
     <div class="data-container">
         <div class="data-card">
-            <h1 class="data-card__header">Общая статистика</h1>
+            <h2 class="data-card__header">Общая статистика</h2>
 
             <div class="data-card__stats">
                 <!-- Первая колонка: Общая статистика -->
@@ -17,19 +17,15 @@
                             </tr>
                             <tr>
                                 <td>Тема</td>
-                                <td>{{ diploma.title }}</td>
+                                <td>{{ diploma.name }}</td>
                             </tr>
                             <tr>
-                                <td>Год изготовления</td>
+                                <td>Год написания</td>
                                 <td>{{ diploma.year }}</td>
                             </tr>
                             <tr>
                                 <td>Научный руководитель</td>
-                                <td>{{ diploma.supervisor }}</td>
-                            </tr>
-                            <tr>
-                                <td>Количество страниц</td>
-                                <td>{{ diploma.pages }}</td>
+                                <td>{{ diploma.academic_supervisor }}</td>
                             </tr>
                             <tr>
                                 <td>Количество слов</td>
@@ -39,7 +35,7 @@
                     </section>
                 </div>
 
-                <div class="data-card__second-col card-col">
+                <div class="data-card__second-col card-col" style="visibility: hidden">
                     <!-- Вторая колонка: Раскрытие тем -->
                     <section class="data-card__topics-coverage">
                         <h3>Раскрытие тем</h3>
@@ -74,34 +70,48 @@
             <h2>Статистика по разделам</h2>
             <div class="accordion">
                 <!-- Правильное определение рекурсивного макроса -->
-                {% macro render_sections(sections) %}
-                    {% for section in sections %}
+                {% macro render_chapters(chapters) %}
+                    {% for chapter in chapters %}
                         <div class="accordion-item">
                             <button class="accordion-header" aria-expanded="false">
-                                {{ section.title }}
-                                <span class="arrow">↓</span>
+                                <span class="chapter-name">{{ chapter.name }}</span>
+                                <i class="fa-solid fa-angle-down fa-2x arrow"></i>
                             </button>
                             <div class="accordion-content">
-                                <div class="section-stats">
-                                    <h4>Общие данные</h4>
-                                    <ul>
-                                        <li>Количество слов: {{ section.stats.words }}</li>
-                                        <li>Количество символов: {{ section.stats.characters }}</li>
-                                        <li>Водность: {{ section.stats.readability }}%</li>
-                                    </ul>
-                                </div>
-                                <div class="section-keywords">
-                                    <h4>Топ ключевых слов</h4>
-                                    <ul>
-                                        {% for keyword, count in section.keywords.items() %}
-                                            <li>{{ keyword }}: {{ count }}</li>
-                                        {% endfor %}
-                                    </ul>
+                                <div class="chapter-stats">
+                                    <section class="data-card__general-data">
+                                        <h3>Общие данные</h3>
+                                        <table class="stats-table">
+                                            <tr>
+                                                <td>Количество слов</td>
+                                                <td>{{ chapter.words }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Количество символов</td>
+                                                <td>{{ chapter.symbols }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Водность</td>
+                                                <td>{{ chapter.water_content }}</td>
+                                            </tr>
+                                        </table>
+                                    </section>
+                                    <section class="data-card__general-data">
+                                        <h3>Топ ключевых слов</h3>
+                                        <table class="stats-table">
+                                            {% for i in range(chapter.commonly_used_words| length) %}
+                                                <tr>
+                                                    <td>{{ chapter.commonly_used_words[i] }}</td>
+                                                    <td>{{ chapter.commonly_used_words_amount[i] }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </section>
                                 </div>
                                 <!-- Рекурсивный вызов через self.call() -->
-                                {% if section.subsections %}
-                                    <div class="subsections">
-                                        {{ render_sections(section.subsections) }}
+                                {% if chapter.chapters %}
+                                    <div class="subchapters">
+                                        {{ render_chapters(chapter.chapters) }}
                                     </div>
                                 {% endif %}
                             </div>
@@ -110,7 +120,7 @@
                 {% endmacro %}
 
                 <!-- Инициализация аккордеона -->
-                {{ render_sections(sections) }}
+                {{ render_chapters(diploma.chapters) }}
             </div>
         </div>
 
@@ -125,7 +135,7 @@
 
                         const content = header.nextElementSibling;
                         if (!expanded) {
-                            content.style.maxHeight = content.scrollHeight + "px";
+                            content.style.maxHeight = "100%";
                         } else {
                             content.style.maxHeight = "0";
                         }
