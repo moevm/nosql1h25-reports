@@ -1,0 +1,137 @@
+{% extends "layout.jinja2" %}
+
+{% block main %}
+    <div class="data-container">
+        <div class="data-card">
+            <h1 class="data-card__header">Общая статистика</h1>
+
+            <div class="data-card__stats">
+                <!-- Первая колонка: Общая статистика -->
+                <div class="data-card__first-col card-col">
+                    <section class="data-card__general-data">
+                        <h3>Общие данные</h3>
+                        <table class="stats-table">
+                            <tr>
+                                <td>Автор</td>
+                                <td>{{ diploma.author }}</td>
+                            </tr>
+                            <tr>
+                                <td>Тема</td>
+                                <td>{{ diploma.title }}</td>
+                            </tr>
+                            <tr>
+                                <td>Год изготовления</td>
+                                <td>{{ diploma.year }}</td>
+                            </tr>
+                            <tr>
+                                <td>Научный руководитель</td>
+                                <td>{{ diploma.supervisor }}</td>
+                            </tr>
+                            <tr>
+                                <td>Количество страниц</td>
+                                <td>{{ diploma.pages }}</td>
+                            </tr>
+                            <tr>
+                                <td>Количество слов</td>
+                                <td>{{ diploma.words }}</td>
+                            </tr>
+                        </table>
+                    </section>
+                </div>
+
+                <div class="data-card__second-col card-col">
+                    <!-- Вторая колонка: Раскрытие тем -->
+                    <section class="data-card__topics-coverage">
+                        <h3>Раскрытие тем</h3>
+                        <table class="stats-table">
+                            {% for topic in diploma.topics %}
+                                <tr>
+                                    <td>{{ topic.name }}</td>
+                                    <td>{{ topic.coverage }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </section>
+
+                    <!-- Вторая колонка: Похожие работы -->
+                    <section class="data-card__similar-diplomas">
+                        <h3>Похожие дипломы</h3>
+                        <table class="stats-table">
+                            {% for work in diploma.similar_works %}
+                                <tr>
+                                    <td>{{ work.name }}</td>
+                                    <td>{{ work.match }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="data-card">
+            <h2>Статистика по разделам</h2>
+            <div class="accordion">
+                <!-- Правильное определение рекурсивного макроса -->
+                {% macro render_sections(sections) %}
+                    {% for section in sections %}
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                {{ section.title }}
+                                <span class="arrow">↓</span>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="section-stats">
+                                    <h4>Общие данные</h4>
+                                    <ul>
+                                        <li>Количество слов: {{ section.stats.words }}</li>
+                                        <li>Количество символов: {{ section.stats.characters }}</li>
+                                        <li>Водность: {{ section.stats.readability }}%</li>
+                                    </ul>
+                                </div>
+                                <div class="section-keywords">
+                                    <h4>Топ ключевых слов</h4>
+                                    <ul>
+                                        {% for keyword, count in section.keywords.items() %}
+                                            <li>{{ keyword }}: {{ count }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <!-- Рекурсивный вызов через self.call() -->
+                                {% if section.subsections %}
+                                    <div class="subsections">
+                                        {{ render_sections(section.subsections) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endmacro %}
+
+                <!-- Инициализация аккордеона -->
+                {{ render_sections(sections) }}
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const headers = document.querySelectorAll(".accordion-header");
+
+                headers.forEach(header => {
+                    header.addEventListener("click", () => {
+                        const expanded = header.getAttribute("aria-expanded") === "true";
+                        header.setAttribute("aria-expanded", !expanded);
+
+                        const content = header.nextElementSibling;
+                        if (!expanded) {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        } else {
+                            content.style.maxHeight = "0";
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
+{% endblock %}
