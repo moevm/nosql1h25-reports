@@ -12,7 +12,7 @@ class Chapter:
     symbols: int
     commonly_used_words: list[str]
     commonly_used_words_amount: list[int]
-    chapters: list['Chapter']
+    chapters: list['Chapter' | int]
 
 
 @dataclass
@@ -24,4 +24,4 @@ class Diploma:
     year: int
     words: int
     load_date: datetime
-    chapters: list[Chapter]
+    chapters: list['Chapter' | int]
