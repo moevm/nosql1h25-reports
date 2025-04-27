@@ -140,7 +140,14 @@ class DiplomaRepository:
         self.database.query(query, parameters)
 
     def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, str]]:
-        pass
+        query = """
+                MATCH (d:Diploma)
+                WHERE ID(d) <> $id_diploma
+                RETURN ID(d), d.shingles
+                """
+        parameters = {"id_diploma": id_diploma}
+        result = self.database.query(query, parameters)
+        return [(record[0], record[1]) for record in result]
 
     def save_similarity(self, id_diploma: int, id_diploma_2: int, similarity: float) -> None:
         query = """
