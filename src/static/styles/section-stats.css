@@ -38,8 +38,12 @@
     opacity: 0; /* Начальное состояние: прозрачно */
 }
 
+.accordion-header[aria-expanded="true"] .arrow {
+    transform: rotate(180deg);
+}
+
 .accordion-header[aria-expanded="true"] + .accordion-content {
-    max-height: 500px; /* Достаточно большое значение для покрытия содержимого */
+    max-height: 100%; /* Достаточно большое значение для покрытия содержимого */
     opacity: 1; /* Содержимое становится видимым */
 }
 
