@@ -35,10 +35,12 @@ class DocxParser:
         """
         try:
             self.docx_file = docx.Document(self.file)
-        except docx.exc.InvalidFileException as e:
-            raise ValueError(f"Файл '{self.file}' имеет неверный формат (.docx)")
+        except docx.opc.exceptions.PackageNotFoundError as e:
+            raise ValueError(f"Файл '{self.file}' имеет неверный формат (.docx) или поврежден")
+        except Exception as e:
+            raise ValueError(f"Ошибка при открытии файла '{self.file}': {e}")
     
-    def _load_life_from_buffer(self):
+    def _load_file_from_buffer(self):
         """
         Предполагается, что на вход подан какой-то буффер или массив байтов.
         
@@ -46,10 +48,10 @@ class DocxParser:
         """
         try:
             self.docx_file = docx.Document(self.file)
-        except docx.exc.InvalidFileException as e:
-            raise ValueError(f"Файл '{self.file}' имеет неверный формат (.docx)")
-        except e:
-            raise ValueError(f"Файл не удаётся прочитать по техническим причинам")
+        except docx.opc.exceptions.PackageNotFoundError as e:
+            raise ValueError(f"Файл имеет неверный формат (.docx) или поврежден")
+        except Exception as e:
+            raise ValueError(f"Файл не удаётся прочитать по техническим причинам: {e}")
 
     def read_document(self):
         """
@@ -66,7 +68,7 @@ class DocxParser:
             self._check_file_exists()
             self._check_file_format()
         else:
-            self._load_life_from_buffer()
+            self._load_file_from_buffer()
 
         if not hasattr(self, 'docx_file'):
             raise AttributeError("Файл не был открыт")

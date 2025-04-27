@@ -30,6 +30,10 @@ class CalcStats:
             nltk.data.find('corpora/stopwords')
         except LookupError:
             nltk.download('stopwords')
+        try:
+            nltk.data.find('tokenizers/punkt_tab')
+        except LookupError:
+            nltk.download('punkt_tab')
         
         self._stop_words = set(stopwords.words('russian'))
         self._max_common_words = max_common_words
