@@ -1,3 +1,4 @@
+import sys
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
 from src.diploma_processing.data_types import Chapter, Diploma
@@ -63,9 +64,7 @@ class Neo4jDatabase:
 class DiplomaRepository:
     def __init__(self, database: Neo4jDatabase):
         self.database = database
-        self.key_work = 1
 
-    # works
     def save_diploma(self, diploma: Diploma) -> int | None:
         query = """
         CREATE (d:Diploma { 
@@ -93,7 +92,6 @@ class DiplomaRepository:
             return diploma.id
         return None
 
-    # works
     def save_chapter(self, chapter: Chapter) -> int | None:
         query = """
         CREATE (c:Chapter {
@@ -123,7 +121,6 @@ class DiplomaRepository:
             return chapter.id
         return None
 
-    # works
     def link_chapter_to_diploma(self, id_diploma: int) -> None:
         query = """
         MATCH (d:Diploma), (c:Chapter) 
@@ -133,7 +130,6 @@ class DiplomaRepository:
         parameters = {"id_diploma": id_diploma}
         self.database.query(query, parameters)
 
-    # works
     def link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
         query = """
         MATCH (c1:Chapter), (c2:Chapter) 
@@ -146,7 +142,6 @@ class DiplomaRepository:
         }
         self.database.query(query, parameters)
 
-    # idk (no field 'shingles' in Diploma added yet)
     def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, list[int]]]:
         query = """
         MATCH (d:Diploma)
@@ -157,7 +152,6 @@ class DiplomaRepository:
         result = self.database.query(query, parameters)
         return [(int(record[0]), list(map(int, record[1]))) for record in result]
 
-    # works
     def save_similarity(self, id_diploma: int, id_diploma_2: int, similarity: float) -> None:
         query = """
         MATCH (d1:Diploma), (d2:Diploma)
@@ -171,7 +165,6 @@ class DiplomaRepository:
         }
         self.database.query(query, parameters)
 
-    # works
     def load_diploma_graph(self, id_diploma: int) -> list[list[int], list[list[int]]]:
         query = """
         MATCH p = (d:Diploma)-[r:CONTAINS*0..]->(x) 
@@ -228,14 +221,12 @@ class DiplomaRepository:
 
             return chpts
 
-        cpt_list = []
         if key_run == 1:
             rels = clear_rels(rels)
 
         cpt_list = chapter_list_filler(id, [], rels, [])
         return cpt_list
 
-    # works
     def load_diploma_data(self, id_diploma: int) -> Diploma | None:
         query = """
         MATCH (d:Diploma)
@@ -247,7 +238,6 @@ class DiplomaRepository:
 
         node, rels = self.load_diploma_graph(id_diploma)
         cpt_list = self.subchapters_recursive_search(rels, id_diploma, key_run=1)
-        print(cpt_list)
 
         if not result:
             return None
@@ -270,7 +260,6 @@ class DiplomaRepository:
 
         return diploma
 
-    # works
     def load_chapters(self, chapter_ids: list[int]) -> list[Chapter]:
         query = """
         MATCH (c:Chapter)
@@ -311,7 +300,7 @@ class DiplomaRepository:
                         min_words: int = None, max_words: int = None,
                         min_date: str = None, max_date: str = None,
                         chapters: list[int] = None,
-                        order_by: str = "id", limit: int = 10, skip: int = 0) -> list[Diploma]:
+                        order_by: str = None) -> list[Diploma]:
         query = """
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
         WITH d, COLLECT(ID(c)) AS chapters
@@ -327,18 +316,19 @@ class DiplomaRepository:
           AND ($min_date IS NULL OR d.load_date >= $min_date)
           AND ($max_date IS NULL OR d.load_date <= $max_date)
           AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
-        ORDER BY d.""" + order_by + """
-        LIMIT $limit SKIP $skip
-        RETURN d{.*, chapters: chapters} AS diploma
         """
+        if order_by:
+            query += f"\nORDER BY d.{order_by}"
+
+        query += "\nRETURN d{.*, chapters: chapters} AS diploma"
+
         parameters = {
             "min_id": min_id, "max_id": max_id,
             "name": name, "author": author, "academic_supervisor": academic_supervisor,
             "min_year": min_year, "max_year": max_year,
             "min_words": min_words, "max_words": max_words,
             "min_date": min_date, "max_date": max_date,
-            "chapters": chapters,
-            "limit": limit, "skip": skip
+            "chapters": chapters
         }
         result = self.database.query(query, parameters)
         return [record["diploma"] for record in result] if result else []
@@ -352,7 +342,7 @@ class DiplomaRepository:
                         min_water_content: float = None, max_water_content: float = None,
                         words: list[str] = None,
                         chapters: list[int] = None,
-                        order_by: str = "id", limit: int = 10, skip: int = 0) -> list[Chapter]:
+                        order_by: str = None) -> list[Chapter]:
         query = """
         MATCH (c:Chapter)-[:CONTAINS*0..]->(c1:Chapter)
         WITH c, COLLECT(ID(c1)) AS chapters
@@ -369,10 +359,12 @@ class DiplomaRepository:
           AND ($max_water_content IS NULL OR c.water_content <= $max_water_content)
           AND ($words IS NULL OR ANY(word IN $words WHERE word IN c.commonly_used_words))
           AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
-        ORDER BY c.""" + order_by + """
-        LIMIT $limit SKIP $skip
-        RETURN c{.*, chapters: chapters} AS chapter
         """
+        if order_by:
+            query += f"\nORDER BY c.{order_by}"
+
+        query += "\nRETURN c{.*, chapters: chapters} AS chapter"
+
         parameters = {
             "min_id": min_id, "max_id": max_id,
             "min_id_diploma": min_id_diploma, "max_id_diploma": max_id_diploma,
@@ -381,8 +373,7 @@ class DiplomaRepository:
             "min_symbols": min_symbols, "max_symbols": max_symbols,
             "min_water_content": min_water_content, "max_water_content": max_water_content,
             "words": words,
-            "chapters": chapters,
-            "limit": limit, "skip": skip
+            "chapters": chapters
         }
         result = self.database.query(query, parameters)
         return [record["chapter"] for record in result] if result else []
