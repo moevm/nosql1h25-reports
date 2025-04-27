@@ -63,6 +63,7 @@ class Neo4jDatabase:
 class DiplomaRepository:
     def __init__(self, database: Neo4jDatabase):
         self.database = database
+        self.key_work = 1
 
     # works
     def save_diploma(self, diploma: Diploma) -> int | None:
@@ -184,6 +185,56 @@ class DiplomaRepository:
         nodes, rels = result[0] if result else ([], [])
         return [list(map(int, nodes)), rels]
 
+    def subchapters_recursive_search(self, rels, id, key_run):
+        """Метод рекурсивного построения дерева диплома / раздела
+        Доступные ключи key:
+            - 1: работа с дипломом
+            - 2: работа с разделом
+        """
+        if key_run not in [1, 2]:
+            print(f"Неверный ключ: {key_run} (1 или 2 доступны)")
+            raise sys.exit(1)
+
+        def clear_rels(rls):
+            rls = sorted(rls)
+            i, j = 0, len(rls) // 2 + 1
+            while i <= j and i < len(rls):
+                while j < len(rls):
+                    if rls[i][1] == rls[j][1]:
+                        rls.pop(i)
+                        i -= 1
+                        break
+                    j += 1
+
+                i += 1
+                j = i + 1
+            return rls
+
+        def chapter_list_filler(id, chpts: list[Chapter], rls, used):
+            while rls:
+                i = 0
+                while rls[i][0] != id:
+                    i += 1
+                    if i >= len(rls):
+                        return chpts
+
+                new_id = rls[i][1]
+                chpts.extend(self.load_chapters([rls.pop(i)[1]]))
+                if new_id in used:
+                    rls.pop(i)
+                    return chpts
+
+                chpts[-1].chapters = chapter_list_filler(new_id, chpts[-1].chapters, rls, used + [new_id])
+
+            return chpts
+
+        cpt_list = []
+        if key_run == 1:
+            rels = clear_rels(rels)
+
+        cpt_list = chapter_list_filler(id, [], rels, [])
+        return cpt_list
+
     # works
     def load_diploma_data(self, id_diploma: int) -> Diploma | None:
         query = """
@@ -193,6 +244,10 @@ class DiplomaRepository:
         """
         parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
+
+        node, rels = self.load_diploma_graph(id_diploma)
+        cpt_list = self.subchapters_recursive_search(rels, id_diploma, key_run=1)
+        print(cpt_list)
 
         if not result:
             return None
@@ -210,7 +265,7 @@ class DiplomaRepository:
                 node.get("load_date").year,
                 node.get("load_date").month,
                 node.get("load_date").day),
-            chapters=[]
+            chapters=cpt_list
         )
 
         return diploma
@@ -240,6 +295,10 @@ class DiplomaRepository:
                 commonly_used_words_amount=node.get("commonly_used_words_amount", []),
                 chapters=[]
             )
+
+            chpt_node, rels = self.load_diploma_graph(chapter.id_diploma)
+            rels = list(filter(lambda x: x[0] != chapter.id_diploma, rels))
+            chapter.chapters = self.subchapters_recursive_search(rels, chapter.id, key_run=2)
 
             chapters.append(chapter)
 
