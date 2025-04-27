@@ -7,11 +7,15 @@ import pymorphy2
 from typing import Union, BinaryIO
 from io import BytesIO
 import re
+import functools
 
 from src.diploma_processing.data_types import Diploma, Chapter
 from src.diploma_processing.utils import doc_to_dataclass, doc_section_to_dataclass
 from src.diploma_processing.parsing_docx.docClasses import Doc, DocSection
 from src.diploma_processing.parsing_docx.docxParser import DocxParser
+
+
+LRU_CACHE_MAXSIZE = 2048
 
 
 # класс нужен из-за необходимости скачивать пакеты nltk
@@ -30,11 +34,16 @@ class CalcStats:
         self._stop_words = set(stopwords.words('russian'))
         self._max_common_words = max_common_words
         self._morph = pymorphy2.MorphAnalyzer()
+        self._CLEAN_NAME_REGEX = re.compile(r"^[\s!#$%&*+,-./:;=?@\\^_|~]+|[\s!#$%&*+,-./:;=?@\\^_|~]+$")
     
     def get_diploma_stats(self, file: str | Union[BinaryIO, BytesIO]) -> Diploma:
-        dp = DocxParser(file)
-        dp.read_document()
-        return self.calc_stats(dp.doc)
+        try:
+            dp = DocxParser(file)
+            dp.read_document()
+            diploma = self.calc_stats(dp.doc)
+            return diploma
+        except Exception as e:
+            raise Exception(f"Ошибка при обработке файла: {e}", exc_info=True) # exc_info=True для полного traceback
 
     def calc_stats(self, doc: Doc):
         self._remove_empty_sections(doc)
@@ -95,6 +104,14 @@ class CalcStats:
         if len(chapter.chapters) > 0:
             chapter.water_content = int(chapter.water_content / (len(chapter.chapters) + 1))
 
+    @functools.lru_cache(maxsize=LRU_CACHE_MAXSIZE)  # Кэшируем результаты
+    def _normalize_word(self, word):
+        try:
+            # может возвращать пустой список, если слово не найдено в словаре
+            return self._morph.parse(word)[0].normal_form
+        except IndexError:
+            return word # Вернуть исходное слово, если не удалось нормализовать
+    
     def _count_words(self, doc_section: DocSection):
         text = doc_section.text
         words = word_tokenize(text)
@@ -104,7 +121,8 @@ class CalcStats:
             return 0, 0, 0, [], [] # Changed water content to zero here because zero length text has no content
 
         # Приведение слов к нормальной форме с помощью pymorphy2
-        normalized_words = [self._morph.parse(word)[0].normal_form for word in words]
+        # normalized_words = [self._morph.parse(word)[0].normal_form for word in words]
+        normalized_words = [self._normalize_word(word) for word in words]
 
         # Удаление стоп-слов и незначимых символов (например, знаков препинания)
         filtered_words = [word.lower() for word in normalized_words if word.lower() not in self._stop_words]
@@ -143,7 +161,8 @@ class CalcStats:
             # # Remove leading and trailing whitespace and punctuation
             # cleaned_name = re.sub(r"^[\s\W]+|[\s\W]+$", "", name)
             # Remove leading and trailing whitespace and punctuation, EXCEPT parentheses and quotes
-            cleaned_name = re.sub(r"^[\s!#$%&*+,-./:;=?@\\^_|~]+|[\s!#$%&*+,-./:;=?@\\^_|~]+$", "", name)
+            # cleaned_name = re.sub(r"^[\s!#$%&*+,-./:;=?@\\^_|~]+|[\s!#$%&*+,-./:;=?@\\^_|~]+$", "", name)
+            cleaned_name = self._CLEAN_NAME_REGEX.sub("", name)
             return cleaned_name
 
         def clean_section_names_recursive(structure):
