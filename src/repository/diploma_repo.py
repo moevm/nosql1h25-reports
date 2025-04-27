@@ -119,10 +119,25 @@ class DiplomaRepository:
         return None
 
     def link_chapter_to_diploma(self, id_diploma: int) -> None:
-        pass
+        query = """
+                MATCH (d:Diploma), (c:Chapter) 
+                WHERE ID(d) = $id_diploma AND c.id_diploma = $id_diploma
+                CREATE (d)-[:CONTAINS]->(c)
+                """
+        parameters = {"id_diploma": id_diploma}
+        self.database.query(query, parameters)
 
     def link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
-        pass
+        query = """
+                MATCH (c1:Chapter), (c2:Chapter) 
+                WHERE ID(c1) = $parent_chapter_id AND ID(c2) IN $subchapter_ids
+                CREATE (c1)-[:CONTAINS]->(c2)
+                """
+        parameters = {
+            "parent_chapter_id": parent_chapter_id,
+            "subchapter_ids": subchapter_ids
+        }
+        self.database.query(query, parameters)
 
     def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, str]]:
         pass
