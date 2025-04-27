@@ -66,22 +66,24 @@ class DiplomaRepository:
 
     def save_diploma(self, diploma: Diploma) -> int | None:
         query = """
-                CREATE (d:Diploma { 
-                    name: $name, 
-                    author: $author, 
-                    academic_supervisor: $academic_supervisor, 
-                    year: $year, 
-                    disclosure_persentage: 0, 
-                    shingles: ''
-                })
-                SET d.id = ID(d)
-                RETURN d.id
-                """
+        CREATE (d:Diploma { 
+            name: $name, 
+            author: $author, 
+            academic_supervisor: $academic_supervisor, 
+            year: $year, 
+            words: $words,
+            load_date: $load_date
+        })
+        SET d.id = ID(d)
+        RETURN d.id
+        """
         parameters = {
             "name": diploma.name,
             "author": diploma.author,
             "academic_supervisor": diploma.academic_supervisor,
-            "year": diploma.year
+            "year": diploma.year,
+            "words": diploma.words,
+            "load_date": diploma.load_date
         }
         result = self.database.query(query, parameters)
         if result:
@@ -91,18 +93,18 @@ class DiplomaRepository:
 
     def save_chapter(self, chapter: Chapter) -> int | None:
         query = """
-                CREATE (c:Chapter {
-                    id_diploma: $id_diploma, 
-                    name: $name, 
-                    water_content: $water_content, 
-                    words: $words, 
-                    symbols: $symbols, 
-                    commonly_used_words: $commonly_used_words, 
-                    commonly_used_words_amount: $commonly_used_words_amount
-                })
-                SET c.id = ID(c)
-                RETURN ID(c)
-                """
+        CREATE (c:Chapter {
+            id_diploma: $id_diploma, 
+            name: $name, 
+            water_content: $water_content, 
+            words: $words, 
+            symbols: $symbols, 
+            commonly_used_words: $commonly_used_words, 
+            commonly_used_words_amount: $commonly_used_words_amount
+        })
+        SET c.id = ID(c)
+        RETURN c.id
+        """
         parameters = {
             "id_diploma": chapter.id_diploma,
             "name": chapter.name,
@@ -120,41 +122,41 @@ class DiplomaRepository:
 
     def link_chapter_to_diploma(self, id_diploma: int) -> None:
         query = """
-                MATCH (d:Diploma), (c:Chapter) 
-                WHERE ID(d) = $id_diploma AND c.id_diploma = $id_diploma
-                CREATE (d)-[:CONTAINS]->(c)
-                """
+        MATCH (d:Diploma), (c:Chapter) 
+        WHERE d.id = $id_diploma AND c.id_diploma = $id_diploma
+        CREATE (d)-[:CONTAINS]->(c)
+        """
         parameters = {"id_diploma": id_diploma}
         self.database.query(query, parameters)
 
     def link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
         query = """
-                MATCH (c1:Chapter), (c2:Chapter) 
-                WHERE ID(c1) = $parent_chapter_id AND ID(c2) IN $subchapter_ids
-                CREATE (c1)-[:CONTAINS]->(c2)
-                """
+        MATCH (c1:Chapter), (c2:Chapter) 
+        WHERE c1.id = $parent_chapter_id AND c2.id IN $subchapter_ids
+        CREATE (c1)-[:CONTAINS]->(c2)
+        """
         parameters = {
             "parent_chapter_id": parent_chapter_id,
             "subchapter_ids": subchapter_ids
         }
         self.database.query(query, parameters)
 
-    def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, str]]:
+    def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, list[int]]]:
         query = """
-                MATCH (d:Diploma)
-                WHERE ID(d) <> $id_diploma
-                RETURN ID(d), d.shingles
-                """
+        MATCH (d:Diploma)
+        WHERE d.id <> $id_diploma
+        RETURN d.id, d.shingles
+        """
         parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
-        return [(record[0], record[1]) for record in result]
+        return [(int(record[0]), list(map(int, record[1]))) for record in result]
 
     def save_similarity(self, id_diploma: int, id_diploma_2: int, similarity: float) -> None:
         query = """
-                MATCH (d1:Diploma), (d2:Diploma)
-                WHERE ID(d1) = $id_diploma AND ID(d2) = $id_diploma_2
-                CREATE (d1)-[:SIMILAR_TO {similarity: $similarity}]->(d2)
-                """
+        MATCH (d1:Diploma), (d2:Diploma)
+        WHERE d1.id = $id_diploma AND d2.id = $id_diploma_2
+        CREATE (d1)-[:SIMILAR_TO {similarity: $similarity}]->(d2)
+        """
         parameters = {
             "id_diploma": id_diploma,
             "id_diploma_2": id_diploma_2,
@@ -164,34 +166,33 @@ class DiplomaRepository:
 
     def load_diploma_graph(self, id_diploma: int) -> tuple[list[int], list[list[int]]]:
         query = """
-                MATCH p = (d:Diploma)-[r:CONTAINS*0..]->(x) 
-                WHERE ID(d) = $id_diploma
-                RETURN 
-                    COLLECT(DISTINCT ID(x)) AS nodes,
-                    [r IN COLLECT(DISTINCT LAST(r)) | [ID(startNode(r)), ID(endNode(r))]] AS rels
-                """
+        MATCH p = (d:Diploma)-[r:CONTAINS*0..]->(x) 
+        WHERE d.id = $id_diploma
+        RETURN 
+            COLLECT(DISTINCT ID(x)) AS nodes,
+            [r IN COLLECT(DISTINCT LAST(r)) | [ID(startNode(r)), ID(endNode(r))]] AS rels
+        """
         parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
         nodes, rels = result[0] if result else ([], [])
         return nodes, rels
 
-    def load_diploma_data(self, id_diploma: int) -> dict:
+    def load_diploma_data(self, id_diploma: int) -> Diploma:
         query = """
-                MATCH (d:Diploma)
-                WHERE ID(d) = $id_diploma
-                RETURN d
-                """
+        MATCH (d:Diploma)
+        WHERE d.id = $id_diploma
+        RETURN d
+        """
         parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
-        return dict(result[0]["d"]) if result else {}
+        return result[0]["d"] if result else {}
 
-    def load_chapters(self, chapter_ids: list[int]) -> list[dict]:
+    def load_chapters(self, chapter_ids: list[int]) -> list[Chapter]:
         query = """
-                MATCH (c:Chapter)
-                WHERE ID(c) IN $chapter_ids
-                RETURN c
-                """
+        MATCH (c:Chapter)
+        WHERE c.id IN $chapter_ids
+        RETURN c
+        """
         parameters = {"chapter_ids": chapter_ids}
         result = self.database.query(query, parameters)
-        return [dict(record["c"]) for record in result] if result else []
-
+        return [record["c"] for record in result] if result else []
