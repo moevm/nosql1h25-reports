@@ -1,0 +1,1105 @@
+{
+    "id": 0,
+    "name": "Реализация диффузионного декодера для задач распознавания речи",
+    "author": "Е. А. Павлов",
+    "academic_supervisor": "А.А. Лисс",
+    "year": 2024,
+    "words": 4329,
+    "load_date": "2025-04-27T15:18:14.768755",
+    "chapters": [
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "ВВЕДЕНИЕ",
+            "water_content": 81,
+            "words": 135,
+            "symbols": 1149,
+            "commonly_used_words": [
+                "распознавание",
+                "речь",
+                "задача",
+                "диффузионный",
+                "модель"
+            ],
+            "commonly_used_words_amount": [
+                6,
+                6,
+                6,
+                5,
+                5
+            ],
+            "chapters": []
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "Структура",
+            "water_content": 56,
+            "words": 4066,
+            "symbols": 34482,
+            "commonly_used_words": [
+                "модель",
+                "обучение",
+                "представление",
+                "последовательность",
+                "эмбеддинг"
+            ],
+            "commonly_used_words_amount": [
+                24,
+                23,
+                22,
+                21,
+                19
+            ],
+            "chapters": [
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "1. Актуальность",
+                    "water_content": 73,
+                    "words": 448,
+                    "symbols": 3541,
+                    "commonly_used_words": [
+                        "речь",
+                        "система",
+                        "информация",
+                        "количество",
+                        "задача"
+                    ],
+                    "commonly_used_words_amount": [
+                        10,
+                        9,
+                        8,
+                        5,
+                        4
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.1 Применение систем распознавания речи в современном мире",
+                            "water_content": 74,
+                            "words": 220,
+                            "symbols": 1745,
+                            "commonly_used_words": [
+                                "система",
+                                "количество",
+                                "также",
+                                "речь",
+                                "информация"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                4,
+                                4,
+                                4,
+                                4
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "1.2 Обоснование использования диффузионных моделей в задаче распознавания речи",
+                            "water_content": 71,
+                            "words": 38,
+                            "symbols": 268,
+                            "commonly_used_words": [
+                                "речь",
+                                "применение",
+                                "небольшой",
+                                "количество",
+                                "время"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                2,
+                                1,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "2. Обзор аналогов",
+                    "water_content": 76,
+                    "words": 866,
+                    "symbols": 7185,
+                    "commonly_used_words": [
+                        "последовательность",
+                        "элемент",
+                        "модель",
+                        "l",
+                        "выходной"
+                    ],
+                    "commonly_used_words_amount": [
+                        21,
+                        12,
+                        10,
+                        9,
+                        9
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.1 CTC — подходы",
+                            "water_content": 74,
+                            "words": 478,
+                            "symbols": 3766,
+                            "commonly_used_words": [
+                                "последовательность",
+                                "элемент",
+                                "l",
+                                "выходной",
+                                "алфавит"
+                            ],
+                            "commonly_used_words_amount": [
+                                21,
+                                12,
+                                9,
+                                9,
+                                7
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "2.2 TransFusion",
+                            "water_content": 81,
+                            "words": 302,
+                            "symbols": 2769,
+                            "commonly_used_words": [
+                                "модель",
+                                "диффузия",
+                                "использоваться",
+                                "диффузионный",
+                                "автор"
+                            ],
+                            "commonly_used_words_amount": [
+                                10,
+                                5,
+                                5,
+                                4,
+                                4
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "2.2.1 Мультиноминальная диффузия",
+                                    "water_content": 86,
+                                    "words": 105,
+                                    "symbols": 982,
+                                    "commonly_used_words": [
+                                        "диффузия",
+                                        "последовательность",
+                                        "вектор",
+                                        "диффузионный",
+                                        "модель"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        5,
+                                        3,
+                                        3,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "2.2.2 Получение векторных представлений аудио",
+                                    "water_content": 83,
+                                    "words": 56,
+                                    "symbols": 486,
+                                    "commonly_used_words": [
+                                        "модель",
+                                        "дать",
+                                        "автор",
+                                        "wavlm",
+                                        "обучаться"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "2.2.3 Архитектура модели",
+                                    "water_content": 80,
+                                    "words": 46,
+                                    "symbols": 410,
+                                    "commonly_used_words": [
+                                        "предсказатель",
+                                        "шум",
+                                        "автор",
+                                        "архитектура",
+                                        "качество"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        2,
+                                        2,
+                                        2,
+                                        2,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "2.2.4 Обучение модели",
+                                    "water_content": 74,
+                                    "words": 66,
+                                    "symbols": 647,
+                                    "commonly_used_words": [
+                                        "использоваться",
+                                        "обучение",
+                                        "модель",
+                                        "качество",
+                                        "значение"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        5,
+                                        2,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "3. Теоретическая часть",
+                    "water_content": 69,
+                    "words": 1875,
+                    "symbols": 15930,
+                    "commonly_used_words": [
+                        "представление",
+                        "модель",
+                        "который",
+                        "эмбеддинг",
+                        "количество"
+                    ],
+                    "commonly_used_words_amount": [
+                        22,
+                        14,
+                        13,
+                        12,
+                        11
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.1 Обзор предметной области",
+                            "water_content": 74,
+                            "words": 340,
+                            "symbols": 2908,
+                            "commonly_used_words": [
+                                "количество",
+                                "текст",
+                                "аудиосигнал",
+                                "юниграмм",
+                                "это"
+                            ],
+                            "commonly_used_words_amount": [
+                                11,
+                                7,
+                                4,
+                                4,
+                                4
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.1.1 Формальная постановка задачи",
+                                    "water_content": 71,
+                                    "words": 46,
+                                    "symbols": 358,
+                                    "commonly_used_words": [
+                                        "поступать",
+                                        "сигнал",
+                                        "вход",
+                                        "аудиосигнал",
+                                        "содержимый"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        2,
+                                        2,
+                                        1,
+                                        1,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.1.2 Метрики качества",
+                                    "water_content": 76,
+                                    "words": 145,
+                                    "symbols": 1199,
+                                    "commonly_used_words": [
+                                        "количество",
+                                        "текст",
+                                        "юниграмм",
+                                        "метрика",
+                                        "слово"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        11,
+                                        7,
+                                        4,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.1.3 Предобработка аудиоданных",
+                                    "water_content": 75,
+                                    "words": 129,
+                                    "symbols": 1214,
+                                    "commonly_used_words": [
+                                        "это",
+                                        "представление",
+                                        "спектрограмма",
+                                        "аудиосигнал",
+                                        "пример"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        4,
+                                        4,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.2 Спектральные аугментации (SpecAug)",
+                            "water_content": 66,
+                            "words": 86,
+                            "symbols": 641,
+                            "commonly_used_words": [
+                                "аугментация",
+                                "спектрограмма",
+                                "спектральный",
+                                "ося",
+                                "частота"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                3,
+                                3,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.3 Диффузионные модели",
+                            "water_content": 76,
+                            "words": 203,
+                            "symbols": 1619,
+                            "commonly_used_words": [
+                                "модель",
+                                "процесс",
+                                "наблюдение",
+                                "исходный",
+                                "шум"
+                            ],
+                            "commonly_used_words_amount": [
+                                6,
+                                6,
+                                4,
+                                3,
+                                3
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.1 Прямой процесс диффузии",
+                                    "water_content": 76,
+                                    "words": 90,
+                                    "symbols": 710,
+                                    "commonly_used_words": [
+                                        "наблюдение",
+                                        "процесс",
+                                        "исходный",
+                                        "шум",
+                                        "весь"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        3,
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.3.2 Обратный процесс диффузии",
+                                    "water_content": 75,
+                                    "words": 77,
+                                    "symbols": 613,
+                                    "commonly_used_words": [
+                                        "процесс",
+                                        "модель",
+                                        "обратный",
+                                        "диффузия",
+                                        "поэтому"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        3,
+                                        3,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.4 Архитектура трансформер",
+                            "water_content": 75,
+                            "words": 198,
+                            "symbols": 1677,
+                            "commonly_used_words": [
+                                "элемент",
+                                "эмбеддинг",
+                                "вектор",
+                                "который",
+                                "каждый"
+                            ],
+                            "commonly_used_words_amount": [
+                                7,
+                                6,
+                                6,
+                                5,
+                                5
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.5 Автокодировщик",
+                            "water_content": 80,
+                            "words": 116,
+                            "symbols": 1024,
+                            "commonly_used_words": [
+                                "который",
+                                "представление",
+                                "пространство",
+                                "исходный",
+                                "нейронный"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                5,
+                                5,
+                                4,
+                                3
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.6 Latent Diffusion for Language Generation",
+                            "water_content": 81,
+                            "words": 64,
+                            "symbols": 584,
+                            "commonly_used_words": [
+                                "текст",
+                                "модель",
+                                "автокодировщик",
+                                "статья",
+                                "диффузия"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                3,
+                                3,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.6.1 Обучение автокодировщика",
+                            "water_content": 78,
+                            "words": 397,
+                            "symbols": 3399,
+                            "commonly_used_words": [
+                                "представление",
+                                "нейросеть",
+                                "сжатие",
+                                "сеть",
+                                "энкодер"
+                            ],
+                            "commonly_used_words_amount": [
+                                8,
+                                8,
+                                8,
+                                7,
+                                7
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.6.2 Обучение диффузионной модели",
+                                    "water_content": 82,
+                                    "words": 129,
+                                    "symbols": 1139,
+                                    "commonly_used_words": [
+                                        "автор",
+                                        "использовать",
+                                        "шум",
+                                        "латентный",
+                                        "качество"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        6,
+                                        5,
+                                        4,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.7 wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations",
+                            "water_content": 75,
+                            "words": 258,
+                            "symbols": 2227,
+                            "commonly_used_words": [
+                                "представление",
+                                "нейросеть",
+                                "который",
+                                "эмбеддинг",
+                                "компонент"
+                            ],
+                            "commonly_used_words_amount": [
+                                9,
+                                3,
+                                3,
+                                3,
+                                3
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.7.1 Архитектура",
+                                    "water_content": 71,
+                                    "words": 117,
+                                    "symbols": 988,
+                                    "commonly_used_words": [
+                                        "нейросеть",
+                                        "который",
+                                        "эмбеддинг",
+                                        "архитектура",
+                                        "состоять"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        3,
+                                        3,
+                                        3,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.7.1 Обучение",
+                                    "water_content": 76,
+                                    "words": 121,
+                                    "symbols": 1089,
+                                    "commonly_used_words": [
+                                        "представление",
+                                        "компонент",
+                                        "генерировать",
+                                        "набор",
+                                        "далее"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        9,
+                                        3,
+                                        2,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.8 Предлагаемый подход",
+                            "water_content": 71,
+                            "words": 56,
+                            "symbols": 488,
+                            "commonly_used_words": [
+                                "диффузия",
+                                "публикация",
+                                "работа",
+                                "диффузионный",
+                                "модель"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                2,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.8.1 Обучение автокодировщика",
+                            "water_content": 78,
+                            "words": 47,
+                            "symbols": 402,
+                            "commonly_used_words": [
+                                "автокодировщик",
+                                "модель",
+                                "обучение",
+                                "диффузионный",
+                                "требоваться"
+                            ],
+                            "commonly_used_words_amount": [
+                                4,
+                                3,
+                                2,
+                                1,
+                                1
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "3.8.2 Получение эмбеддингов для аудио",
+                            "water_content": 75,
+                            "words": 110,
+                            "symbols": 961,
+                            "commonly_used_words": [
+                                "шум",
+                                "использоваться",
+                                "эмбеддинг",
+                                "работа",
+                                "качество"
+                            ],
+                            "commonly_used_words_amount": [
+                                4,
+                                4,
+                                3,
+                                2,
+                                2
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "3.8.3 Обучение диффузионной модели",
+                                    "water_content": 76,
+                                    "words": 78,
+                                    "symbols": 697,
+                                    "commonly_used_words": [
+                                        "шум",
+                                        "использоваться",
+                                        "эмбеддинг",
+                                        "качество",
+                                        "временной"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        4,
+                                        3,
+                                        2,
+                                        2
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "4. Практическая часть",
+                    "water_content": 58,
+                    "words": 587,
+                    "symbols": 5287,
+                    "commonly_used_words": [
+                        "обучение",
+                        "эмбеддинг",
+                        "содержимый",
+                        "параметр",
+                        "фреймворк"
+                    ],
+                    "commonly_used_words_amount": [
+                        23,
+                        7,
+                        6,
+                        6,
+                        4
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "4.1 Используемые инструменты и библиотеки",
+                            "water_content": 80,
+                            "words": 126,
+                            "symbols": 1165,
+                            "commonly_used_words": [
+                                "обучение",
+                                "фреймворк",
+                                "содержимый",
+                                "нейронный",
+                                "сеть"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                4,
+                                4,
+                                4,
+                                4
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "4.2 Описание данных",
+                            "water_content": 77,
+                            "words": 68,
+                            "symbols": 542,
+                            "commonly_used_words": [
+                                "дать",
+                                "корпус",
+                                "который",
+                                "содержимый",
+                                "часы"
+                            ],
+                            "commonly_used_words_amount": [
+                                2,
+                                2,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "4.3 Описание экспериментов",
+                            "water_content": 77,
+                            "words": 393,
+                            "symbols": 3580,
+                            "commonly_used_words": [
+                                "обучение",
+                                "эмбеддинг",
+                                "параметр",
+                                "количество",
+                                "итерация"
+                            ],
+                            "commonly_used_words_amount": [
+                                18,
+                                7,
+                                6,
+                                4,
+                                4
+                            ],
+                            "chapters": [
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "4.3.1 Обучение автокодировщика текста",
+                                    "water_content": 87,
+                                    "words": 85,
+                                    "symbols": 826,
+                                    "commonly_used_words": [
+                                        "обучение",
+                                        "количество",
+                                        "итерация",
+                                        "параметр",
+                                        "значение"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        7,
+                                        4,
+                                        4,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "4.3.2 Получение векторных представлений аудио",
+                                    "water_content": 80,
+                                    "words": 10,
+                                    "symbols": 100,
+                                    "commonly_used_words": [
+                                        "получение",
+                                        "векторое",
+                                        "представление",
+                                        "использоваться",
+                                        "модель"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "4.3.3 Обучение предсказателя шума",
+                                    "water_content": 80,
+                                    "words": 111,
+                                    "symbols": 1142,
+                                    "commonly_used_words": [
+                                        "эмбеддинг",
+                                        "обучение",
+                                        "аудиоэмбеддинг",
+                                        "модель",
+                                        "параметр"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        5,
+                                        4,
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                },
+                                {
+                                    "id": 0,
+                                    "id_diploma": 0,
+                                    "name": "4.3.4 Оценка и сравнения полученной модели",
+                                    "water_content": 68,
+                                    "words": 157,
+                                    "symbols": 1192,
+                                    "commonly_used_words": [
+                                        "обучение",
+                                        "шум",
+                                        "метрика",
+                                        "график",
+                                        "предиктор"
+                                    ],
+                                    "commonly_used_words_amount": [
+                                        4,
+                                        4,
+                                        3,
+                                        3,
+                                        3
+                                    ],
+                                    "chapters": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 0,
+                    "id_diploma": 0,
+                    "name": "5. Обеспечение качества разработки, продукции, программного продукта",
+                    "water_content": 64,
+                    "words": 290,
+                    "symbols": 2539,
+                    "commonly_used_words": [
+                        "система",
+                        "требование",
+                        "распознавание",
+                        "компания",
+                        "разрабатывать"
+                    ],
+                    "commonly_used_words_amount": [
+                        7,
+                        7,
+                        4,
+                        3,
+                        3
+                    ],
+                    "chapters": [
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "5.1 Определение потребителей",
+                            "water_content": 87,
+                            "words": 47,
+                            "symbols": 462,
+                            "commonly_used_words": [
+                                "система",
+                                "распознавание",
+                                "компания",
+                                "разрабатывать",
+                                "использовать"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                4,
+                                3,
+                                3,
+                                3
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "5.2 Функции продукции",
+                            "water_content": 77,
+                            "words": 59,
+                            "symbols": 496,
+                            "commonly_used_words": [
+                                "функция",
+                                "разработать",
+                                "изделие",
+                                "услуга",
+                                "требование"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                2,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "5.3 Качество и характеристики",
+                            "water_content": 85,
+                            "words": 60,
+                            "symbols": 549,
+                            "commonly_used_words": [
+                                "требование",
+                                "качество",
+                                "система",
+                                "стандарт",
+                                "протокол"
+                            ],
+                            "commonly_used_words_amount": [
+                                5,
+                                2,
+                                2,
+                                2,
+                                2
+                            ],
+                            "chapters": []
+                        },
+                        {
+                            "id": 0,
+                            "id_diploma": 0,
+                            "name": "5.4 Измерение характеристик качества. Операциональное определение",
+                            "water_content": 74,
+                            "words": 124,
+                            "symbols": 1032,
+                            "commonly_used_words": [
+                                "определение",
+                                "оо",
+                                "который",
+                                "испытание",
+                                "модель"
+                            ],
+                            "commonly_used_words_amount": [
+                                3,
+                                3,
+                                3,
+                                3,
+                                3
+                            ],
+                            "chapters": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 0,
+            "id_diploma": 0,
+            "name": "ЗАКЛЮЧЕНИЕ",
+            "water_content": 73,
+            "words": 128,
+            "symbols": 1048,
+            "commonly_used_words": [
+                "модель",
+                "диффузионный",
+                "текст",
+                "качество",
+                "дать"
+            ],
+            "commonly_used_words_amount": [
+                5,
+                3,
+                3,
+                3,
+                2
+            ],
+            "chapters": []
+        }
+    ]
+}

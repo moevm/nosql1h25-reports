@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 from src.diploma_processing.data_types import Chapter, Diploma
+from src.diploma_processing.parsing_docx.docClasses import Doc, DocSection
 
 
 # serialize/deserialize Chapter
@@ -74,6 +75,91 @@ def diploma_from_dict(diploma: dict) -> Diploma:
         chapters=chapters
     )
 
+# serialize/deserialize DocSection
+def doc_section_to_dict(doc_section: DocSection) -> dict:
+    doc_section_dict = doc_section.__dict__.copy()
+    doc_section_dict.pop('upper', None)
+    doc_section_dict['structure'] = []
+    for e in doc_section.structure:
+        doc_section_dict['structure'].append(doc_section_to_dict(e))
+    return doc_section_dict
+
+def doc_section_from_dict(doc_section: dict) -> DocSection:
+    name = doc_section['name']
+    text = doc_section['text']
+    upper = None
+    level = doc_section['level']
+    structure = []
+    for e in doc_section['structure']:
+        structure.append(doc_section_from_dict(e))
+    return DocSection(
+        name=name,
+        text=text,
+        upper=upper,
+        level=level,
+        structure=structure
+    )
+
+# serialize/deserialize Doc
+def doc_to_dict(doc: Doc) -> dict:
+    doc_dict = doc.__dict__.copy()
+    doc_dict['structure'] = []
+    for e in doc.structure:
+        doc_dict['structure'].append(doc_section_to_dict(e))
+    return doc_dict
+
+def doc_from_dict(doc: dict) -> Doc:
+    name = doc['name']
+    author = doc['author']
+    academic_supervisor = doc['academic_supervisor']
+    year = doc['year']
+    structure = []
+    for e in doc['structure']:
+        structure.append(doc_section_from_dict(e))
+    return Doc(
+        name=name,
+        author=author,
+        academic_supervisor=academic_supervisor,
+        year=year,
+        structure=structure
+    )
+
+# make dataclasses from parsing classes
+def doc_section_to_dataclass(doc_section: DocSection) -> Chapter:
+    chapters = []
+    for e in doc_section.structure:
+        chapters.append(doc_section_to_dataclass(e))
+    return Chapter(
+        id=0,
+        id_diploma=0,
+        name=doc_section.name,
+        water_content=0,
+        words=0,
+        symbols=0,
+        commonly_used_words=[],
+        commonly_used_words_amount=[],
+        chapters=chapters
+    )
+
+def doc_to_dataclass(doc: Doc) -> Diploma:
+    chapters = []
+    for e in doc.structure:
+        chapters.append(doc_section_to_dataclass(e))
+    return Diploma(
+        id=0,
+        name=doc.name,
+        author=doc.author,
+        academic_supervisor=doc.academic_supervisor,
+        year=doc.year,
+        words=0,
+        load_date=None,
+        chapters=chapters
+    )
+
+
+def save_doc_json(doc: Doc, save_path: str):
+    with open(save_path, 'w', encoding ='utf8') as json_file:
+        json.dump(doc_to_dict(doc), json_file, indent=4, ensure_ascii=False)
 
 def save_diploma_json(diploma: Diploma, save_path: str):
     with open(save_path, 'w', encoding='utf8') as json_file:

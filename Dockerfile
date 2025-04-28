@@ -1,13 +1,13 @@
 FROM python:3.12-alpine
 
-WORKDIR /app
+WORKDIR /src
 
 # Установка зависимостей
-COPY requirements.txt /app
+COPY requirements.txt /src
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копирование исходного кода
-COPY /src /app
+COPY /src /src
 
 EXPOSE 5000
 
