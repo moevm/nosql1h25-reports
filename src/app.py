@@ -38,7 +38,7 @@ def search():
 def search_diploma():
     params = request.args.to_dict()
 
-    return render_template('diploma_search.jinja2', params = [])
+    return render_template('diploma_search.jinja2', params = params)
 
 
 @app.get('/search/chapter')

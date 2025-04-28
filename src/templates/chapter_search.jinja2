@@ -104,7 +104,8 @@
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-                    <div class="list-words"></div>
+                    <div class="words-container"></div>
+                    <input type="hidden" name="words" id="words" value="{{ request.args.get('words', '') }}">
                 </div>
             </div>
 
@@ -120,16 +121,17 @@
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-                    <div class="list-words"></div>
+                    <div class="words-container"></div>
+                    <input type="hidden" name="words" id="words" value="{{ request.args.get('words', '') }}">
                 </div>
             </div>
 
-            <button type="submit" class="search-button filters__header-block">Найти</button>
+            <button type="submit" class="search-button filters__header-block" onclick="addWord()">Найти</button>
         </form>
     </section>
 
     <section class="results-block">
-        <select name="order_by" form="filter__form" class="sort-chapter">
+        <select name="order_by" form="filter__form" class="sort-chapter" onchange="form.submit()">
             <option value=""
                     {% if request.args.get('order_by', '') == "" %}selected{% endif %}>
                 без сортировки
@@ -189,7 +191,78 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const wordInput = document.querySelector(".filter-box__input");
+            const wordList = document.querySelector(".words-container");
+            const hiddenWordsInput = document.querySelector("#words");
+
+            // Функция для обновления значения скрытого поля
+            function updateHiddenWords() {
+                const words = Array.from(wordList.querySelectorAll('.word__text')).map(word => word.textContent.trim());
+                hiddenWordsInput.value = words.join(",");
+            }
+
+            // Функция для добавления слова
+            window.addWord = function () {
+                const word = wordInput.value.trim();
+                if (word === "") return; // Если поле пустое, ничего не делаем
+
+                // Проверяем, что слово еще не добавлено
+                const currentWords = Array.from(wordList.querySelectorAll('.word__text')).map(el => el.textContent.trim());
+                if (!currentWords.includes(word)) {
+                    // Добавляем новое слово в контейнер
+                    wordList.insertAdjacentHTML('beforeend', `
+                <span class="word__text">${word}
+                    <button class="word__remove" onclick="removeWord(this)">×</button>
+                </span>
+            `);
+
+                    // Обновляем значение скрытого поля
+                    updateHiddenWords();
+                }
+
+                // Очищаем поле ввода
+                wordInput.value = "";
+            };
+
+            // Функция для удаления слова
+            window.removeWord = function (button) {
+                const wordElement = button.parentElement;
+                const word = wordElement.textContent.trim().replace("×", ""); // Удаляем символ "×"
+
+                // Удаляем элемент из DOM
+                wordElement.remove();
+
+                // Обновляем значение скрытого поля
+                updateHiddenWords();
+            };
+
+            // Инициализация: отображение уже добавленных слов при загрузке страницы
+            const initialWords = hiddenWordsInput.value.split(",").filter(word => word.trim() !== "");
+            initialWords.forEach(word => {
+                wordList.insertAdjacentHTML('beforeend', `
+            <span class="word__text">${word}
+                <button class="word__remove" onclick="removeWord(this)">×</button>
+            </span>
+        `);
+            });
+
+            // Обработка отправки формы
             const form = document.querySelector("form");
+            form.addEventListener("submit", function (e) {
+                e.preventDefault(); // Остановить стандартную отправку формы
+
+                const formData = new FormData(form);
+                const params = new URLSearchParams();
+
+                for (const [key, value] of formData.entries()) {
+                    if (value.trim() !== "") { // Если значение не пустое
+                        params.append(key, value);
+                    }
+                }
+                const url = form.action + '?' + params.toString();
+                window.location.href = url;
+            });
         });
     </script>
+
 {% endblock %}
