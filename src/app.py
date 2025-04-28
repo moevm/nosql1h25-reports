@@ -38,7 +38,7 @@ def search():
 def search_diploma():
     params = request.args.to_dict()
 
-    return render_template('layout.jinja2')
+    return render_template('diploma_search.jinja2', params = [])
 
 
 # Поиск разделов дипломов
@@ -90,7 +90,7 @@ def search_chapter():
             "id_diploma": ch.id_diploma,
             "id_section": ch.id,
             "section_name": ch.name,
-            "density": ch.water_content,
+            "water_content": ch.water_content,
             "word_count": ch.words,
             "symbol_count": ch.symbols,
             "top_word": ", ".join(ch.commonly_used_words[:5]),

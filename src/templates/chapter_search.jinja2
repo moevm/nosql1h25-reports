@@ -5,7 +5,7 @@
         <div class="filters__header-block">
             <h2 class="filters__header">Фильтры</h2>
         </div>
-        <form action="/search" method="POST">
+        <form action="/search/chapter" method="POST">
             <div class="filter-range">
                 <div class="label-box">
                     <label class="label-box__label" for="id_diploma">id диплома</label>
@@ -121,89 +121,88 @@
             <button type="submit" class="search-button filters__header-block">Найти</button>
         </form>
     </section>
-{% endblock %}
 
-<section class="results-block">
-    <div class="sort-chapter">
-        <div class="label-box_dark-light">
-            <label class="label-box__label-sort" for="sort_by">без сортировки</label>
-            <input type="hidden" name="order_by" id="order_by_input">
+    <section class="results-block">
+        <div class="sort-chapter">
+            <div class="label-box_dark-light">
+                <label class="label-box__label-sort" for="sort_by">без сортировки</label>
+                <input type="hidden" name="order_by" id="order_by_input">
+            </div>
+            <button class="arrow-button" aria-label="Открыть/закрыть список">
+                <i class="fa-solid fa-angle-down fa-2x arrow"></i>
+            </button>
+            <ul class="options-list">
+                <li data-value="no_sort">без сортировки</li>
+                <li data-value="id_asc">id диплома</li>
+                <li data-value="year">год</li>
+                <li data-value="pages">количество страниц</li>
+                <li data-value="words">количество слов</li>
+                <li data-value="upload_date">дата загрузки</li>
+            </ul>
         </div>
-        <button class="arrow-button" aria-label="Открыть/закрыть список">
-            <i class="fa-solid fa-angle-down fa-2x arrow"></i>
-        </button>
-        <ul class="options-list">
-            <li data-value="no_sort">без сортировки</li>
-            <li data-value="id_asc">id диплома</li>
-            <li data-value="year">год</li>
-            <li data-value="pages">количество страниц</li>
-            <li data-value="words">количество слов</li>
-            <li data-value="upload_date">дата загрузки</li>
-        </ul>
-    </div>
-    <!-- Блок с результатами -->
-    <table class="results-block__table">
-        <thead>
-        <tr>
-            <th>id диплома</th>
-            <th>id раздела</th>
-            <th>название раздела</th>
-            <th>водность (%)</th>
-            <th>слов (вкл.)</th>
-            <th>символов (вкл.)</th>
-            <th>топ часто встречающихся слов</th>
-            <th>дочерние разделы (id)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Здесь будут выводиться данные из базы данных -->
-        {% for result in results %}
+        <!-- Блок с результатами -->
+        <table class="results-block__table">
+            <thead>
             <tr>
-                <td>{{ result.id_diploma }}</td>
-                <td>{{ result.id_section }}</td>
-                <td>{{ result.section_name }}</td>
-                <td>{{ result.density }}</td>
-                <td>{{ result.word_count }}</td>
-                <td>{{ result.symbol_count }}</td>
-                <td>{{ result.top_word }}</td>
-                <td>{{ result.child_sections }}</td>
+                <th>id диплома</th>
+                <th>id раздела</th>
+                <th>название раздела</th>
+                <th>водность (%)</th>
+                <th>слов (вкл.)</th>
+                <th>символов (вкл.)</th>
+                <th>топ часто встречающихся слов</th>
+                <th>дочерние разделы (id)</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</section>
+            </thead>
+            <tbody>
+            <!-- Здесь будут выводиться данные из базы данных -->
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.id_diploma }}</td>
+                    <td>{{ result.id_section }}</td>
+                    <td>{{ result.section_name }}</td>
+                    <td>{{ result.water_content }}</td>
+                    <td>{{ result.word_count }}</td>
+                    <td>{{ result.symbol_count }}</td>
+                    <td>{{ result.top_word }}</td>
+                    <td>{{ result.child_sections }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const arrowButton = document.querySelector(".arrow-button");
-        const optionsList = document.querySelector(".options-list");
-        const labelSort = document.querySelector(".label-box__label-sort");
-        const orderByInput = document.getElementById("order_by_input");
-        const form = document.querySelector("form");
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const arrowButton = document.querySelector(".arrow-button");
+            const optionsList = document.querySelector(".options-list");
+            const labelSort = document.querySelector(".label-box__label-sort");
+            const orderByInput = document.getElementById("order_by_input");
+            const form = document.querySelector("form");
 
-        arrowButton.addEventListener("click", function () {
-            optionsList.classList.toggle("open");
-            arrowButton.classList.toggle("open");
+            arrowButton.addEventListener("click", function () {
+                optionsList.classList.toggle("open");
+                arrowButton.classList.toggle("open");
+            });
+
+            document.addEventListener("click", function (e) {
+                if (!arrowButton.contains(e.target) && !optionsList.contains(e.target)) {
+                    optionsList.classList.remove("open");
+                    arrowButton.classList.remove("open");
+                }
+            });
+
+            optionsList.addEventListener("click", function (e) {
+                if (e.target.tagName === "LI") {
+                    const selectedText = e.target.textContent;
+                    const selectedValue = e.target.dataset.value;
+                    labelSort.textContent = selectedText;
+                    orderByInput.value = selectedValue;  // Ставим в скрытое поле
+                    optionsList.classList.remove("open");
+                    arrowButton.classList.remove("open");
+                    form.submit();
+                }
+            });
         });
-
-        document.addEventListener("click", function (e) {
-            if (!arrowButton.contains(e.target) && !optionsList.contains(e.target)) {
-                optionsList.classList.remove("open");
-                arrowButton.classList.remove("open");
-            }
-        });
-
-        optionsList.addEventListener("click", function (e) {
-            if (e.target.tagName === "LI") {
-                const selectedText = e.target.textContent;
-                const selectedValue = e.target.dataset.value;
-                labelSort.textContent = selectedText;
-                orderByInput.value = selectedValue;  // Ставим в скрытое поле
-                optionsList.classList.remove("open");
-                arrowButton.classList.remove("open");
-                form.submit();
-            }
-        });
-    });
-</script>
+    </script>
 {% endblock %}
