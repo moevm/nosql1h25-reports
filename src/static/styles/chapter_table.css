@@ -40,7 +40,7 @@ thead th {
     border-bottom: 1px solid #d1dade; /* Граница между строками */
     padding: 12px 15px;
     text-align: center;
-    height: 50px;
+    height: 80px;
 }
 
 .results-block__table tbody tr:hover {

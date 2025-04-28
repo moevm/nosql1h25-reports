@@ -7,13 +7,13 @@ services:
     ports:
       - "127.0.0.1:5000:5000"
     environment:
-      - DB_HOST=bolt://db
+      - DB_HOST=bolt://db # хост БД из внутренней сети Docker
     healthcheck:
-      test: wget http://localhost:5000 || exit 1
+      test: curl --fail http://127.0.0.1:5000 || exit 1
       interval: 3s
       timeout: 10s
       retries: 5
-      start_period: 5s
+      start_period: 3s
     depends_on:
       db:
         condition: service_healthy
@@ -22,10 +22,9 @@ services:
     image: neo4j:ubi9
     environment:
       - NEO4J_AUTH=neo4j/password
-    # TODO: закрыть порты после докеризации приложения
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "7474:7474" # веб-интерфейс
+      - "7687:7687" # используется для локальной отладки
     volumes:
       - db-logs:/logs
       - db-config:/config

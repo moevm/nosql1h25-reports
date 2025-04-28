@@ -290,32 +290,40 @@ class DiplomaRepository:
         query += "\nRETURN d{.*, chapters: chapters} AS diploma"
 
         parameters = {
-            "min_id": min_id, "max_id": max_id,
-            "name": name, "author": author, "academic_supervisor": academic_supervisor,
-            "min_year": min_year, "max_year": max_year,
-            "min_words": min_words, "max_words": max_words,
-            "min_date": min_date, "max_date": max_date,
-            "chapters": chapters
+            "min_id": int(min_id) if min_id else None,
+            "max_id": int(max_id) if max_id else None,
+            "name": name,
+            "author": author,
+            "academic_supervisor": academic_supervisor,
+            "min_year": int(min_year) if min_year else None,
+            "max_year": int(max_year) if max_year else None,
+            "min_words": int(min_words) if min_words else None,
+            "max_words": int(max_words) if max_words else None,
+            "min_date": min_date,
+            "max_date": max_date,
+            "chapters": list(map(int, chapters)) if chapters else None
         }
         result = self.database.query(query, parameters)
 
-        diplomas = []
-        for record in map(lambda x: x["diploma"], result):
-            diploma = Diploma(
-                id=record.get("id"),
-                name=record.get("name", ""),
-                author=record.get("author", ""),
-                academic_supervisor=record.get("academic_supervisor"),
-                year=record.get("year", 0),
-                words=record.get("words", 0),
-                load_date=datetime.datetime(
-                    record.get("load_date").year,
-                    record.get("load_date").month,
-                    record.get("load_date").day),
-                chapters=record.get("chapters", [])
-            )
-            diplomas.append(diploma)
-        return diplomas
+        if result is not None:
+            diplomas = []
+            for record in map(lambda x: x["diploma"], result):
+                diploma = Diploma(
+                    id=record.get("id"),
+                    name=record.get("name", ""),
+                    author=record.get("author", ""),
+                    academic_supervisor=record.get("academic_supervisor"),
+                    year=record.get("year", 0),
+                    words=record.get("words", 0),
+                    load_date=datetime.datetime(
+                        record.get("load_date").year,
+                        record.get("load_date").month,
+                        record.get("load_date").day),
+                    chapters=record.get("chapters", [])
+                )
+                diplomas.append(diploma)
+            return diplomas
+        return []
 
     def search_chapters(self,
                         min_id: int = None, max_id: int = None,
@@ -329,7 +337,7 @@ class DiplomaRepository:
                         order_by: str = None) -> list[Chapter]:
         query = """
         MATCH (c:Chapter)-[:CONTAINS*0..1]->(c1:Chapter)
-        WITH c, COLLECT(c1.id) AS chapters
+        WITH c, [id in COLLECT(c1.id) WHERE id <> c.id] AS chapters
         WHERE ($min_id IS NULL OR c.id >= $min_id)
           AND ($max_id IS NULL OR c.id <= $max_id)
           AND ($min_id_diploma IS NULL OR c.id_diploma >= $min_id_diploma)
@@ -352,29 +360,36 @@ class DiplomaRepository:
         query += "\nRETURN c{.*, chapters: [id in chapters WHERE id <> c.id]} AS chapter"
 
         parameters = {
-            "min_id": min_id, "max_id": max_id,
-            "min_id_diploma": min_id_diploma, "max_id_diploma": max_id_diploma,
+            "min_id": int(min_id) if min_id else None,
+            "max_id": int(max_id) if max_id else None,
+            "min_id_diploma": int(min_id_diploma) if min_id_diploma else None,
+            "max_id_diploma": int(max_id_diploma) if max_id_diploma else None,
             "name": name,
-            "min_words": min_words, "max_words": max_words,
-            "min_symbols": min_symbols, "max_symbols": max_symbols,
-            "min_water_content": min_water_content, "max_water_content": max_water_content,
+            "min_words": int(min_words) if min_words else None,
+            "max_words": int(max_words) if max_words else None,
+            "min_symbols": int(min_symbols) if min_symbols else None,
+            "max_symbols": int(max_symbols) if max_symbols else None,
+            "min_water_content": int(min_water_content) if min_water_content else None,
+            "max_water_content": int(max_water_content) if max_water_content else None,
             "words": words,
-            "chapters": chapters
+            "chapters": list(map(int, chapters)) if chapters else None
         }
         result = self.database.query(query, parameters)
 
-        chapters = []
-        for record in map(lambda x: x["chapter"], result):
-            chapter = Chapter(
-                id=record.get("id"),
-                id_diploma=record.get("id_diploma"),
-                name=record.get("name", ""),
-                water_content=record.get("water_content", 0),
-                words=record.get("words", 0),
-                symbols=record.get("symbols", 0),
-                commonly_used_words=record.get("commonly_used_words", []),
-                commonly_used_words_amount=record.get("commonly_used_words_amount", []),
-                chapters=record.get("chapters", [])
-            )
-            chapters.append(chapter)
-        return chapters
+        if result is not None:
+            chapters = []
+            for record in map(lambda x: x["chapter"], result):
+                chapter = Chapter(
+                    id=record.get("id"),
+                    id_diploma=record.get("id_diploma"),
+                    name=record.get("name", ""),
+                    water_content=record.get("water_content", 0),
+                    words=record.get("words", 0),
+                    symbols=record.get("symbols", 0),
+                    commonly_used_words=record.get("commonly_used_words", []),
+                    commonly_used_words_amount=record.get("commonly_used_words_amount", []),
+                    chapters=record.get("chapters", [])
+                )
+                chapters.append(chapter)
+            return chapters
+        return []

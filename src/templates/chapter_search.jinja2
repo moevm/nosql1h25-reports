@@ -18,11 +18,11 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="min_id_diploma">от</label>
-                    <input class="filter-box__input" type="text" id="min_id_diploma" name="min_id_diploma"
-                           value="{{ request.args.get('min_id_diploma', '') }}">
+                    <input class="filter-box__input" type="number" id="min_id_diploma" name="min_id_diploma"
+                           value="{{ request.args.get('min_id_diploma', '') }}" min="0">
                     <label class="filter-box__label" for="max_id_diploma">до</label>
-                    <input class="filter-box__input" type="text" id="max_id_diploma" name="max_id_diploma"
-                           value="{{ request.args.get('max_id_diploma', '') }}">
+                    <input class="filter-box__input" type="number" id="max_id_diploma" name="max_id_diploma"
+                           value="{{ request.args.get('max_id_diploma', '') }}" min="0">
                 </div>
             </div>
 
@@ -32,11 +32,11 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="min_id">от</label>
-                    <input class="filter-box__input" type="text" id="min_id" name="min_id"
-                           value="{{ request.args.get('min_id', '') }}">
+                    <input class="filter-box__input" type="number" id="min_id" name="min_id"
+                           value="{{ request.args.get('min_id', '') }}" min="0">
                     <label class="filter-box__label" for="max_id">до</label>
-                    <input class="filter-box__input" type="text" id="max_id" name="max_id"
-                           value="{{ request.args.get('max_id', '') }}">
+                    <input class="filter-box__input" type="number" id="max_id" name="max_id"
+                           value="{{ request.args.get('max_id', '') }}" min="0">
                 </div>
             </div>
 
@@ -46,7 +46,7 @@
                 </div>
                 <div class="filter-box">
                     <input class="filter-box__input long-input" type="text" id="name" name="name"
-                           value="{{ request.args.get('name', '') }}" placeholder="Введите название раздела">
+                           value="{{ request.args.get('name', '') }}" placeholder="название раздела">
                 </div>
             </div>
 
@@ -56,11 +56,11 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="min_water_content">от</label>
-                    <input class="filter-box__input" type="text" id="min_water_content" name="min_water_content"
-                           value="{{ request.args.get('min_water_content', '') }}">
+                    <input class="filter-box__input" type="number" id="min_water_content" name="min_water_content"
+                           value="{{ request.args.get('min_water_content', '') }}" min="0">
                     <label class="filter-box__label" for="max_water_content">до</label>
-                    <input class="filter-box__input" type="text" id="max_water_content" name="max_water_content"
-                           value="{{ request.args.get('max_water_content', '') }}">
+                    <input class="filter-box__input" type="number" id="max_water_content" name="max_water_content"
+                           value="{{ request.args.get('max_water_content', '') }}" min="0">
                 </div>
             </div>
 
@@ -70,11 +70,11 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="min_words">от</label>
-                    <input class="filter-box__input" type="text" id="min_words" name="min_words"
-                           value="{{ request.args.get('min_words', '') }}">
+                    <input class="filter-box__input" type="number" id="min_words" name="min_words"
+                           value="{{ request.args.get('min_words', '') }}" min="0">
                     <label class="filter-box__label" for="max_words">до</label>
-                    <input class="filter-box__input" type="text" id="max_words" name="max_words"
-                           value="{{ request.args.get('max_words', '') }}">
+                    <input class="filter-box__input" type="number" id="max_words" name="max_words"
+                           value="{{ request.args.get('max_words', '') }}" min="0">
                 </div>
             </div>
 
@@ -84,11 +84,11 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="min_symbols">от</label>
-                    <input class="filter-box__input" type="text" id="min_symbols" name="min_symbols"
-                           value="{{ request.args.get('min_symbols', '') }}">
+                    <input class="filter-box__input" type="number" id="min_symbols" name="min_symbols"
+                           value="{{ request.args.get('min_symbols', '') }}" min="0">
                     <label class="filter-box__label" for="max_symbols">до</label>
-                    <input class="filter-box__input" type="text" id="max_symbols" name="max_symbols"
-                           value="{{ request.args.get('max_symbols', '') }}">
+                    <input class="filter-box__input" type="number" id="max_symbols" name="max_symbols"
+                           value="{{ request.args.get('max_symbols', '') }}" min="0">
                 </div>
             </div>
 
@@ -98,14 +98,13 @@
                 </div>
                 <div class="list-card">
                     <div class="filter-box">
-                        <input class="filter-box__input append-input" type="text" id="words" name="words"
-                               value="{{ request.args.get('words', '') }}" placeholder="Введите слово">
-                        <button class="filter-box__add-word">
+                        <input class="filter-box__input append-input" type="text" id="words" placeholder="Добавить">
+                        <button type="button" class="filter-box__add-word" id="words_button">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-                    <div class="words-container"></div>
-                    <input type="hidden" name="words" id="words" value="{{ request.args.get('words', '') }}">
+                    <div class="words-container" id="words-container"></div>
+                    <input type="hidden" name="words" id="hidden-words" value="{{ request.args.get('words', '') }}">
                 </div>
             </div>
 
@@ -115,23 +114,24 @@
                 </div>
                 <div class="list-card">
                     <div class="filter-box">
-                        <input class="filter-box__input append-input" type="text" id="chapters" name="chapters"
-                               value="{{ request.args.get('chapters', '') }}" placeholder="Введите id раздела">
-                        <button class="filter-box__add-word">
+                        <input class="filter-box__input append-input" type="number" id="chapters"
+                               placeholder="Добавить" min="0">
+                        <button type="button" class="filter-box__add-word" id="chapters-button">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-                    <div class="words-container"></div>
-                    <input type="hidden" name="words" id="words" value="{{ request.args.get('words', '') }}">
+                    <div class="words-container" id="chapters-container"></div>
+                    <input type="hidden" name="chapters" id="hidden-chapters"
+                           value="{{ request.args.get('chapters', '') }}">
                 </div>
             </div>
 
-            <button type="submit" class="search-button filters__header-block" onclick="addWord()">Найти</button>
+            <button type="submit" class="search-button filters__header-block">Найти</button>
         </form>
     </section>
 
     <section class="results-block">
-        <select name="order_by" form="filter__form" class="sort-chapter" onchange="form.submit()">
+        <select name="order_by" form="filter__form" class="sort-chapter" id="sort" onchange="submitForm()">
             <option value=""
                     {% if request.args.get('order_by', '') == "" %}selected{% endif %}>
                 без сортировки
@@ -175,7 +175,9 @@
             <!-- Здесь будут выводиться данные из базы данных -->
             {% for chapter in chapters %}
                 <tr>
-                    <td>{{ chapter.id_diploma }}</td>
+                    <td>
+                        <a href="{{ url_for('diploma_statistics', diploma_id=chapter.id_diploma) }}">{{ chapter.id_diploma }}</a>
+                    </td>
                     <td>{{ chapter.id }}</td>
                     <td>{{ chapter.name }}</td>
                     <td>{{ chapter.water_content }}</td>
@@ -190,78 +192,71 @@
     </section>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const wordInput = document.querySelector(".filter-box__input");
-            const wordList = document.querySelector(".words-container");
-            const hiddenWordsInput = document.querySelector("#words");
+        const form = document.querySelector("form");
+        const wordsContainer = document.querySelector("#words-container");
+        const chaptersContainer = document.querySelector("#chapters-container");
+        const wordsHiddenInput = document.querySelector("#hidden-words");
+        const chaptersHiddenInput = document.querySelector("#hidden-chapters");
 
-            // Функция для обновления значения скрытого поля
-            function updateHiddenWords() {
-                const words = Array.from(wordList.querySelectorAll('.word__text')).map(word => word.textContent.trim());
-                hiddenWordsInput.value = words.join(",");
+        function addWord(word, div) {
+            let x = document.createElement('span');
+            x.classList.add('container-word');
+            x.innerText = word;
+            x.addEventListener('click', e => e.target.remove())
+            div.appendChild(x);
+        }
+
+        for (let word of wordsHiddenInput.value.split(' ')) {
+            if (word.trim() !== '') addWord(word, wordsContainer)
+        }
+        for (let chapter of chaptersHiddenInput.value.split(' ')) {
+            if (chapter.trim() !== '') addWord(chapter, chaptersContainer)
+        }
+
+        function submitForm() {
+            let wordsList = [...wordsContainer.children].map(child => child.innerText);
+            wordsHiddenInput.value = wordsList.join(' ')
+            let chapterList = [...chaptersContainer.children].map(child => child.innerText);
+            chaptersHiddenInput.value = chapterList.join(' ')
+
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+
+            for (const [key, value] of formData.entries()) {
+                if (value.trim() !== "") {
+                    console.log(value)
+                    params.append(key, value);
+                }
             }
 
-            // Функция для добавления слова
-            window.addWord = function () {
-                const word = wordInput.value.trim();
-                if (word === "") return; // Если поле пустое, ничего не делаем
+            const url = form.action + '?' + params.toString();
+            window.location.href = url;
+        }
 
-                // Проверяем, что слово еще не добавлено
-                const currentWords = Array.from(wordList.querySelectorAll('.word__text')).map(el => el.textContent.trim());
-                if (!currentWords.includes(word)) {
-                    // Добавляем новое слово в контейнер
-                    wordList.insertAdjacentHTML('beforeend', `
-                <span class="word__text">${word}
-                    <button class="word__remove" onclick="removeWord(this)">×</button>
-                </span>
-            `);
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-                    // Обновляем значение скрытого поля
-                    updateHiddenWords();
-                }
+            submitForm();
+        });
 
-                // Очищаем поле ввода
-                wordInput.value = "";
-            };
+        const wordsButton = document.querySelector("#words_button");
+        const wordInput = document.querySelector("#words");
+        wordsButton.addEventListener('click', () => {
+            value = wordInput.value;
+            if (value.trim() !== '') {
+                addWord(value, wordsContainer);
+            }
+            wordInput.value = '';
+        });
 
-            // Функция для удаления слова
-            window.removeWord = function (button) {
-                const wordElement = button.parentElement;
-                const word = wordElement.textContent.trim().replace("×", ""); // Удаляем символ "×"
-
-                // Удаляем элемент из DOM
-                wordElement.remove();
-
-                // Обновляем значение скрытого поля
-                updateHiddenWords();
-            };
-
-            // Инициализация: отображение уже добавленных слов при загрузке страницы
-            const initialWords = hiddenWordsInput.value.split(",").filter(word => word.trim() !== "");
-            initialWords.forEach(word => {
-                wordList.insertAdjacentHTML('beforeend', `
-            <span class="word__text">${word}
-                <button class="word__remove" onclick="removeWord(this)">×</button>
-            </span>
-        `);
-            });
-
-            // Обработка отправки формы
-            const form = document.querySelector("form");
-            form.addEventListener("submit", function (e) {
-                e.preventDefault(); // Остановить стандартную отправку формы
-
-                const formData = new FormData(form);
-                const params = new URLSearchParams();
-
-                for (const [key, value] of formData.entries()) {
-                    if (value.trim() !== "") { // Если значение не пустое
-                        params.append(key, value);
-                    }
-                }
-                const url = form.action + '?' + params.toString();
-                window.location.href = url;
-            });
+        const chaptersButton = document.querySelector("#chapters-button");
+        const chaptersInput = document.querySelector("#chapters");
+        chaptersButton.addEventListener('click', () => {
+            value = chaptersInput.value;
+            if (value.trim() !== '') {
+                addWord(value, chaptersContainer);
+            }
+            chaptersInput.value = ''
         });
     </script>
 
