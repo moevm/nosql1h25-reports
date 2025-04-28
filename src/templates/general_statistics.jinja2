@@ -1,0 +1,165 @@
+{% extends "layout.jinja2" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/general_statistics.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/section_stats.css') }}" type="text/css"/>
+{% endblock %}
+{% block main %}
+    <div class="data-container">
+        <div class="data-card">
+            <h2 class="data-card__header">Общая статистика</h2>
+
+            <div class="data-card__stats">
+                <!-- Первая колонка: Общая статистика -->
+                <div class="data-card__first-col card-col">
+                    <section class="data-card__general-data">
+                        <h3>Общие данные</h3>
+                        <table class="stats-table">
+                            <tr>
+                                <td>Автор</td>
+                                <td>{{ diploma.author }}</td>
+                            </tr>
+                            <tr>
+                                <td>Тема</td>
+                                <td>{{ diploma.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Год написания</td>
+                                <td>{{ diploma.year }}</td>
+                            </tr>
+                            <tr>
+                                <td>Научный руководитель</td>
+                                <td>{{ diploma.academic_supervisor }}</td>
+                            </tr>
+                            <tr>
+                                <td>Количество слов</td>
+                                <td>{{ diploma.words }}</td>
+                            </tr>
+                        </table>
+                    </section>
+                </div>
+
+                <div class="data-card__second-col card-col" style="visibility: hidden">
+                    <!-- Вторая колонка: Раскрытие тем -->
+                    <section class="data-card__topics-coverage">
+                        <h3>Раскрытие тем</h3>
+                        <table class="stats-table">
+                            {% for topic in diploma.topics %}
+                                <tr>
+                                    <td>{{ topic.name }}</td>
+                                    <td>{{ topic.coverage }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </section>
+
+                    <!-- Вторая колонка: Похожие работы -->
+                    <section class="data-card__similar-diplomas">
+                        <h3>Похожие дипломы</h3>
+                        <table class="stats-table">
+                            {% for work in diploma.similar_works %}
+                                <tr>
+                                    <td>{{ work.name }}</td>
+                                    <td>{{ work.match }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="data-card">
+            <h2>Статистика по разделам</h2>
+            <div class="accordion">
+                <!-- Правильное определение рекурсивного макроса -->
+                {% macro render_chapters(chapters) %}
+                    {% for chapter in chapters %}
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                <span class="chapter-name">{{ chapter.name }}</span>
+                                <i class="fa-solid fa-angle-down fa-2x arrow"></i>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="chapter-stats">
+                                    <section class="data-card__general-data">
+                                        <h3>Общие данные</h3>
+                                        <table class="stats-table">
+                                            <tr>
+                                                <td>Количество слов</td>
+                                                <td>{{ chapter.words }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Количество символов</td>
+                                                <td>{{ chapter.symbols }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Водность</td>
+                                                <td>{{ chapter.water_content }}</td>
+                                            </tr>
+                                        </table>
+                                    </section>
+                                    <section class="data-card__general-data">
+                                        <h3>Топ ключевых слов</h3>
+                                        <table class="stats-table">
+                                            {% for i in range(chapter.commonly_used_words| length) %}
+                                                <tr>
+                                                    <td>{{ chapter.commonly_used_words[i] }}</td>
+                                                    <td>{{ chapter.commonly_used_words_amount[i] }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </section>
+                                </div>
+                                <!-- Рекурсивный вызов через self.call() -->
+                                {% if chapter.chapters %}
+                                    <div class="subchapters">
+                                        {{ render_chapters(chapter.chapters) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endmacro %}
+
+                <!-- Инициализация аккордеона -->
+                {{ render_chapters(diploma.chapters) }}
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const headers = document.querySelectorAll(".accordion-header");
+
+                // Функция для закрытия всех дочерних элементов
+                function closeChildren(header) {
+                    const parentItem = header.parentElement; // Найдем родительский элемент (accordion-item)
+                    const subchapters = parentItem.querySelector(".subchapters"); // Найдем дочерние разделы
+
+                    if (subchapters) {
+                        const childHeaders = subchapters.querySelectorAll(".accordion-header");
+                        childHeaders.forEach(childHeader => {
+                            childHeader.setAttribute("aria-expanded", "false"); // Закрываем дочерний заголовок
+                            closeChildren(childHeader); // Рекурсивно закрываем вложенные дочерние элементы
+                        });
+                    }
+                }
+
+                // Обработчик кликов по заголовкам
+                headers.forEach(header => {
+                    header.addEventListener("click", () => {
+                        const expanded = header.getAttribute("aria-expanded") === "true";
+                        header.setAttribute("aria-expanded", !expanded);
+
+                        // Если родительский раздел закрывается, закрываем все дочерние
+                        if (!expanded) {
+                            closeChildren(header);
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
+{% endblock %}

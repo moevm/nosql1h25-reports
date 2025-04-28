@@ -1,0 +1,63 @@
+.accordion {
+    width: 100%;
+}
+
+.accordion-item {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    background-color: white;
+    height: 100px;
+    width: 100%;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.accordion-header:hover {
+    background: rgba(239, 239, 239, 0.8);
+}
+
+.arrow {
+    transition: transform 0.3s ease;
+    width: 29px;
+    display: block;
+}
+
+.accordion-content {
+    padding-left: 20px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.accordion-header[aria-expanded="true"] .arrow {
+    transform: rotate(180deg);
+}
+
+.accordion-header[aria-expanded="true"] + .accordion-content {
+    max-height: 100%;
+    opacity: 1; /* Содержимое становится видимым */
+}
+
+.chapter-stats {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chapter-name {
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.subchapters {
+    margin-left: 20px;
+}

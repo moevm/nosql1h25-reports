@@ -1,0 +1,216 @@
+{% extends "layout.jinja2" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chapter_filter.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chapter_table.css') }}" type="text/css"/>
+{% endblock %}
+
+{% block main %}
+    <section class="filters">
+        <div class="filters__header-block">
+            <h2 class="filters__header">Фильтры</h2>
+        </div>
+        <form action="/search/diploma" method="POST">
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">id диплома</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="min_id_diploma" name="min_id_diploma"
+                           value="{{ request.args.get('min_id_diploma', '') }}">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="max_id_diploma" name="max_id_diploma"
+                           value="{{ request.args.get('max_id_diploma', '') }}">
+                </div>
+            </div>
+
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="words">id разделов</label>
+                </div>
+                <div class="list-card">
+                    <div class="filter-box">
+                        <input class="filter-box__input append-input" type="text" id="chapters" name="chapters"
+                               value="{{ request.args.get('chapters', '') }}" placeholder="Введите раздел">
+                        <button class="filter-box__add-word">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="list-words"></div>
+                </div>
+            </div>
+
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="section_name">название темы</label>
+                </div>
+                <div class="filter-box">
+                    <input class="filter-box__input long-input" type="text" id="name" name="name"
+                           value="{{ request.args.get('name', '') }}" placeholder="Введите название темы">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="section_name">автор</label>
+                </div>
+                <div class="filter-box">
+                    <input class="filter-box__input long-input" type="text" id="author" name="author"
+                           value="{{ request.args.get('author', '') }}" placeholder="Введите имя автора">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="section_name">научный руководитель</label>
+                </div>
+                <div class="filter-box">
+                    <input class="filter-box__input long-input" type="text" id="academic_supervisor"
+                           name="academic_supervisor"
+                           value="{{ request.args.get('academic_supervisor', '') }}" placeholder="Введите имя руководителя">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">год</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="min_year" name="min_year"
+                           value="{{ request.args.get('min_year', '') }}">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="max_year" name="max_year"
+                           value="{{ request.args.get('max_year', '') }}">
+                </div>
+            </div>
+
+            <!--<div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">страницы</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="" name=""
+                           value="{{ request.args.get('', '') }}">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="" name=""
+                           value="{{ request.args.get('', '') }}">
+                </div>
+            </div>-->
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">слова</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="min_words" name="min_words"
+                           value="{{ request.args.get('min_words', '') }}">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="max_words" name="max_words"
+                           value="{{ request.args.get('max_words', '') }}">
+                </div>
+            </div>
+
+            <!--<div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">минимальная раскрытость</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="" name=""
+                           value="{{ request.args.get('', '') }}">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="" name=""
+                           value="{{ request.args.get('', '') }}">
+                </div>
+            </div>-->
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">дата загрузки</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="min_date" name="min_date"
+                           value="{{ request.args.get('min_date', '') }}">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="max_date" name="max_date"
+                           value="{{ request.args.get('max_date', '') }}">
+                </div>
+            </div>
+
+            <button type="submit" class="search-button filters__header-block">Найти</button>
+        </form>
+    </section>
+
+    <section class="results-block">
+       <select name="order_by" form="filter__form" class="sort-chapter" onchange="form.submit()">
+            <option value=""
+                    {% if request.args.get('order_by', '') == "" %}selected{% endif %}>
+                без сортировки
+            </option>
+            <option value="id"
+                    {% if request.args.get('order_by', '') == "id" %}selected{% endif %}>
+                id
+            </option>
+            <option value="id_diploma"
+                    {% if request.args.get('order_by', '') == "id_diploma" %}selected{% endif %}>
+                id диплома
+            </option>
+            <option value="water_content"
+                    {% if request.args.get('order_by', '') == "water_content" %}selected{% endif %}>
+                водность
+            </option>
+            <option value="words"
+                    {% if request.args.get('order_by', '') == "words" %}selected{% endif %}>
+                количество слов
+            </option>
+            <option value="symbols"
+                    {% if request.args.get('order_by', '') == "symbols" %}selected{% endif %}>
+                количество символов
+            </option>
+        </select>
+        <!-- Блок с результатами -->
+        <table class="results-block__table">
+            <thead>
+            <tr>
+                <th>id диплома</th>
+                <th>список id разделов, на которые диплом ссылается</th>
+                <th>тема</th>
+                <th>автор</th>
+                <th>научный руководитель</th>
+                <th>год</th>
+                <!--<th>количество страниц</th>-->
+                <th>количество слов</th>
+                <!--<th>раскрытие тем</th>-->
+                <th>дата загрузки</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Здесь будут выводиться данные из базы данных -->
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.id_diploma }}</td>
+                    <td>{{ result.chapters }}</td>
+                    <td>{{ result.name }}</td>
+                    <td>{{ result.author }}</td>
+                    <td>{{ result.academic_supervisor }}</td>
+                    <td>{{ result.year }}</td>
+                    <!--<td>{{ 0 }}</td>-->
+                    <td>{{ result.words }}</td>
+                    <!--<td>{{ 0 }}</td>-->
+                    <td>{{ result.load_dates }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+
+{% endblock %}

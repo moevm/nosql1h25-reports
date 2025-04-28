@@ -3,6 +3,9 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for
 
+
+from src.diploma_processing.testkit.test_diploma_consts import test_diploma
+
 from src.diploma_processing.stats import CalcStats
 from src.repository.diploma_repo import Neo4jDatabase, DiplomaRepository
 
@@ -40,9 +43,11 @@ def diploma_upload():
 
 @app.get('/diploma/<int:diploma_id>')
 def diploma_statistics(diploma_id: int):
+    stats_data = test_diploma[0]
+
     diploma = repo.load_diploma_data(diploma_id)
 
-    return render_template('layout.jinja2')
+    return render_template('general_statistics.jinja2', diploma=stats_data)
 
 
 @app.get('/search')
@@ -56,16 +61,16 @@ def search_diploma():
 
     diplomas = repo.search_diplomas(**params)
 
-    return render_template('layout.jinja2')
+    return render_template('diploma_search.jinja2', params = params)
 
 
 @app.get('/search/chapter')
 def search_chapter():
-    params = request.args.to_dict()
+    params = request.args.to_dict(flat=False)
 
     chapters = repo.search_chapters(**params)
 
-    return render_template('layout.jinja2')
+    return render_template('chapter_search.jinja2', chapters=chapters)
 
 
 if __name__ == '__main__':

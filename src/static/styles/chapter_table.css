@@ -1,0 +1,48 @@
+.results-block {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Блок сортировки */
+.sort-chapter {
+    position: relative;
+    display: flex;
+    width: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+}
+
+.label-box_dark-light {
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    margin-right: 50px;
+}
+
+/*Блок оформления таблицы*/
+.results-block__table {
+    width: 1100px;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень вокруг таблицы */
+}
+
+thead th {
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #d1dade;
+    background-color: #f2f2f2;
+    font-size: 12px;
+}
+
+.results-block__table tbody tr {
+    border-bottom: 1px solid #d1dade; /* Граница между строками */
+    padding: 12px 15px;
+    text-align: center;
+    height: 50px;
+}
+
+.results-block__table tbody tr:hover {
+    background-color: #f1f8ff;
+}
