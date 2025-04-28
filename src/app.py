@@ -45,7 +45,7 @@ def search_diploma():
 def search_chapter():
     params = request.args.to_dict()
 
-    return render_template('layout.jinja2')
+    return render_template('chapter_search.jinja2')
 
 
 if __name__ == '__main__':

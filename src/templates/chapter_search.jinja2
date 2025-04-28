@@ -1,0 +1,167 @@
+{% extends "layout.jinja2" %}
+
+{% block main %}
+    <section class="filters">
+        <div class="filters__header-block">
+            <h2 class="filters__header">Фильтры</h2>
+        </div>
+        <form action="/search" method="POST">
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">id диплома</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="to" name="to">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">id раздела</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="to" name="to">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="section_name">название раздела</label>
+                </div>
+                <div class="filter-box">
+                    <input class="filter-box__input long-input" type="text" id="section_name" name="section_name"
+                           placeholder="Введите название раздела">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">водность</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="to" name="to">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">слов</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="to" name="to">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="id_diploma">символов</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="from">от</label>
+                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <label class="filter-box__label" for="to">до</label>
+                    <input class="filter-box__input" type="text" id="to" name="to">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="top_word">часто употребляемые слова</label>
+                </div>
+                <div class="list-card">
+                    <div class="filter-box">
+                        <input class="filter-box__input append-input" type="text" id="top_word" name="top_word"
+                               placeholder="Введите слово">
+                        <button class="filter-box__add-word">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="list-words">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="top_word">id дочерних разделов</label>
+                </div>
+                <div class="list-card">
+                    <div class="filter-box">
+                        <input class="filter-box__input append-input" type="text" id="top_word" name="top_word"
+                               placeholder="Введите слово">
+                        <button class="filter-box__add-word">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="list-words">
+
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="search-button filters__header-block">Найти</button>
+        </form>
+    </section>
+
+    <section class="results-block">
+        <div class="sort-chapter">
+            <div class="label-box_dark-light">
+                <label class="label-box__label" for="sort_by">без сортировки</label>
+            </div>
+            <button class="arrow-button" aria-label="Открыть/закрыть список">
+                <i class="fa-solid fa-angle-down fa-2x arrow"></i>
+            </button>
+            <ul class="options-list">
+                <li data-value="no_sort">без сортировки<</li>
+                <li data-value="id_asc">id диплома</li>
+                <li data-value="year">год</li>
+                <li data-value="pages">количество страниц</li>
+                <li data-value="words">количество слов</li>
+                <li data-value="upload_date">дата загрузки</li>
+            </ul>
+        </div>
+        <!-- Блок с результатами -->
+        <table class="results-block__table">
+            <thead>
+            <tr>
+                <th>id диплома</th>
+                <th>id раздела</th>
+                <th>название раздела</th>
+                <th>водность (%)</th>
+                <th>слов (вкл.)</th>
+                <th>символов (вкл.)</th>
+                <th>топ часто встречающихся слов</th>
+                <th>дочерние разделы (id)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Здесь будут выводиться данные из базы данных -->
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.id_diploma }}</td>
+                    <td>{{ result.id_section }}</td>
+                    <td>{{ result.section_name }}</td>
+                    <td>{{ result.density }}</td>
+                    <td>{{ result.word_count }}</td>
+                    <td>{{ result.symbol_count }}</td>
+                    <td>{{ result.top_word }}</td>
+                    <td>{{ result.child_sections }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{% endblock %}

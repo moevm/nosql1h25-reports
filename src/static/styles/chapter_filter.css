@@ -1,0 +1,111 @@
+.main {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 25px;
+    width: 100%;
+    gap: 30px;
+}
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    width: 290px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.filters__header-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    background-color: #C1DCFF;
+    width: 100%;
+    height: 40px;
+    border-radius: 4px;
+}
+
+.filters__header {
+    font-size: 16px;
+}
+
+.filter-range {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.label-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 80px;
+    margin: 0;
+    padding: 0;
+}
+
+.filter-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 175px;
+}
+
+.filter-box__label {
+    font-size: 10px;
+}
+
+.filter-box__input {
+    width: 65px;
+    min-height: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 10px;
+    margin: 0;
+    text-align: center;
+}
+
+.long-input {
+    width: 170px;
+}
+
+.label-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.append-input {
+    width: 100px;
+    margin-left: 15px;
+}
+
+.filter-box__add-word {
+    margin-right: 37px;
+    color: black;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: white;
+}
+
+.list-words {
+
+}
+
+.search-button {
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+

@@ -1,0 +1,89 @@
+
+.results-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.options-list li {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.options-list li:hover {
+    background-color: #f1f1f1;
+}
+
+.custom-select.open .options-list {
+    display: block;
+}
+.sort-chapter {
+    margin-top: 20px;
+}
+
+.label-box__label {
+    font-weight: bold;
+    color: #555;
+    font-size: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.arrow-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.options-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 10;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.arrow {
+    color: #555;
+}
+
+.results-block__table {
+    width: 1100px;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень вокруг таблицы */
+}
+
+thead th {
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #d1dade;
+    background-color: #f2f2f2;
+    font-size: 12px;
+}
+
+.results-block__table tbody tr {
+    border-bottom: 1px solid #d1dade; /* Граница между строками */
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.results-block__table tbody tr:hover {
+    background-color: #f1f8ff;
+}
+
