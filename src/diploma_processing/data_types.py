@@ -24,4 +24,4 @@ class Diploma:
     year: int
     words: int
     load_date: datetime
-    chapters: list[Chapter]
+    chapters: list['Chapter']
