@@ -1,7 +1,8 @@
-import docx
 import os
-from typing import Union, BinaryIO
 from io import BytesIO
+from typing import Union, BinaryIO
+
+import docx
 
 from src.diploma_processing.parsing_docx.docClasses import Doc, DocSection
 
@@ -25,7 +26,7 @@ class DocxParser:
             if not os.path.exists(self.file) or not os.path.isfile(self.file):
                 raise FileNotFoundError(f"Файл '{self.file}' не найден")
         except ImportError as e:
-            raise("Возможная ошибка: ", str(e))
+            raise ("Возможная ошибка: ", str(e))
 
     def _check_file_format(self):
         """
@@ -39,7 +40,7 @@ class DocxParser:
             raise ValueError(f"Файл '{self.file}' имеет неверный формат (.docx) или поврежден")
         except Exception as e:
             raise ValueError(f"Ошибка при открытии файла '{self.file}': {e}")
-    
+
     def _load_file_from_buffer(self):
         """
         Предполагается, что на вход подан какой-то буффер или массив байтов.
@@ -63,7 +64,7 @@ class DocxParser:
         # вопрос, будем ли мы проверять как-либо ещё дополнительно форматирование
         # т.е. содержит ли документ нужные заделы, например
         # содержит ли нужные таблицы с данными по типу темы, автор и д.т.
-        
+
         if isinstance(self.file, str):
             self._check_file_exists()
             self._check_file_format()
@@ -113,7 +114,7 @@ class DocxParser:
 
             elif found_content_section and not found_references_section:
                 level = self._get_heared_level(paragraph)
-                
+
                 if level == 0:
                     if len(current_section.text) == 0:
                         current_section.text = text
@@ -125,7 +126,7 @@ class DocxParser:
                     current_section.name = text
 
                 elif current_section.level is None \
-                    or level == current_section.level:
+                        or level == current_section.level:
                     new_section = DocSection()
                     new_section.level = level
                     new_section.name = text
@@ -137,7 +138,7 @@ class DocxParser:
                     else:
                         current_section = new_section
                         doc.structure.append(current_section)
-                
+
                 elif level > current_section.level:
                     new_section = DocSection()
                     new_section.upper = current_section
@@ -153,7 +154,7 @@ class DocxParser:
                     new_section.name = text
                     new_section.level = level
                     if current_section.level is None or \
-                        current_section.upper is None and level <= current_section.level:
+                            current_section.upper is None and level <= current_section.level:
                         current_section = new_section
                         doc.structure.append(current_section)
                     else:
@@ -167,7 +168,7 @@ class DocxParser:
         if len(s) > 1 and s[0] == 'heading':
             level = int(s[len(s) - 1])
         return level
-    
+
     # пока не работает вообще, там криво читается, но читаться будет примерно таким образом,
     # просто надо переделать немного, чтобы с отальным кодом коннектилось
     # def _cut_code_paragraph(self, paragraph):
@@ -179,7 +180,7 @@ class DocxParser:
     #             not 'courier' in run.font.name.lower():
     #             text_no_courier.append(run.text.lower())
     #     return ' '.join(text_no_courier) if len(text_no_courier) >= 0 else ''
-    
+
     def _read_info(self, doc: Doc):
         """
         Чтение основной информации о документе:
@@ -191,12 +192,12 @@ class DocxParser:
                 t_i = None
                 year = None
                 y_i = None
-                
+
                 for i in range(len(self.docx_file.paragraphs)):
                     p = self.docx_file.paragraphs[i]
                     if t_i is not None \
-                        and year is None \
-                        and len(p.text.strip()) > 0:
+                            and year is None \
+                            and len(p.text.strip()) > 0:
                         if y_i is None:
                             y_i = i
                         else:
@@ -218,10 +219,12 @@ class DocxParser:
             if len(self.docx_file.tables[1].columns) < 3:
                 raise Exception("error checking formating of docx file: len(self.docx_file.tables[1].columns) < 3")
             if self.docx_file.tables[1].rows[0].cells[0].text != 'Студент':
-                raise Exception("error checking formating of docx file: self.docx_file.tables[1].rows[0].cells[0].text != 'Студент'")
+                raise Exception(
+                    "error checking formating of docx file: self.docx_file.tables[1].rows[0].cells[0].text != 'Студент'")
             if self.docx_file.tables[1].rows[2].cells[0].text != 'Руководитель':
-                raise Exception("error checking formating of docx file: self.docx_file.tables[1].rows[2].cells[0].text != 'Руководитель'")
-            
+                raise Exception(
+                    "error checking formating of docx file: self.docx_file.tables[1].rows[2].cells[0].text != 'Руководитель'")
+
             try:
                 h = 0
                 author = ''
@@ -230,7 +233,7 @@ class DocxParser:
                     author = self.docx_file.tables[1].rows[h].cells[i].text.strip()
                     i -= 1
                 doc.author = author
-    
+
                 h = 2
                 academic_supervisor = ''
                 i = len(self.docx_file.tables[1].rows[h].cells) - 1
@@ -239,10 +242,12 @@ class DocxParser:
                     i -= 1
                 doc.academic_supervisor = academic_supervisor
             except:
-                raise Exception("formating check passed, but have a problem during reading author and academic_supervisor")
-            
+                raise Exception(
+                    "formating check passed, but have a problem during reading author and academic_supervisor")
+
         except Exception as e:
-            raise Exception(f"something wrong will reading info of documents (name, year, author, academic_supervisor): \n{e}")
+            raise Exception(
+                f"something wrong will reading info of documents (name, year, author, academic_supervisor): \n{e}")
 
     def _make_doc_structure_accurate(self, doc: Doc):
         i = 0
@@ -270,5 +275,3 @@ class DocxParser:
                 doc.structure.pop(i)
                 index_end -= 1
             doc.structure.insert(i, chapt)
-
-

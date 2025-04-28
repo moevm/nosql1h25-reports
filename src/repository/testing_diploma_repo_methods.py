@@ -1,243 +1,20 @@
-from diploma_repo import Neo4jDatabase, ServiceUnavailable
+from diploma_repo import Neo4jDatabase, DiplomaRepository
 from src.diploma_processing.data_types import *
-
-
-class DiplomaRepository:
-    def __init__(self, database: Neo4jDatabase):
-        self.database = database
-
-    # works
-    def save_diploma(self, diploma: Diploma) -> int | None:
-        query = """
-        CREATE (d:Diploma { 
-            name: $name, 
-            author: $author, 
-            academic_supervisor: $academic_supervisor, 
-            year: $year, 
-            words: $words,
-            load_date: $load_date
-        })
-        SET d.id = ID(d)
-        RETURN d.id
-        """
-        parameters = {
-            "name": diploma.name,
-            "author": diploma.author,
-            "academic_supervisor": diploma.academic_supervisor,
-            "year": diploma.year,
-            "words": diploma.words,
-            "load_date": diploma.load_date
-        }
-        result = self.database.query(query, parameters)
-        if result:
-            diploma.id = result[0][0]  # Теперь id будет и в объекте, и в БД в поле id
-            return diploma.id
-        return None
-
-    # works
-    def save_chapter(self, chapter: Chapter) -> int | None:
-        query = """
-        CREATE (c:Chapter {
-            id_diploma: $id_diploma, 
-            name: $name, 
-            water_content: $water_content, 
-            words: $words, 
-            symbols: $symbols, 
-            commonly_used_words: $commonly_used_words, 
-            commonly_used_words_amount: $commonly_used_words_amount
-        })
-        SET c.id = ID(c)
-        RETURN c.id
-        """
-        parameters = {
-            "id_diploma": chapter.id_diploma,
-            "name": chapter.name,
-            "water_content": chapter.water_content,
-            "words": chapter.words,
-            "symbols": chapter.symbols,
-            "commonly_used_words": chapter.commonly_used_words,
-            "commonly_used_words_amount": chapter.commonly_used_words_amount
-        }
-        result = self.database.query(query, parameters)
-        if result:
-            chapter.id = result[0][0]  # Теперь id будет и в объекте, и в БД в поле id
-            return chapter.id
-        return None
-
-    # works
-    def link_chapter_to_diploma(self, id_diploma: int) -> None:
-        query = """
-        MATCH (d:Diploma), (c:Chapter) 
-        WHERE d.id = $id_diploma AND c.id_diploma = $id_diploma
-        CREATE (d)-[:CONTAINS]->(c)
-        """
-        parameters = {"id_diploma": id_diploma}
-        self.database.query(query, parameters)
-
-    # works
-    def link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
-        query = """
-        MATCH (c1:Chapter), (c2:Chapter) 
-        WHERE c1.id = $parent_chapter_id AND c2.id IN $subchapter_ids
-        CREATE (c1)-[:CONTAINS]->(c2)
-        """
-        parameters = {
-            "parent_chapter_id": parent_chapter_id,
-            "subchapter_ids": subchapter_ids
-        }
-        self.database.query(query, parameters)
-
-    # idk (no field 'shingles' in Diploma added yet)
-    def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, list[int]]]:
-        query = """
-        MATCH (d:Diploma)
-        WHERE d.id <> $id_diploma
-        RETURN d.id, d.shingles
-        """
-        parameters = {"id_diploma": id_diploma}
-        result = self.database.query(query, parameters)
-        return [(int(record[0]), list(map(int, record[1]))) for record in result]
-
-    # works
-    def save_similarity(self, id_diploma: int, id_diploma_2: int, similarity: float) -> None:
-        query = """
-        MATCH (d1:Diploma), (d2:Diploma)
-        WHERE d1.id = $id_diploma AND d2.id = $id_diploma_2
-        CREATE (d1)-[:SIMILAR_TO {similarity: $similarity}]->(d2)
-        """
-        parameters = {
-            "id_diploma": id_diploma,
-            "id_diploma_2": id_diploma_2,
-            "similarity": similarity
-        }
-        self.database.query(query, parameters)
-
-    # works
-    def load_diploma_graph(self, id_diploma: int) -> tuple[list[int], list[list[int]]]:
-        query = """
-        MATCH p = (d:Diploma)-[r:CONTAINS*0..]->(x) 
-        WHERE d.id = $id_diploma
-        RETURN 
-            COLLECT(DISTINCT ID(x)) AS nodes,
-            [r IN COLLECT(DISTINCT LAST(r)) | [ID(startNode(r)), ID(endNode(r))]] AS rels
-        """
-        parameters = {"id_diploma": id_diploma}
-        result = self.database.query(query, parameters)
-        nodes, rels = result[0] if result else ([], [])
-        return nodes, rels
-
-    # works
-    def load_diploma_data(self, id_diploma: int) -> Diploma:
-        query = """
-        MATCH (d:Diploma)
-        WHERE d.id = $id_diploma
-        RETURN d
-        """
-        parameters = {"id_diploma": id_diploma}
-        result = self.database.query(query, parameters)
-        return result[0]["d"] if result else {}
-
-    # works
-    def load_chapters(self, chapter_ids: list[int]) -> list[Chapter]:
-        query = """
-        MATCH (c:Chapter)
-        WHERE c.id IN $chapter_ids
-        RETURN c
-        """
-        parameters = {"chapter_ids": chapter_ids}
-        result = self.database.query(query, parameters)
-        return [record["c"] for record in result] if result else []
-
+from src.diploma_processing.testkit.test_diploma_consts import test_diploma
 
 # Инициализируем соединение с базой данных Neo4j
-neo4j_db = Neo4jDatabase(uri="bolt://localhost:7687", user="neo4j", password="password")
+neo4j_db = Neo4jDatabase(host="bolt://localhost", user="neo4j", password="password")
 
 # Создаем репозиторий дипломов
 diploma_repository = DiplomaRepository(neo4j_db)
 
 # Пример диплома
-test_diploma1 = Diploma(
-    id=None,
-    name="ОЧЕНЬ ДЛИННОЕ НАЗВАНИЕ ДИПЛОМА 1",
-    author="Авторов А.А.",
-    academic_supervisor="Научруков А.А.",
-    year=2024,
-    words=24,
-    load_date=datetime.datetime.fromisoformat("2025-04-25T20:01:25.807687"),
-    chapters=[
-        Chapter(
-            id=0,
-            id_diploma=1,
-            name="ВВЕДЕНИЕ",
-            water_content=85,
-            words=2,
-            symbols=11,
-            commonly_used_words=["это", "введение"],
-            commonly_used_words_amount=[1, 1],
-            chapters=[]
-        ),
-        Chapter(
-            id=1,
-            id_diploma=1,
-            name="Структура",
-            water_content=60,
-            words=15,
-            symbols=66,
-            commonly_used_words=["это", "раздел", "пояснения"],
-            commonly_used_words_amount=[2, 1, 1],
-            chapters=[
-                Chapter(
-                    id=3,
-                    id_diploma=1,
-                    name="Раздел 1",
-                    water_content=70,
-                    words=5,
-                    symbols=16,
-                    commonly_used_words=["это", "раздел"],
-                    commonly_used_words_amount=[2, 1],
-                    chapters=[]
-                ),
-                Chapter(
-                    id=4,
-                    id_diploma=1,
-                    name="Раздел 2",
-                    water_content=50,
-                    words=10,
-                    symbols=50,
-                    commonly_used_words=["это", "пояснения"],
-                    commonly_used_words_amount=[2, 1],
-                    chapters=[]
-                )
-            ]
-        ),
-        Chapter(
-            id=2,
-            id_diploma=1,
-            name="ЗАКЛЮЧЕНИЕ",
-            water_content=80,
-            words=7,
-            symbols=60,
-            commonly_used_words=["наконец", "заключение"],
-            commonly_used_words_amount=[2, 1],
-            chapters=[]
-        )
-    ]
-)
+test_diploma1 = test_diploma[0]
 
-test_diploma2 = Diploma(
-    id=None,
-    name="ОЧЕНЬ ДЛИННОЕ НАЗВАНИЕ ДИПЛОМА 1",
-    author="Авторов А.А.",
-    academic_supervisor="Научруков А.А.",
-    year=2024,
-    words=24,
-    load_date=datetime.datetime.fromisoformat("2025-04-25T20:01:25.807687"),
-    chapters=[],
-)
+test_diploma2 = test_diploma[1]
 
 
 def testing():
-
     # Получаем все узлы и связи
     all_data = neo4j_db.query("MATCH (n)-[r]->(m) RETURN n, r, m")
 
@@ -313,7 +90,8 @@ def test_link_subchapters():
 def test_save_similarity():
     similarity_value = 0.3  # допустим, какая-то вычисленная схожесть
     diploma_repository.save_similarity(test_diploma1.id, test_diploma2.id, similarity_value)
-    print(f"Связь схожести между дипломами {test_diploma1.id} и {test_diploma2.id} успешно сохранена (похожесть {similarity_value}).")
+    print(
+        f"Связь схожести между дипломами {test_diploma1.id} и {test_diploma2.id} успешно сохранена (похожесть {similarity_value}).")
 
 
 # 7 Извлечение диплома и его разделов (3 запроса)

@@ -1,17 +1,20 @@
-import sys
+from collections import defaultdict
+from datetime import datetime
+
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
-from src.diploma_processing.data_types import Chapter, Diploma
+
+from src.diploma_processing.data_types import *
 
 
 class Neo4jDatabase:
-    def __init__(self, uri, user, password):
+    def __init__(self, host='bolt://localhost', user='neo4j', password='password'):
         """
         Инициализация соединения с базой данных Neo4j.
         """
         self._driver = None
         try:
-            self._driver = GraphDatabase.driver(uri, auth=(user, password))
+            self._driver = GraphDatabase.driver(f"{host}:7687", auth=(user, password))
             # >>> ПРОВЕРКА ДОСТУПНОСТИ БАЗЫ <<<
             with self._driver.session() as session:
                 session.run("RETURN 1")  # минимальный запрос
@@ -87,12 +90,21 @@ class DiplomaRepository:
             "load_date": diploma.load_date.date()
         }
         result = self.database.query(query, parameters)
+
         if result:
-            diploma.id = result[0][0]  # Теперь id будет и в объекте, и в БД в поле id
-            return diploma.id
+            id_diploma = result[0][0]
+
+            ids = []
+            for chapter in diploma.chapters:
+                chapter.id_diploma = id_diploma
+                ids.append(self._save_chapter(chapter))
+            if len(ids) > 0:
+                self._link_subchapters(id_diploma, ids)
+
+            return id_diploma
         return None
 
-    def save_chapter(self, chapter: Chapter) -> int | None:
+    def _save_chapter(self, chapter: Chapter) -> int | None:
         query = """
         CREATE (c:Chapter {
             id_diploma: $id_diploma, 
@@ -117,24 +129,24 @@ class DiplomaRepository:
         }
         result = self.database.query(query, parameters)
         if result:
-            chapter.id = result[0][0]  # Теперь id будет и в объекте, и в БД в поле id
-            return chapter.id
+            id_chapter = result[0][0]
+
+            ids = []
+            for subchapter in chapter.chapters:
+                subchapter.id_diploma = chapter.id_diploma
+                chapter_id = self._save_chapter(subchapter)
+                ids.append(chapter_id)
+            if len(ids) > 0:
+                self._link_subchapters(id_chapter, ids)
+
+            return id_chapter
         return None
 
-    def link_chapter_to_diploma(self, id_diploma: int) -> None:
+    def _link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
         query = """
-        MATCH (d:Diploma), (c:Chapter) 
-        WHERE d.id = $id_diploma AND c.id_diploma = $id_diploma
-        CREATE (d)-[:CONTAINS]->(c)
-        """
-        parameters = {"id_diploma": id_diploma}
-        self.database.query(query, parameters)
-
-    def link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
-        query = """
-        MATCH (c1:Chapter), (c2:Chapter) 
-        WHERE c1.id = $parent_chapter_id AND c2.id IN $subchapter_ids
-        CREATE (c1)-[:CONTAINS]->(c2)
+        MATCH (c), (c2:Chapter) 
+        WHERE c.id = $parent_chapter_id AND c2.id IN $subchapter_ids
+        CREATE (c)-[:CONTAINS]->(c2)
         """
         parameters = {
             "parent_chapter_id": parent_chapter_id,
@@ -165,68 +177,6 @@ class DiplomaRepository:
         }
         self.database.query(query, parameters)
 
-    def load_diploma_graph(self, id_diploma: int) -> list[list[int], list[list[int]]]:
-        query = """
-        MATCH p = (d:Diploma)-[r:CONTAINS*0..]->(x) 
-        WHERE d.id = $id_diploma
-        RETURN 
-            COLLECT(DISTINCT ID(x)) AS nodes,
-            [r IN COLLECT(DISTINCT LAST(r)) | [ID(startNode(r)), ID(endNode(r))]] AS rels
-        """
-        parameters = {"id_diploma": id_diploma}
-        result = self.database.query(query, parameters)
-        nodes, rels = result[0] if result else ([], [])
-        return [list(map(int, nodes)), rels]
-
-    def subchapters_recursive_search(self, rels, id, key_run):
-        """Метод рекурсивного построения дерева диплома / раздела
-        Доступные ключи key:
-            - 1: работа с дипломом
-            - 2: работа с разделом
-        """
-        if key_run not in [1, 2]:
-            print(f"Неверный ключ: {key_run} (1 или 2 доступны)")
-            raise sys.exit(1)
-
-        def clear_rels(rls):
-            rls = sorted(rls)
-            i, j = 0, len(rls) // 2 + 1
-            while i <= j and i < len(rls):
-                while j < len(rls):
-                    if rls[i][1] == rls[j][1]:
-                        rls.pop(i)
-                        i -= 1
-                        break
-                    j += 1
-
-                i += 1
-                j = i + 1
-            return rls
-
-        def chapter_list_filler(id, chpts: list[Chapter], rls, used):
-            while rls:
-                i = 0
-                while rls[i][0] != id:
-                    i += 1
-                    if i >= len(rls):
-                        return chpts
-
-                new_id = rls[i][1]
-                chpts.extend(self.load_chapters([rls.pop(i)[1]]))
-                if new_id in used:
-                    rls.pop(i)
-                    return chpts
-
-                chpts[-1].chapters = chapter_list_filler(new_id, chpts[-1].chapters, rls, used + [new_id])
-
-            return chpts
-
-        if key_run == 1:
-            rels = clear_rels(rels)
-
-        cpt_list = chapter_list_filler(id, [], rels, [])
-        return cpt_list
-
     def load_diploma_data(self, id_diploma: int) -> Diploma | None:
         query = """
         MATCH (d:Diploma)
@@ -235,9 +185,6 @@ class DiplomaRepository:
         """
         parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
-
-        node, rels = self.load_diploma_graph(id_diploma)
-        cpt_list = self.subchapters_recursive_search(rels, id_diploma, key_run=1)
 
         if not result:
             return None
@@ -255,18 +202,32 @@ class DiplomaRepository:
                 node.get("load_date").year,
                 node.get("load_date").month,
                 node.get("load_date").day),
-            chapters=cpt_list
+            chapters=[]
         )
+
+        rels = self._load_diploma_graph(id_diploma)
+        chapters = self._load_chapters(id_diploma)
+        graph = defaultdict(list)
+        chapters_dict = {}
+        for chapter in chapters:
+            chapters_dict[chapter.id] = chapter
+        for rel in rels:
+            graph[rel[0]].append(rel[1])
+        for key in graph:
+            graph[key] = sorted(graph[key])
+        diploma.chapters = [chapters_dict[x] for x in graph[diploma.id]]
+        for chapter in chapters:
+            chapter.chapters = [chapters_dict[x] for x in graph[chapter.id]]
 
         return diploma
 
-    def load_chapters(self, chapter_ids: list[int]) -> list[Chapter]:
+    def _load_chapters(self, id_diploma: int) -> list[Chapter]:
         query = """
         MATCH (c:Chapter)
-        WHERE c.id IN $chapter_ids
+        WHERE c.id_diploma = $id_diploma
         RETURN c
         """
-        parameters = {"chapter_ids": chapter_ids}
+        parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
 
         chapters = []
@@ -284,14 +245,20 @@ class DiplomaRepository:
                 commonly_used_words_amount=node.get("commonly_used_words_amount", []),
                 chapters=[]
             )
-
-            chpt_node, rels = self.load_diploma_graph(chapter.id_diploma)
-            rels = list(filter(lambda x: x[0] != chapter.id_diploma, rels))
-            chapter.chapters = self.subchapters_recursive_search(rels, chapter.id, key_run=2)
-
             chapters.append(chapter)
 
         return chapters
+
+    def _load_diploma_graph(self, id_diploma: int) -> list[list[int]]:
+        query = """
+        MATCH p = (d:Diploma)-[r:CONTAINS*]->(x) 
+        WHERE d.id = $id_diploma
+        RETURN [r IN COLLECT(DISTINCT LAST(r)) | [startNode(r).id, endNode(r).id]] AS rels
+        """
+        parameters = {"id_diploma": id_diploma}
+        result = self.database.query(query, parameters)
+        rels = result[0][0] if result else []
+        return rels
 
     def search_diplomas(self,
                         min_id: int = None, max_id: int = None,
@@ -303,7 +270,7 @@ class DiplomaRepository:
                         order_by: str = None) -> list[Diploma]:
         query = """
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
-        WITH d, COLLECT(ID(c)) AS chapters
+        WITH d, COLLECT(c.id) AS chapters
         WHERE ($min_id IS NULL OR d.id >= $min_id)
           AND ($max_id IS NULL OR d.id <= $max_id)
           AND ($name IS NULL OR toLower(d.name) CONTAINS toLower($name))
@@ -313,8 +280,8 @@ class DiplomaRepository:
           AND ($max_year IS NULL OR d.year <= $max_year)
           AND ($min_words IS NULL OR d.words >= $min_words)
           AND ($max_words IS NULL OR d.words <= $max_words)
-          AND ($min_date IS NULL OR d.load_date >= $min_date)
-          AND ($max_date IS NULL OR d.load_date <= $max_date)
+          AND ($min_date IS NULL OR d.load_date >= Date($min_date))
+          AND ($max_date IS NULL OR d.load_date <= Date($max_date))
           AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
         """
         if order_by:
@@ -331,7 +298,24 @@ class DiplomaRepository:
             "chapters": chapters
         }
         result = self.database.query(query, parameters)
-        return [record["diploma"] for record in result] if result else []
+
+        diplomas = []
+        for record in map(lambda x: x["diploma"], result):
+            diploma = Diploma(
+                id=record.get("id"),
+                name=record.get("name", ""),
+                author=record.get("author", ""),
+                academic_supervisor=record.get("academic_supervisor"),
+                year=record.get("year", 0),
+                words=record.get("words", 0),
+                load_date=datetime.datetime(
+                    record.get("load_date").year,
+                    record.get("load_date").month,
+                    record.get("load_date").day),
+                chapters=record.get("chapters", [])
+            )
+            diplomas.append(diploma)
+        return diplomas
 
     def search_chapters(self,
                         min_id: int = None, max_id: int = None,
@@ -344,8 +328,8 @@ class DiplomaRepository:
                         chapters: list[int] = None,
                         order_by: str = None) -> list[Chapter]:
         query = """
-        MATCH (c:Chapter)-[:CONTAINS*0..]->(c1:Chapter)
-        WITH c, COLLECT(ID(c1)) AS chapters
+        MATCH (c:Chapter)-[:CONTAINS*0..1]->(c1:Chapter)
+        WITH c, COLLECT(c1.id) AS chapters
         WHERE ($min_id IS NULL OR c.id >= $min_id)
           AND ($max_id IS NULL OR c.id <= $max_id)
           AND ($min_id_diploma IS NULL OR c.id_diploma >= $min_id_diploma)
@@ -357,13 +341,15 @@ class DiplomaRepository:
           AND ($max_symbols IS NULL OR c.symbols <= $max_symbols)
           AND ($min_water_content IS NULL OR c.water_content >= $min_water_content)
           AND ($max_water_content IS NULL OR c.water_content <= $max_water_content)
-          AND ($words IS NULL OR ANY(word IN $words WHERE word IN c.commonly_used_words))
+          AND ($words IS NULL OR ANY(word IN $words WHERE 
+            ANY(com_word IN c.commonly_used_words WHERE toLower(com_word) CONTAINS toLower(word))
+          ))
           AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
         """
         if order_by:
             query += f"\nORDER BY c.{order_by}"
 
-        query += "\nRETURN c{.*, chapters: chapters} AS chapter"
+        query += "\nRETURN c{.*, chapters: [id in chapters WHERE id <> c.id]} AS chapter"
 
         parameters = {
             "min_id": min_id, "max_id": max_id,
@@ -376,4 +362,19 @@ class DiplomaRepository:
             "chapters": chapters
         }
         result = self.database.query(query, parameters)
-        return [record["chapter"] for record in result] if result else []
+
+        chapters = []
+        for record in map(lambda x: x["chapter"], result):
+            chapter = Chapter(
+                id=record.get("id"),
+                id_diploma=record.get("id_diploma"),
+                name=record.get("name", ""),
+                water_content=record.get("water_content", 0),
+                words=record.get("words", 0),
+                symbols=record.get("symbols", 0),
+                commonly_used_words=record.get("commonly_used_words", []),
+                commonly_used_words_amount=record.get("commonly_used_words_amount", []),
+                chapters=record.get("chapters", [])
+            )
+            chapters.append(chapter)
+        return chapters

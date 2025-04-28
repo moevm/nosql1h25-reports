@@ -1,19 +1,19 @@
+import functools
+import re
+from collections import defaultdict
+from datetime import datetime
+from io import BytesIO
+from typing import Union, BinaryIO
+
 import nltk
+import pymorphy2
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from datetime import datetime
-from collections import defaultdict
-import pymorphy2
-from typing import Union, BinaryIO
-from io import BytesIO
-import re
-import functools
 
 from src.diploma_processing.data_types import Diploma, Chapter
-from src.diploma_processing.utils import doc_to_dataclass, doc_section_to_dataclass
 from src.diploma_processing.parsing_docx.docClasses import Doc, DocSection
 from src.diploma_processing.parsing_docx.docxParser import DocxParser
-
+from src.diploma_processing.utils import doc_to_dataclass
 
 LRU_CACHE_MAXSIZE = 2048
 
@@ -34,12 +34,12 @@ class CalcStats:
             nltk.data.find('tokenizers/punkt_tab')
         except LookupError:
             nltk.download('punkt_tab')
-        
+
         self._stop_words = set(stopwords.words('russian'))
         self._max_common_words = max_common_words
         self._morph = pymorphy2.MorphAnalyzer()
         self._CLEAN_NAME_REGEX = re.compile(r"^[\s!#$%&*+,-./:;=?@\\^_|~]+|[\s!#$%&*+,-./:;=?@\\^_|~]+$")
-    
+
     def get_diploma_stats(self, file: str | Union[BinaryIO, BytesIO]) -> Diploma:
         try:
             dp = DocxParser(file)
@@ -47,7 +47,7 @@ class CalcStats:
             diploma = self.calc_stats(dp.doc)
             return diploma
         except Exception as e:
-            raise Exception(f"Ошибка при обработке файла: {e}", exc_info=True) # exc_info=True для полного traceback
+            raise Exception("Ошибка при обработке файла: ", e)  # exc_info=True для полного traceback
 
     def calc_stats(self, doc: Doc):
         self._remove_empty_sections(doc)
@@ -114,15 +114,15 @@ class CalcStats:
             # может возвращать пустой список, если слово не найдено в словаре
             return self._morph.parse(word)[0].normal_form
         except IndexError:
-            return word # Вернуть исходное слово, если не удалось нормализовать
-    
+            return word  # Вернуть исходное слово, если не удалось нормализовать
+
     def _count_words(self, doc_section: DocSection):
         text = doc_section.text
         words = word_tokenize(text)
         # Удаление незначимых символов (например, знаков препинания)
         words = [word.lower() for word in words if word.isalpha()]
         if len(words) == 0:
-            return 0, 0, 0, [], [] # Changed water content to zero here because zero length text has no content
+            return 0, 0, 0, [], []  # Changed water content to zero here because zero length text has no content
 
         # Приведение слов к нормальной форме с помощью pymorphy2
         # normalized_words = [self._morph.parse(word)[0].normal_form for word in words]
@@ -137,11 +137,13 @@ class CalcStats:
         # Сортировка слов по частоте в порядке убывания
         sorted_words = sorted(word_count.keys(), key=lambda x: word_count[x], reverse=True)
         sorted_counts = [word_count[word] for word in sorted_words]
-        water_content = int(len(filtered_words)/len(words) * 100) if len(words) > 0 else 0
-        return water_content, len(words), len(text), sorted_words[:self._max_common_words], sorted_counts[:self._max_common_words]
-    
+        water_content = int(len(filtered_words) / len(words) * 100) if len(words) > 0 else 0
+        return water_content, len(words), len(text), sorted_words[:self._max_common_words], sorted_counts[
+                                                                                            :self._max_common_words]
+
     def _remove_empty_sections(self, doc: Doc):
         """Removes sections with no name from the document structure."""
+
         def remove_empty_sections_recursive(structure):
             new_structure = []
             for section in structure:
@@ -159,6 +161,7 @@ class CalcStats:
 
     def _clean_section_names(self, doc: Doc):
         """Cleans section names by removing leading/trailing whitespace and punctuation."""
+
         def clean_name(name: str) -> str:
             if not name:
                 return name
@@ -176,4 +179,3 @@ class CalcStats:
                 clean_section_names_recursive(section.structure)
 
         clean_section_names_recursive(doc.structure)
-
