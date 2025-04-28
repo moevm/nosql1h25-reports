@@ -4,31 +4,76 @@
     flex-direction: column;
 }
 
+/* Блок сортировки */
+.sort-chapter {
+    position: relative;
+    display: flex;
+    width: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+}
+
+.label-box_dark-light {
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    margin-right: 50px;
+}
+
+.arrow-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    color: black;
+    transition: transform 0.3s ease; /* Поворот стрелки */
+}
+
+.arrow {
+    color: black;
+}
+
+.arrow-button.open .arrow {
+    transform: rotate(180deg);
+}
+
+.options-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 150px; /* Ширина списка */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    list-style: none;
+    margin: 5px 0 0 0;
+    padding: 0;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    z-index: 999; /* Чтобы перекрывал весь контент */
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
 .options-list li {
     padding: 10px;
-    cursor: pointer;
     font-size: 14px;
     color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .options-list li:hover {
     background-color: #f1f1f1;
 }
 
-.custom-select.open .options-list {
-    display: block;
-}
-.sort-chapter {
-    margin-top: 20px;
+.options-list.open {
+    max-height: 500px; /* Достаточно, чтобы вместить все элементы */
+    opacity: 1;
 }
 
-.label-box__label {
-    font-weight: bold;
-    color: #555;
+.label-box__label-sort {
     font-size: 10px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
 }
 
 .arrow-button {
@@ -41,25 +86,11 @@
     cursor: pointer;
 }
 
-.options-list {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    z-index: 10;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 200px;
-    overflow-y: auto;
-}
 
-.arrow {
-    color: #555;
-}
+
+
+
+
 
 .results-block__table {
     width: 1100px;

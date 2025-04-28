@@ -119,7 +119,7 @@
     <section class="results-block">
         <div class="sort-chapter">
             <div class="label-box_dark-light">
-                <label class="label-box__label" for="sort_by">без сортировки</label>
+                <label class="label-box__label-sort" for="sort_by">без сортировки</label>
             </div>
             <button class="arrow-button" aria-label="Открыть/закрыть список">
                 <i class="fa-solid fa-angle-down fa-2x arrow"></i>
@@ -164,4 +164,32 @@
             </tbody>
         </table>
     </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const arrowButton = document.querySelector(".arrow-button");
+            const optionsList = document.querySelector(".options-list");
+            const labelSort = document.querySelector(".label-box__label-sort");
+
+            arrowButton.addEventListener("click", function () {
+                optionsList.classList.toggle("open");
+                arrowButton.classList.toggle("open");
+            });
+
+            document.addEventListener("click", function (e) {
+                if (!arrowButton.contains(e.target) && !optionsList.contains(e.target)) {
+                    optionsList.classList.remove("open");
+                    arrowButton.classList.remove("open");
+                }
+            });
+
+            optionsList.addEventListener("click", function (e) {
+                if (e.target.tagName === "LI") {
+                    labelSort.textContent = e.target.textContent;
+                    optionsList.classList.remove("open");
+                    arrowButton.classList.remove("open");
+                }
+            });
+        });
+    </script>
 {% endblock %}

@@ -80,6 +80,14 @@
     flex-direction: column;
 }
 
+.label-box__label {
+    font-weight: bold;
+    font-size: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
 .append-input {
     width: 100px;
     margin-left: 15px;
