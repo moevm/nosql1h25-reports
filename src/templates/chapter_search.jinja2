@@ -12,9 +12,9 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <input class="filter-box__input" type="text" id="from" name="min_id_diploma">
                     <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="to" name="to">
+                    <input class="filter-box__input" type="text" id="to" name="max_id_diploma">
                 </div>
             </div>
 
@@ -24,9 +24,9 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <input class="filter-box__input" type="text" id="from" name="min_id">
                     <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="to" name="to">
+                    <input class="filter-box__input" type="text" id="to" name="max_id">
                 </div>
             </div>
 
@@ -46,9 +46,9 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <input class="filter-box__input" type="text" id="from" name="min_water_content">
                     <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="to" name="to">
+                    <input class="filter-box__input" type="text" id="to" name="max_water_content">
                 </div>
             </div>
 
@@ -58,9 +58,9 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <input class="filter-box__input" type="text" id="from" name="min_words">
                     <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="to" name="to">
+                    <input class="filter-box__input" type="text" id="to" name="max_words">
                 </div>
             </div>
 
@@ -70,19 +70,19 @@
                 </div>
                 <div class="filter-box">
                     <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="from" name="from">
+                    <input class="filter-box__input" type="text" id="from" name="min_symbols">
                     <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="to" name="to">
+                    <input class="filter-box__input" type="text" id="to" name="max_symbols">
                 </div>
             </div>
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="top_word">часто употребляемые слова</label>
+                    <label class="label-box__label" for="words">часто употребляемые слова</label>
                 </div>
                 <div class="list-card">
                     <div class="filter-box">
-                        <input class="filter-box__input append-input" type="text" id="top_word" name="top_word"
+                        <input class="filter-box__input append-input" type="text" id="words" name="words"
                                placeholder="Введите слово">
                         <button class="filter-box__add-word">
                             <i class="fa-solid fa-plus"></i>
@@ -96,11 +96,11 @@
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="top_word">id дочерних разделов</label>
+                    <label class="label-box__label" for="chapters">id дочерних разделов</label>
                 </div>
                 <div class="list-card">
                     <div class="filter-box">
-                        <input class="filter-box__input append-input" type="text" id="top_word" name="top_word"
+                        <input class="filter-box__input append-input" type="text" id="chapters" name="chapters"
                                placeholder="Введите слово">
                         <button class="filter-box__add-word">
                             <i class="fa-solid fa-plus"></i>
@@ -120,6 +120,7 @@
         <div class="sort-chapter">
             <div class="label-box_dark-light">
                 <label class="label-box__label-sort" for="sort_by">без сортировки</label>
+                <input type="hidden" name="order_by" id="order_by_input">
             </div>
             <button class="arrow-button" aria-label="Открыть/закрыть список">
                 <i class="fa-solid fa-angle-down fa-2x arrow"></i>
@@ -170,6 +171,7 @@
             const arrowButton = document.querySelector(".arrow-button");
             const optionsList = document.querySelector(".options-list");
             const labelSort = document.querySelector(".label-box__label-sort");
+            const orderByInput = document.getElementById("order_by_input");
 
             arrowButton.addEventListener("click", function () {
                 optionsList.classList.toggle("open");
@@ -185,7 +187,10 @@
 
             optionsList.addEventListener("click", function (e) {
                 if (e.target.tagName === "LI") {
-                    labelSort.textContent = e.target.textContent;
+                    const selectedText = e.target.textContent;
+                    const selectedValue = e.target.dataset.value;
+                    labelSort.textContent = selectedText;
+                    orderByInput.value = selectedValue;  // Ставим в скрытое поле
                     optionsList.classList.remove("open");
                     arrowButton.classList.remove("open");
                 }
