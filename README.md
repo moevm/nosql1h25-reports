@@ -17,6 +17,13 @@
 
 <a href=" ./../../../actions/workflows/7_app_is_ready.yml" >![7. App is ready]( ./../../actions/workflows/7_app_is_ready.yml/badge.svg)</a>
 
+## Инструкция для запуска
+
+1. `docker compose build –no-cache && docker compose up`
+2. Основное приложение будет доступно по [localhost:5000](http://127.0.0.1:5000/)
+3. Для отладки можно использовать [дипломные работы](src/diploma_processing/testkit/docx_examples)
+4. Для отладки БД можно использовать [веб-интерфейс](http://localhost:7474)
+
 ## Запуск БД
 
 1. Запустить `Docker Desktop`, если используется Windows/MacOS

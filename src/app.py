@@ -3,9 +3,6 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for
 
-
-from src.diploma_processing.testkit.test_diploma_consts import test_diploma
-
 from src.diploma_processing.stats import CalcStats
 from src.repository.diploma_repo import Neo4jDatabase, DiplomaRepository
 
@@ -43,11 +40,9 @@ def diploma_upload():
 
 @app.get('/diploma/<int:diploma_id>')
 def diploma_statistics(diploma_id: int):
-    stats_data = test_diploma[0]
-
     diploma = repo.load_diploma_data(diploma_id)
 
-    return render_template('general_statistics.jinja2', diploma=stats_data)
+    return render_template('general_statistics.jinja2', diploma=diploma)
 
 
 @app.get('/search')
@@ -58,15 +53,23 @@ def search():
 @app.get('/search/diploma')
 def search_diploma():
     params = request.args.to_dict()
+    params = {key: value for (key, value) in params.items() if value is not None and value != ''}
+    if 'chapters' in params:
+        params['chapters'] = params['chapters'].split()
 
     diplomas = repo.search_diplomas(**params)
 
-    return render_template('diploma_search.jinja2', params = params)
+    return render_template('diploma_search.jinja2', diplomas=diplomas)
 
 
 @app.get('/search/chapter')
 def search_chapter():
-    params = request.args.to_dict(flat=False)
+    params = request.args.to_dict()
+    params = {key: value for (key, value) in params.items() if value is not None and value != ''}
+    if 'words' in params:
+        params['words'] = params['words'].split()
+    if 'chapters' in params:
+        params['chapters'] = params['chapters'].split()
 
     chapters = repo.search_chapters(**params)
 

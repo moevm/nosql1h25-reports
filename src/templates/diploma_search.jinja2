@@ -11,136 +11,111 @@
         <div class="filters__header-block">
             <h2 class="filters__header">Фильтры</h2>
         </div>
-        <form action="/search/diploma" method="POST">
+        <form action="/search/diploma" id="filter__form" class="filter__form" method="GET">
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="id_diploma">id диплома</label>
+                    <label class="label-box__label">id</label>
                 </div>
                 <div class="filter-box">
-                    <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="min_id_diploma" name="min_id_diploma"
-                           value="{{ request.args.get('min_id_diploma', '') }}">
-                    <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="max_id_diploma" name="max_id_diploma"
-                           value="{{ request.args.get('max_id_diploma', '') }}">
+                    <label class="filter-box__label" for="min_id">от</label>
+                    <input class="filter-box__input" type="number" min="0" id="min_id" name="min_id"
+                           value="{{ request.args.get('min_id', '') }}">
+                    <label class="filter-box__label" for="max_id">до</label>
+                    <input class="filter-box__input" type="number" min="0" id="max_id" name="max_id"
+                           value="{{ request.args.get('max_id', '') }}">
                 </div>
             </div>
 
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="words">id разделов</label>
+                    <label class="label-box__label" for="chapters">id подразделов</label>
                 </div>
                 <div class="list-card">
                     <div class="filter-box">
-                        <input class="filter-box__input append-input" type="text" id="chapters" name="chapters"
-                               value="{{ request.args.get('chapters', '') }}" placeholder="Введите раздел">
-                        <button class="filter-box__add-word">
+                        <input class="filter-box__input append-input" type="number" id="chapters"
+                               placeholder="Добавить" min="0">
+                        <button type="button" class="filter-box__add-word" id="chapters-button">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-                    <div class="list-words"></div>
+                    <div class="words-container" id="chapters-container"></div>
+                    <input type="hidden" name="chapters" id="hidden-chapters"
+                           value="{{ request.args.get('chapters', '') }}">
                 </div>
             </div>
 
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="section_name">название темы</label>
+                    <label class="label-box__label" for="name">название темы</label>
                 </div>
                 <div class="filter-box">
                     <input class="filter-box__input long-input" type="text" id="name" name="name"
-                           value="{{ request.args.get('name', '') }}" placeholder="Введите название темы">
+                           value="{{ request.args.get('name', '') }}" placeholder="Название темы">
                 </div>
             </div>
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="section_name">автор</label>
+                    <label class="label-box__label" for="author">автор</label>
                 </div>
                 <div class="filter-box">
                     <input class="filter-box__input long-input" type="text" id="author" name="author"
-                           value="{{ request.args.get('author', '') }}" placeholder="Введите имя автора">
+                           value="{{ request.args.get('author', '') }}" placeholder="Автор">
                 </div>
             </div>
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="section_name">научный руководитель</label>
+                    <label class="label-box__label" for="academic_supervisor">научный руководитель</label>
                 </div>
                 <div class="filter-box">
                     <input class="filter-box__input long-input" type="text" id="academic_supervisor"
                            name="academic_supervisor"
-                           value="{{ request.args.get('academic_supervisor', '') }}" placeholder="Введите имя руководителя">
+                           value="{{ request.args.get('academic_supervisor', '') }}"
+                           placeholder="Имя руководителя">
                 </div>
             </div>
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="id_diploma">год</label>
+                    <label class="label-box__label">год</label>
                 </div>
                 <div class="filter-box">
-                    <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="min_year" name="min_year"
+                    <label class="filter-box__label" for="min_year">от</label>
+                    <input class="filter-box__input" type="number" min="1970" max="2025" id="min_year" name="min_year"
                            value="{{ request.args.get('min_year', '') }}">
-                    <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="max_year" name="max_year"
+                    <label class="filter-box__label" for="max_year">до</label>
+                    <input class="filter-box__input" type="number" min="1970" max="2025" id="max_year" name="max_year"
                            value="{{ request.args.get('max_year', '') }}">
                 </div>
             </div>
 
-            <!--<div class="filter-range">
-                <div class="label-box">
-                    <label class="label-box__label" for="id_diploma">страницы</label>
-                </div>
-                <div class="filter-box">
-                    <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="" name=""
-                           value="{{ request.args.get('', '') }}">
-                    <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="" name=""
-                           value="{{ request.args.get('', '') }}">
-                </div>
-            </div>-->
-
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="id_diploma">слова</label>
+                    <label class="label-box__label">слова</label>
                 </div>
                 <div class="filter-box">
-                    <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="min_words" name="min_words"
+                    <label class="filter-box__label" for="min_words">от</label>
+                    <input class="filter-box__input" type="number" min="0" id="min_words" name="min_words"
                            value="{{ request.args.get('min_words', '') }}">
-                    <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="max_words" name="max_words"
+                    <label class="filter-box__label" for="max_words">до</label>
+                    <input class="filter-box__input" type="text" min="0" id="max_words" name="max_words"
                            value="{{ request.args.get('max_words', '') }}">
                 </div>
             </div>
 
-            <!--<div class="filter-range">
-                <div class="label-box">
-                    <label class="label-box__label" for="id_diploma">минимальная раскрытость</label>
-                </div>
-                <div class="filter-box">
-                    <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="" name=""
-                           value="{{ request.args.get('', '') }}">
-                    <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="" name=""
-                           value="{{ request.args.get('', '') }}">
-                </div>
-            </div>-->
-
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label" for="id_diploma">дата загрузки</label>
+                    <label class="label-box__label">дата загрузки</label>
                 </div>
                 <div class="filter-box">
-                    <label class="filter-box__label" for="from">от</label>
-                    <input class="filter-box__input" type="text" id="min_date" name="min_date"
+                    <label class="filter-box__label" for="min_date">от</label>
+                    <input class="filter-box__input" type="date" id="min_date" name="min_date"
                            value="{{ request.args.get('min_date', '') }}">
-                    <label class="filter-box__label" for="to">до</label>
-                    <input class="filter-box__input" type="text" id="max_date" name="max_date"
+                    <label class="filter-box__label" for="max_date">до</label>
+                    <input class="filter-box__input" type="date" id="max_date" name="max_date"
                            value="{{ request.args.get('max_date', '') }}">
                 </div>
             </div>
@@ -150,7 +125,7 @@
     </section>
 
     <section class="results-block">
-       <select name="order_by" form="filter__form" class="sort-chapter" onchange="form.submit()">
+        <select name="order_by" form="filter__form" class="sort-chapter" onchange="submitForm()">
             <option value=""
                     {% if request.args.get('order_by', '') == "" %}selected{% endif %}>
                 без сортировки
@@ -159,58 +134,100 @@
                     {% if request.args.get('order_by', '') == "id" %}selected{% endif %}>
                 id
             </option>
-            <option value="id_diploma"
-                    {% if request.args.get('order_by', '') == "id_diploma" %}selected{% endif %}>
-                id диплома
-            </option>
-            <option value="water_content"
-                    {% if request.args.get('order_by', '') == "water_content" %}selected{% endif %}>
-                водность
+            <option value="year"
+                    {% if request.args.get('order_by', '') == "year" %}selected{% endif %}>
+                год
             </option>
             <option value="words"
                     {% if request.args.get('order_by', '') == "words" %}selected{% endif %}>
                 количество слов
             </option>
-            <option value="symbols"
-                    {% if request.args.get('order_by', '') == "symbols" %}selected{% endif %}>
-                количество символов
+            <option value="load_date"
+                    {% if request.args.get('order_by', '') == "load_date" %}selected{% endif %}>
+                дата загрузки
             </option>
         </select>
-        <!-- Блок с результатами -->
         <table class="results-block__table">
             <thead>
             <tr>
-                <th>id диплома</th>
-                <th>список id разделов, на которые диплом ссылается</th>
+                <th>id</th>
+                <th>внешние разделы</th>
                 <th>тема</th>
                 <th>автор</th>
                 <th>научный руководитель</th>
                 <th>год</th>
-                <!--<th>количество страниц</th>-->
-                <th>количество слов</th>
-                <!--<th>раскрытие тем</th>-->
                 <th>дата загрузки</th>
+                <th>слова</th>
             </tr>
             </thead>
             <tbody>
-            <!-- Здесь будут выводиться данные из базы данных -->
-            {% for result in results %}
+            {% for diploma in diplomas %}
                 <tr>
-                    <td>{{ result.id_diploma }}</td>
-                    <td>{{ result.chapters }}</td>
-                    <td>{{ result.name }}</td>
-                    <td>{{ result.author }}</td>
-                    <td>{{ result.academic_supervisor }}</td>
-                    <td>{{ result.year }}</td>
-                    <!--<td>{{ 0 }}</td>-->
-                    <td>{{ result.words }}</td>
-                    <!--<td>{{ 0 }}</td>-->
-                    <td>{{ result.load_dates }}</td>
+                    <td><a href="{{ url_for('diploma_statistics', diploma_id=diploma.id) }}">{{ diploma.id }}</a></td>
+                    <td>{{ diploma.chapters|join(", ") }}</td>
+                    <td>{{ diploma.name }}</td>
+                    <td>{{ diploma.author }}</td>
+                    <td>{{ diploma.academic_supervisor }}</td>
+                    <td>{{ diploma.year }}</td>
+                    <td>{{ diploma.load_date.strftime('%d-%m-%Y') }}</td>
+                    <td>{{ diploma.words }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </section>
+
+    <script>
+        const form = document.querySelector("form");
+        const chaptersContainer = document.querySelector("#chapters-container");
+        const chaptersHiddenInput = document.querySelector("#hidden-chapters");
+
+        function addWord(word, div) {
+            let x = document.createElement('span');
+            x.classList.add('container-word');
+            x.innerText = word;
+            x.addEventListener('click', e => e.target.remove())
+            div.appendChild(x);
+        }
+
+        for (let chapter of chaptersHiddenInput.value.split(' ')) {
+            if (chapter.trim() !== '') addWord(chapter, chaptersContainer)
+        }
+
+        function submitForm() {
+            let chapterList = [...chaptersContainer.children].map(child => child.innerText);
+            chaptersHiddenInput.value = chapterList.join(' ')
+
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+
+            for (const [key, value] of formData.entries()) {
+                if (value.trim() !== "") {
+                    console.log(value)
+                    params.append(key, value);
+                }
+            }
+
+            const url = form.action + '?' + params.toString();
+            window.location.href = url;
+        }
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            submitForm();
+        });
+
+        const chaptersButton = document.querySelector("#chapters-button");
+        const chaptersInput = document.querySelector("#chapters");
+        chaptersButton.addEventListener('click', () => {
+            value = chaptersInput.value;
+            if (value.trim() !== '') {
+                addWord(value, chaptersContainer);
+            }
+            chaptersInput.value = ''
+        });
+    </script>
 
 
 {% endblock %}
