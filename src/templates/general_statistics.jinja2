@@ -1,5 +1,10 @@
 {% extends "layout.jinja2" %}
 
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/general_statistics.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/section_stats.css') }}" type="text/css"/>
+{% endblock %}
 {% block main %}
     <div class="data-container">
         <div class="data-card">
