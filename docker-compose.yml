@@ -42,8 +42,8 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/password
     ports:
-      - "7474:7474" # веб-интерфейс
-      - "7687:7687" # используется для локальной отладки
+      - "127.0.0.1:7474:7474" # веб-интерфейс
+      - "127.0.0.1:7687:7687" # используется для локальной отладки
     restart: unless-stopped
     healthcheck:
       test: wget http://localhost:7474 || exit 1
