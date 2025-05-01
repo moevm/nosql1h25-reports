@@ -1,7 +1,7 @@
 import io
 import os
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 
 from src.diploma_processing.stats import CalcStats
 from src.repository.diploma_repo import Neo4jDatabase, DiplomaRepository
@@ -15,6 +15,8 @@ password = os.getenv('DB_PASSWORD') or 'password'
 
 connection = Neo4jDatabase(host, user, password)
 repo = DiplomaRepository(connection)
+
+dumps = {}
 
 
 @app.get('/')
@@ -76,5 +78,41 @@ def search_chapter():
     return render_template('chapter_search.jinja2', chapters=chapters)
 
 
+@app.get('/dump')
+def dump():
+    return render_template('dump.jinja2')
+
+
+@app.post('/import')
+def import_db():
+    file = request.files['dump']
+    in_memory_file = io.BytesIO()
+    file.save(in_memory_file)
+
+    dump_id = max(dumps.keys()) + 1 if len(dumps.keys()) > 0 else 0
+    dumps[dump_id] = in_memory_file
+
+    repo.import_by_url(
+        f"http://{'app' if os.getenv('DOCKER_APP') else 'host.docker.internal'}:5000{url_for('send_dump', file_id=dump_id)}")
+
+    return redirect(url_for('dump'))
+
+
+@app.get('/dump/file/<int:file_id>')
+def send_dump(file_id: int):
+    dump_file = dumps[file_id]
+    del dumps[file_id]
+    dump_file.seek(0)
+
+    return send_file(dump_file, as_attachment=True, download_name='dump.json')
+
+
+@app.get('/export')
+def export_db():
+    file = repo.export()
+
+    return send_file(file, mimetype='json', as_attachment=True, download_name='dump.json')
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

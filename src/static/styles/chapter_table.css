@@ -46,3 +46,7 @@ thead th {
 .results-block__table tbody tr:hover {
     background-color: #f1f8ff;
 }
+
+.results-block__table tbody td {
+    max-width: 400px;
+}

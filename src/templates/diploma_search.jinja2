@@ -171,8 +171,8 @@
                 <th>автор</th>
                 <th>научный руководитель</th>
                 <th>год</th>
-                <th>дата загрузки</th>
                 <th>слова</th>
+                <th>дата загрузки</th>
             </tr>
             </thead>
             <tbody>
@@ -184,8 +184,8 @@
                     <td>{{ diploma.author }}</td>
                     <td>{{ diploma.academic_supervisor }}</td>
                     <td>{{ diploma.year }}</td>
-                    <td>{{ diploma.load_date.strftime('%d-%m-%Y') }}</td>
                     <td>{{ diploma.words }}</td>
+                    <td>{{ diploma.load_date.strftime('%d-%m-%Y') }}</td>
                 </tr>
             {% endfor %}
             </tbody>

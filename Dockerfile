@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копирование исходного кода
 COPY /src /src
 
+ENV DOCKER_APP = true
 EXPOSE 5000
 
 ENTRYPOINT ["flask"]
