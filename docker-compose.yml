@@ -40,6 +40,7 @@ services:
 
   db-test:
     image: neo4j:ubi9
+    profiles: ["test"]
     environment:
       - NEO4J_AUTH=neo4j/password
       - NEO4JLABS_PLUGINS=["apoc"]
