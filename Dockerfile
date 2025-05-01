@@ -12,4 +12,4 @@ COPY /src /src
 EXPOSE 5000
 
 ENTRYPOINT ["flask"]
-CMD ["run", "--host", "0.0.0.0"]
+CMD ["run", "--host", "0.0.0.0", "--no-debug", "--port", "5000"]
