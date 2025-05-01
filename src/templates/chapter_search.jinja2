@@ -127,6 +127,7 @@
             </div>
 
             <button type="submit" class="search-button filters__header-block">Найти</button>
+            <button type="reset" class="search-button reset-button filters__header-block">Сбросить фильтры</button>
         </form>
     </section>
 
@@ -138,23 +139,43 @@
             </option>
             <option value="id"
                     {% if request.args.get('order_by', '') == "id" %}selected{% endif %}>
-                id
+                id (по возр.)
+            </option>
+            <option value="id desc"
+                    {% if request.args.get('order_by', '') == "id desc" %}selected{% endif %}>
+                id (по убыв.)
             </option>
             <option value="id_diploma"
                     {% if request.args.get('order_by', '') == "id_diploma" %}selected{% endif %}>
-                id диплома
+                id диплома (по возр.)
+            </option>
+            <option value="id_diploma desc"
+                    {% if request.args.get('order_by', '') == "id_diploma desc" %}selected{% endif %}>
+                id диплома (по убыв.)
             </option>
             <option value="water_content"
                     {% if request.args.get('order_by', '') == "water_content" %}selected{% endif %}>
-                водность
+                водность (по возр.)
+            </option>
+            <option value="water_content desc"
+                    {% if request.args.get('order_by', '') == "water_content desc" %}selected{% endif %}>
+                водность (по убыв.)
             </option>
             <option value="words"
                     {% if request.args.get('order_by', '') == "words" %}selected{% endif %}>
-                количество слов
+                кол-во слов (по возр.)
+            </option>
+            <option value="words desc"
+                    {% if request.args.get('order_by', '') == "words desc" %}selected{% endif %}>
+                кол-во слов (по убыв.)
             </option>
             <option value="symbols"
                     {% if request.args.get('order_by', '') == "symbols" %}selected{% endif %}>
-                количество символов
+                кол-во символов (по возр.)
+            </option>
+            <option value="symbols desc"
+                    {% if request.args.get('order_by', '') == "symbols desc" %}selected{% endif %}>
+                кол-во символов (по убыв.)
             </option>
         </select>
         <!-- Блок с результатами -->
@@ -233,10 +254,14 @@
             window.location.href = url;
         }
 
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", e => {
             e.preventDefault();
 
             submitForm();
+        });
+        form.addEventListener("reset", e => {
+            chaptersContainer.replaceChildren();
+            wordsContainer.replaceChildren();
         });
 
         const wordsButton = document.querySelector("#words_button");

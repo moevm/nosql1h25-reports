@@ -118,6 +118,10 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+.reset-button {
+    background-color: rgba(187, 187, 187, 0.79);
+}
+
 .words-container {
     margin-top: 5px;
     min-height: 40px;

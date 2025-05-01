@@ -26,7 +26,6 @@
                 </div>
             </div>
 
-
             <div class="filter-range">
                 <div class="label-box">
                     <label class="label-box__label" for="chapters">id подразделов</label>
@@ -44,7 +43,6 @@
                            value="{{ request.args.get('chapters', '') }}">
                 </div>
             </div>
-
 
             <div class="filter-range">
                 <div class="label-box">
@@ -101,7 +99,7 @@
                     <input class="filter-box__input" type="number" min="0" id="min_words" name="min_words"
                            value="{{ request.args.get('min_words', '') }}">
                     <label class="filter-box__label" for="max_words">до</label>
-                    <input class="filter-box__input" type="text" min="0" id="max_words" name="max_words"
+                    <input class="filter-box__input" type="number" min="0" id="max_words" name="max_words"
                            value="{{ request.args.get('max_words', '') }}">
                 </div>
             </div>
@@ -121,6 +119,7 @@
             </div>
 
             <button type="submit" class="search-button filters__header-block">Найти</button>
+            <button type="reset" class="search-button reset-button filters__header-block">Сбросить фильтры</button>
         </form>
     </section>
 
@@ -132,19 +131,35 @@
             </option>
             <option value="id"
                     {% if request.args.get('order_by', '') == "id" %}selected{% endif %}>
-                id
+                id (по возр.)
+            </option>
+            <option value="id desc"
+                    {% if request.args.get('order_by', '') == "id desc" %}selected{% endif %}>
+                id (по убыв.)
             </option>
             <option value="year"
                     {% if request.args.get('order_by', '') == "year" %}selected{% endif %}>
-                год
+                год (по возр.)
+            </option>
+            <option value="year desc"
+                    {% if request.args.get('order_by', '') == "year desc" %}selected{% endif %}>
+                год (по убыв.)
             </option>
             <option value="words"
                     {% if request.args.get('order_by', '') == "words" %}selected{% endif %}>
-                количество слов
+                кол-во слов (по возр.)
+            </option>
+            <option value="words desc"
+                    {% if request.args.get('order_by', '') == "words desc" %}selected{% endif %}>
+                кол-во слов (по убыв.)
             </option>
             <option value="load_date"
                     {% if request.args.get('order_by', '') == "load_date" %}selected{% endif %}>
-                дата загрузки
+                дата загрузки (по возр.)
+            </option>
+            <option value="load_date desc"
+                    {% if request.args.get('order_by', '') == "load_date desc" %}selected{% endif %}>
+                дата загрузки (по убыв.)
             </option>
         </select>
         <table class="results-block__table">
@@ -212,11 +227,14 @@
             window.location.href = url;
         }
 
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", e => {
             e.preventDefault();
 
             submitForm();
         });
+        form.addEventListener("reset", e => {
+            chaptersContainer.replaceChildren();
+        })
 
         const chaptersButton = document.querySelector("#chapters-button");
         const chaptersInput = document.querySelector("#chapters");
