@@ -22,6 +22,7 @@ services:
     image: neo4j:ubi9
     environment:
       - NEO4J_AUTH=neo4j/password
+      - NEO4JLABS_PLUGINS=["apoc"]
     volumes:
       - db-logs:/logs
       - db-config:/config
@@ -41,6 +42,7 @@ services:
     image: neo4j:ubi9
     environment:
       - NEO4J_AUTH=neo4j/password
+      - NEO4JLABS_PLUGINS=["apoc"]
     ports:
       - "127.0.0.1:7474:7474" # веб-интерфейс
       - "127.0.0.1:7687:7687" # используется для локальной отладки

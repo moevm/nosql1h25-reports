@@ -1,5 +1,7 @@
+import io
 from collections import defaultdict
 from datetime import datetime
+from io import BytesIO
 
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
@@ -67,9 +69,16 @@ class Neo4jDatabase:
 class DiplomaRepository:
     def __init__(self, database: Neo4jDatabase):
         self.database = database
+        self.database.query("CREATE INDEX IF NOT EXISTS FOR (n:Diploma) ON n.id")
+        self.database.query("CREATE INDEX IF NOT EXISTS FOR (n:Chapter) ON n.id")
+        self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Diploma) REQUIRE n.neo4jImportId IS UNIQUE")
+        self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Chapter) REQUIRE n.neo4jImportId IS UNIQUE")
+        self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Counter) REQUIRE n.neo4jImportId IS UNIQUE")
 
     def save_diploma(self, diploma: Diploma) -> int | None:
         query = """
+        MATCH (n)
+        WITH COALESCE(MAX(n.id), 0) + 1 as id
         CREATE (d:Diploma { 
             name: $name, 
             author: $author, 
@@ -78,7 +87,7 @@ class DiplomaRepository:
             words: $words,
             load_date: $load_date
         })
-        SET d.id = ID(d)
+        SET d.id = id
         RETURN d.id
         """
         parameters = {
@@ -106,6 +115,8 @@ class DiplomaRepository:
 
     def _save_chapter(self, chapter: Chapter) -> int | None:
         query = """
+        MATCH (n)
+        WITH COALESCE(MAX(n.id), 0) + 1 as id
         CREATE (c:Chapter {
             id_diploma: $id_diploma, 
             name: $name, 
@@ -115,7 +126,7 @@ class DiplomaRepository:
             commonly_used_words: $commonly_used_words, 
             commonly_used_words_amount: $commonly_used_words_amount
         })
-        SET c.id = ID(c)
+        SET c.id = id
         RETURN c.id
         """
         parameters = {
@@ -270,6 +281,7 @@ class DiplomaRepository:
                         order_by: str = None) -> list[Diploma]:
         query = """
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
+        ORDER BY c.id
         WITH d, COLLECT(c.id) AS chapters
         WHERE ($min_id IS NULL OR d.id >= $min_id)
           AND ($max_id IS NULL OR d.id <= $max_id)
@@ -337,6 +349,7 @@ class DiplomaRepository:
                         order_by: str = None) -> list[Chapter]:
         query = """
         MATCH (c:Chapter)-[:CONTAINS*0..1]->(c1:Chapter)
+        ORDER BY c1.id
         WITH c, [id in COLLECT(c1.id) WHERE id <> c.id] AS chapters
         WHERE ($min_id IS NULL OR c.id >= $min_id)
           AND ($max_id IS NULL OR c.id <= $max_id)
@@ -393,3 +406,34 @@ class DiplomaRepository:
                 chapters.append(chapter)
             return chapters
         return []
+
+    def export(self) -> BytesIO | None:
+        query = """
+        CALL apoc.export.json.all(null, {useTypes:true, stream: true})
+        YIELD data
+        RETURN data;
+        """
+
+        result = self.database.query(query)
+
+        if result is not None:
+            json_string = result[0].get("data")
+
+            in_memory_file = io.BytesIO()
+            in_memory_file.write(json_string.encode())
+            in_memory_file.seek(0)
+
+            return in_memory_file
+
+        return None
+
+    def import_by_url(self, url: str) -> None:
+        query = """
+        CALL apoc.import.json($url, {nodePropertyMappings: {Diploma: {load_date: 'Localdate'}}})
+        YIELD format, nodes, relationships,	properties, rows, done, data
+        RETURN format, nodes, relationships, properties, rows, done, data;
+        """
+
+        self.database.query("MATCH (n) DETACH DELETE n")
+        self.database.query(query, {"url": url})
+        self.database.query("MATCH (n) REMOVE n.neo4jImportId")

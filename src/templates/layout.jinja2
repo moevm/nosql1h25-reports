@@ -40,6 +40,10 @@
             <h1 class="logo__title">{{ title }}</h1>
         </a>
         <nav class="navigation">
+        <a class="navigation__button {% if request.endpoint.startswith('dump') %} navigation__button_current {% endif %}"
+               href="{{ url_for('dump') }}">
+                ИМПОРТ/ЭСКПОРТ
+            </a>
             <a class="navigation__button {% if request.endpoint.startswith('diploma') %} navigation__button_current {% endif %}"
                href="{{ url_for('diploma') }}">
                 ЗАГРУЗКА ДИПЛОМА

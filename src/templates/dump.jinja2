@@ -1,0 +1,25 @@
+{% extends 'layout.jinja2' %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/upload.css') }}" type="text/css"/>
+{% endblock %}
+{% block main %}
+    <div class="card-container">
+        <div class="card">
+            <h3 class="card__header">Экспорт из БД</h3>
+            <a class="button" href="{{ url_for('export_db') }}">
+                <i class="fa-solid fa-upload fa-4x"></i>
+            </a>
+        </div>
+        <div class="card">
+            <h3 class="card__header">Импорт в БД</h3>
+            <form method="POST" enctype="multipart/form-data" action="/import">
+                <input type="file" id="dump" name="dump" accept=".json" onchange="form.submit(); this.value = ''">
+                <label class="button" for="dump">
+                    <i class="fa-solid fa-download fa-4x"></i>
+                </label>
+            </form>
+        </div>
+    </div>
+{% endblock %}
