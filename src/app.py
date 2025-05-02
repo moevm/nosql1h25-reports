@@ -21,7 +21,7 @@ dumps = {}
 
 @app.get('/')
 def index():
-    return redirect(url_for('diploma'))
+    return diploma()
 
 
 @app.get('/diploma')
