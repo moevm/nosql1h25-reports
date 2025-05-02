@@ -94,6 +94,7 @@ def import_db():
 
     repo.import_by_url(
         f"http://{'app' if os.getenv('DOCKER_APP') else 'host.docker.internal'}:5000{url_for('send_dump', file_id=dump_id)}")
+    del dumps[dump_id]
 
     return redirect(url_for('dump'))
 
@@ -101,10 +102,14 @@ def import_db():
 @app.get('/dump/file/<int:file_id>')
 def send_dump(file_id: int):
     dump_file = dumps[file_id]
-    del dumps[file_id]
     dump_file.seek(0)
 
     return send_file(dump_file, as_attachment=True, download_name='dump.json')
+
+
+@app.get('/dump/file')
+def send_main_dump():
+    return send_file('dump.json', as_attachment=True, download_name='dump.json')
 
 
 @app.get('/export')
@@ -112,6 +117,15 @@ def export_db():
     file = repo.export()
 
     return send_file(file, mimetype='json', as_attachment=True, download_name='dump.json')
+
+
+@app.before_request
+def init():
+    app.before_request_funcs[None].remove(init)
+    if len(repo) == 0:
+        app.logger.info('ok')
+        repo.import_by_url(
+            f"http://{'app' if os.getenv('DOCKER_APP') else 'host.docker.internal'}:5000{url_for('send_main_dump')}")
 
 
 if __name__ == '__main__':
