@@ -75,6 +75,13 @@ class DiplomaRepository:
         self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Chapter) REQUIRE n.neo4jImportId IS UNIQUE")
         self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Counter) REQUIRE n.neo4jImportId IS UNIQUE")
 
+    def __len__(self) -> int:
+        query = "MATCH (n) RETURN count(*)"
+
+        result = self.database.query(query)
+
+        return result[0][0]
+
     def save_diploma(self, diploma: Diploma) -> int | None:
         query = """
         MATCH (n)
@@ -165,28 +172,15 @@ class DiplomaRepository:
         }
         self.database.query(query, parameters)
 
-    def get_other_diplomas_shingles(self, id_diploma: int) -> list[tuple[int, list[int]]]:
+    def _create_similarities(self, id: int) -> None:
         query = """
-        MATCH (d:Diploma)
-        WHERE d.id <> $id_diploma
-        RETURN d.id, d.shingles
+        MARCH (d:Diploma), (ds:Diploma)
+        WHERE d.id = $id
+        WITH d, ds, SIZE(apoc.coll.intersection(d.shingles, ds.shingles)) / SIZE(d.shingles) AS similarity
+        CREATE (d)-[:SIMILAR_TO {similarity: similarity}]->(ds)
         """
-        parameters = {"id_diploma": id_diploma}
-        result = self.database.query(query, parameters)
-        return [(int(record[0]), list(map(int, record[1]))) for record in result]
 
-    def save_similarity(self, id_diploma: int, id_diploma_2: int, similarity: float) -> None:
-        query = """
-        MATCH (d1:Diploma), (d2:Diploma)
-        WHERE d1.id = $id_diploma AND d2.id = $id_diploma_2
-        CREATE (d1)-[:SIMILAR_TO {similarity: $similarity}]->(d2)
-        """
-        parameters = {
-            "id_diploma": id_diploma,
-            "id_diploma_2": id_diploma_2,
-            "similarity": similarity
-        }
-        self.database.query(query, parameters)
+        self.database.query(query, {"id": id})
 
     def load_diploma_data(self, id_diploma: int) -> Diploma | None:
         query = """
@@ -430,8 +424,6 @@ class DiplomaRepository:
     def import_by_url(self, url: str) -> None:
         query = """
         CALL apoc.import.json($url, {nodePropertyMappings: {Diploma: {load_date: 'Localdate'}}})
-        YIELD format, nodes, relationships,	properties, rows, done, data
-        RETURN format, nodes, relationships, properties, rows, done, data;
         """
 
         self.database.query("MATCH (n) DETACH DELETE n")
