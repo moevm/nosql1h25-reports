@@ -9,30 +9,29 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 15px;
     align-items: center;
     background-color: white;
     width: 290px;
     padding: 10px;
-    border-radius: 4px;
-    height: 475px;
+    border-radius: 10px;
+    height: fit-content;
 }
 
 .filter__form {
-    height: 90%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 10px;
 }
 
 .filters__header-block {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0;
     background-color: #C1DCFF;
     width: 100%;
     height: 40px;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 
 .filters__header {
@@ -42,18 +41,15 @@
 .filter-range {
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    margin-top: 10px;
 }
 
 .label-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding-top: 5px;
+    box-sizing: border-box;
     text-align: center;
     width: 80px;
-    margin: 0;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .filter-box {
@@ -69,47 +65,37 @@
 
 .filter-box__input {
     width: 65px;
-    min-height: 15px;
+    min-height: 18px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
     font-size: 12px;
-    margin: 0;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .long-input {
     width: 170px;
 }
 
-.label-box {
-    display: flex;
-    flex-direction: column;
-}
-
 .label-box__label {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 10px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
 }
 
 .append-input {
     width: 100px;
-    margin-left: 15px;
+    margin-left: 25px;
 }
 
 .filter-box__add-word {
     margin-right: 37px;
-    color: black;
     border: none;
     cursor: pointer;
-    font-size: 14px;
     background-color: white;
 }
 
 .search-button {
-    margin-top: 20px;
+    border-radius: 7px;
     border: none;
     cursor: pointer;
 }
@@ -119,26 +105,29 @@
 }
 
 .reset-button {
-    background-color: rgba(187, 187, 187, 0.79);
+    border-radius: 7px;
+    background-color: rgba(187, 187, 187, 0.8);
 }
 
 .words-container {
     margin-top: 5px;
-    min-height: 40px;
+    min-height: 30px;
     width: 200px;
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
+    padding-left: 10px;
+    box-sizing: border-box;
 }
 
 .container-word {
-    display: inline;
-    background-color: #989898;
+    background-color: rgba(187, 187, 187, 0.8);
     border-radius: 5px;
     height: 20px;
-    padding: 1px;
+    padding: 2px;
 }
 
 .container-word:hover {
     cursor: pointer;
+    opacity: 0.8;
 }

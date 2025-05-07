@@ -73,7 +73,6 @@ class DiplomaRepository:
         self.database.query("CREATE INDEX IF NOT EXISTS FOR (n:Chapter) ON n.id")
         self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Diploma) REQUIRE n.neo4jImportId IS UNIQUE")
         self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Chapter) REQUIRE n.neo4jImportId IS UNIQUE")
-        self.database.query("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Counter) REQUIRE n.neo4jImportId IS UNIQUE")
 
     def __len__(self) -> int:
         query = "MATCH (n) RETURN count(*)"
@@ -115,7 +114,7 @@ class DiplomaRepository:
                 chapter.id_diploma = id_diploma
                 ids.append(self._save_chapter(chapter))
             if len(ids) > 0:
-                self._link_subchapters(id_diploma, ids)
+                self._link_subchapters_to_diploma(id_diploma, ids)
 
             return id_diploma
         return None
@@ -160,11 +159,23 @@ class DiplomaRepository:
             return id_chapter
         return None
 
+    def _link_subchapters_to_diploma(self, id_diploma: int, subchapter_ids: list[int]) -> None:
+        query = """
+        MATCH (d:Diploma), (c:Chapter) 
+        WHERE d.id = $id_diploma AND c.id IN $subchapter_ids
+        CREATE (d)-[:CONTAINS]->(c)
+        """
+        parameters = {
+            "id_diploma": id_diploma,
+            "subchapter_ids": subchapter_ids
+        }
+        self.database.query(query, parameters)
+
     def _link_subchapters(self, parent_chapter_id: int, subchapter_ids: list[int]) -> None:
         query = """
-        MATCH (c), (c2:Chapter) 
-        WHERE c.id = $parent_chapter_id AND c2.id IN $subchapter_ids
-        CREATE (c)-[:CONTAINS]->(c2)
+        MATCH (cp:Chapter), (cc:Chapter) 
+        WHERE cp.id = $parent_chapter_id AND cc.id IN $subchapter_ids
+        CREATE (cp)-[:CONTAINS]->(cc)
         """
         parameters = {
             "parent_chapter_id": parent_chapter_id,
@@ -172,7 +183,7 @@ class DiplomaRepository:
         }
         self.database.query(query, parameters)
 
-    def _create_similarities(self, id: int) -> None:
+    def _create_similarities(self, id_diploma: int) -> None:
         query = """
         MARCH (d:Diploma), (ds:Diploma)
         WHERE d.id = $id
@@ -180,7 +191,7 @@ class DiplomaRepository:
         CREATE (d)-[:SIMILAR_TO {similarity: similarity}]->(ds)
         """
 
-        self.database.query(query, {"id": id})
+        self.database.query(query, {"id": id_diploma})
 
     def load_diploma_data(self, id_diploma: int) -> Diploma | None:
         query = """
@@ -421,11 +432,13 @@ class DiplomaRepository:
 
         return None
 
-    def import_by_url(self, url: str) -> None:
+    def import_by_url(self, url: str) -> bool:
         query = """
         CALL apoc.import.json($url, {nodePropertyMappings: {Diploma: {load_date: 'Localdate'}}})
         """
 
         self.database.query("MATCH (n) DETACH DELETE n")
-        self.database.query(query, {"url": url})
+        result = self.database.query(query, {"url": url})
         self.database.query("MATCH (n) REMOVE n.neo4jImportId")
+
+        return True if result else False

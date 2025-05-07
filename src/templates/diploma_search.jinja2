@@ -2,8 +2,8 @@
 
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chapter_filter.css') }}" type="text/css"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chapter_table.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/filter.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/table.css') }}" type="text/css"/>
 {% endblock %}
 
 {% block main %}
@@ -124,43 +124,16 @@
     </section>
 
     <section class="results-block">
-        <select name="order_by" form="filter__form" class="sort-chapter" onchange="submitForm()">
-            <option value=""
-                    {% if request.args.get('order_by', '') == "" %}selected{% endif %}>
-                без сортировки
-            </option>
-            <option value="id"
-                    {% if request.args.get('order_by', '') == "id" %}selected{% endif %}>
-                id (по возр.)
-            </option>
-            <option value="id desc"
-                    {% if request.args.get('order_by', '') == "id desc" %}selected{% endif %}>
-                id (по убыв.)
-            </option>
-            <option value="year"
-                    {% if request.args.get('order_by', '') == "year" %}selected{% endif %}>
-                год (по возр.)
-            </option>
-            <option value="year desc"
-                    {% if request.args.get('order_by', '') == "year desc" %}selected{% endif %}>
-                год (по убыв.)
-            </option>
-            <option value="words"
-                    {% if request.args.get('order_by', '') == "words" %}selected{% endif %}>
-                кол-во слов (по возр.)
-            </option>
-            <option value="words desc"
-                    {% if request.args.get('order_by', '') == "words desc" %}selected{% endif %}>
-                кол-во слов (по убыв.)
-            </option>
-            <option value="load_date"
-                    {% if request.args.get('order_by', '') == "load_date" %}selected{% endif %}>
-                дата загрузки (по возр.)
-            </option>
-            <option value="load_date desc"
-                    {% if request.args.get('order_by', '') == "load_date desc" %}selected{% endif %}>
-                дата загрузки (по убыв.)
-            </option>
+        <select name="order_by" form="filter__form" class="sort-chapter" id="sort">
+            <option value="" {{ sort() }}>без сортировки</option>
+            <option value="id" {{ sort('id') }}>id (по возр.)</option>
+            <option value="id desc" {{ sort('id desc') }}>id (по убыв.)</option>
+            <option value="year" {{ sort('year') }}>год (по возр.)</option>
+            <option value="year desc" {{ sort('year desc') }}>год (по убыв.)</option>
+            <option value="words" {{ sort('words') }}>кол-во слов (по возр.)</option>
+            <option value="words desc" {{ sort('words desc') }}>кол-во слов (по убыв.)</option>
+            <option value="load_date" {{ sort('load_date') }}>дата загрузки (по возр.)</option>
+            <option value="load_date desc" {{ sort('load_date desc') }}>дата загрузки (по убыв.)</option>
         </select>
         <table class="results-block__table">
             <thead>
@@ -192,60 +165,5 @@
         </table>
     </section>
 
-    <script>
-        const form = document.querySelector("form");
-        const chaptersContainer = document.querySelector("#chapters-container");
-        const chaptersHiddenInput = document.querySelector("#hidden-chapters");
-
-        function addWord(word, div) {
-            let x = document.createElement('span');
-            x.classList.add('container-word');
-            x.innerText = word;
-            x.addEventListener('click', e => e.target.remove())
-            div.appendChild(x);
-        }
-
-        for (let chapter of chaptersHiddenInput.value.split(' ')) {
-            if (chapter.trim() !== '') addWord(chapter, chaptersContainer)
-        }
-
-        function submitForm() {
-            let chapterList = [...chaptersContainer.children].map(child => child.innerText);
-            chaptersHiddenInput.value = chapterList.join(' ')
-
-            const formData = new FormData(form);
-            const params = new URLSearchParams();
-
-            for (const [key, value] of formData.entries()) {
-                if (value.trim() !== "") {
-                    console.log(value)
-                    params.append(key, value);
-                }
-            }
-
-            const url = form.action + '?' + params.toString();
-            window.location.href = url;
-        }
-
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-
-            submitForm();
-        });
-        form.addEventListener("reset", e => {
-            chaptersContainer.replaceChildren();
-        })
-
-        const chaptersButton = document.querySelector("#chapters-button");
-        const chaptersInput = document.querySelector("#chapters");
-        chaptersButton.addEventListener('click', () => {
-            value = chaptersInput.value;
-            if (value.trim() !== '') {
-                addWord(value, chaptersContainer);
-            }
-            chaptersInput.value = ''
-        });
-    </script>
-
-
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/search.js') }}"></script>
 {% endblock %}

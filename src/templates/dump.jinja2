@@ -15,11 +15,13 @@
         <div class="card">
             <h3 class="card__header">Импорт в БД</h3>
             <form method="POST" enctype="multipart/form-data" action="/import">
-                <input type="file" id="dump" name="dump" accept=".json" onchange="form.submit(); this.value = ''">
+                <input type="file" id="dump" name="dump" accept=".json">
                 <label class="button" for="dump">
                     <i class="fa-solid fa-download fa-4x"></i>
                 </label>
             </form>
         </div>
     </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/dump.js') }}"></script>
 {% endblock %}

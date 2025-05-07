@@ -30,6 +30,9 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}" type="text/css"/>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/header.css') }}" type="text/css"/>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/card.css') }}" type="text/css"/>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     {% endblock %}
 </head>
 <body class="page">
@@ -40,22 +43,21 @@
             <h1 class="logo__title">{{ title }}</h1>
         </a>
         <nav class="navigation">
-        <a class="navigation__button {% if request.endpoint.startswith('dump') %} navigation__button_current {% endif %}"
-               href="{{ url_for('dump') }}">
-                ИМПОРТ/ЭСКПОРТ
-            </a>
-            <a class="navigation__button {% if request.endpoint.startswith('diploma') %} navigation__button_current {% endif %}"
-               href="{{ url_for('diploma') }}">
-                ЗАГРУЗКА ДИПЛОМА
-            </a>
-            <a class="navigation__button {% if request.endpoint.startswith('search') %} navigation__button_current {% endif %}"
-               href="{{ url_for('search') }}">
-                ПОИСК
-            </a>
+            {% macro current(endpoint) -%}
+                {% if request.endpoint.startswith(endpoint) %} navigation__button_current {% endif %}
+            {%- endmacro %}
+
+            <a class="navigation__button {{ current('dump') }}" href="{{ url_for('dump') }}">ИМПОРТ/ЭСКПОРТ</a>
+            <a class="navigation__button {{ current('diploma') }}" href="{{ url_for('diploma') }}">ЗАГРУЗКА ДИПЛОМА</a>
+            <a class="navigation__button {{ current('search') }}" href="{{ url_for('search') }}">ПОИСК</a>
         </nav>
     </div>
 </header>
 <main class="main">
+    {% macro sort(value='') -%}
+        {% if request.args.get('order_by', '') == value %}selected{% endif %}
+    {%- endmacro %}
+
     {% block main %}{% endblock %}
 </main>
 </body>

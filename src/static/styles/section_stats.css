@@ -30,21 +30,16 @@
     display: block;
 }
 
-.accordion-content {
-    padding-left: 20px;
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    opacity: 0;
-}
-
-.accordion-header[aria-expanded="true"] .arrow {
+.rotated {
     transform: rotate(180deg);
 }
 
-.accordion-header[aria-expanded="true"] + .accordion-content {
-    max-height: 100%;
-    opacity: 1; /* Содержимое становится видимым */
+.accordion-content {
+    padding-left: 20px;
+}
+
+.subchapters {
+    margin-left: 20px;
 }
 
 .chapter-stats {
@@ -56,8 +51,4 @@
 .chapter-name {
     font-size: 30px;
     font-weight: 500;
-}
-
-.subchapters {
-    margin-left: 20px;
 }
