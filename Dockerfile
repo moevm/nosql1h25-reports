@@ -2,6 +2,8 @@ FROM python:3.12-alpine
 
 WORKDIR /src
 
+RUN apk --no-cache add curl
+
 # Установка зависимостей
 COPY requirements.txt /src
 RUN pip install --no-cache-dir -r requirements.txt

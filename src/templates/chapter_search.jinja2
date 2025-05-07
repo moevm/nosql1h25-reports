@@ -2,8 +2,8 @@
 
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chapter_filter.css') }}" type="text/css"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chapter_table.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/filter.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/table.css') }}" type="text/css"/>
 {% endblock %}
 
 {% block main %}
@@ -11,7 +11,7 @@
         <div class="filters__header-block">
             <h2 class="filters__header">Фильтры</h2>
         </div>
-        <form action="/search/chapter" class="filter__form" id="filter__form" method="GET">
+        <form action="/search/chapter" id="filter__form" class="filter__form" method="GET">
             <div class="filter-range">
                 <div class="label-box">
                     <label class="label-box__label">id диплома</label>
@@ -132,51 +132,18 @@
     </section>
 
     <section class="results-block">
-        <select name="order_by" form="filter__form" class="sort-chapter" id="sort" onchange="submitForm()">
-            <option value=""
-                    {% if request.args.get('order_by', '') == "" %}selected{% endif %}>
-                без сортировки
-            </option>
-            <option value="id"
-                    {% if request.args.get('order_by', '') == "id" %}selected{% endif %}>
-                id (по возр.)
-            </option>
-            <option value="id desc"
-                    {% if request.args.get('order_by', '') == "id desc" %}selected{% endif %}>
-                id (по убыв.)
-            </option>
-            <option value="id_diploma"
-                    {% if request.args.get('order_by', '') == "id_diploma" %}selected{% endif %}>
-                id диплома (по возр.)
-            </option>
-            <option value="id_diploma desc"
-                    {% if request.args.get('order_by', '') == "id_diploma desc" %}selected{% endif %}>
-                id диплома (по убыв.)
-            </option>
-            <option value="water_content"
-                    {% if request.args.get('order_by', '') == "water_content" %}selected{% endif %}>
-                водность (по возр.)
-            </option>
-            <option value="water_content desc"
-                    {% if request.args.get('order_by', '') == "water_content desc" %}selected{% endif %}>
-                водность (по убыв.)
-            </option>
-            <option value="words"
-                    {% if request.args.get('order_by', '') == "words" %}selected{% endif %}>
-                кол-во слов (по возр.)
-            </option>
-            <option value="words desc"
-                    {% if request.args.get('order_by', '') == "words desc" %}selected{% endif %}>
-                кол-во слов (по убыв.)
-            </option>
-            <option value="symbols"
-                    {% if request.args.get('order_by', '') == "symbols" %}selected{% endif %}>
-                кол-во символов (по возр.)
-            </option>
-            <option value="symbols desc"
-                    {% if request.args.get('order_by', '') == "symbols desc" %}selected{% endif %}>
-                кол-во символов (по убыв.)
-            </option>
+        <select name="order_by" form="filter__form" class="sort-chapter" id="sort">
+            <option value="" {{ sort() }}>без сортировки</option>
+            <option value="id" {{ sort('id') }}>id (по возр.)</option>
+            <option value="id desc" {{ sort('id desc') }}>id (по убыв.)</option>
+            <option value="id_diploma" {{ sort('id_diploma') }}>id диплома (по возр.)</option>
+            <option value="id_diploma desc" {{ sort('id_diploma desc') }}>id диплома (по убыв.)</option>
+            <option value="water_content" {{ sort('water_content') }}>водность (по возр.)</option>
+            <option value="water_content desc" {{ sort('water_content desc') }}>водность (по убыв.)</option>
+            <option value="words" {{ sort('words') }}>кол-во слов (по возр.)</option>
+            <option value="words desc" {{ sort('words desc') }}>кол-во слов (по убыв.)</option>
+            <option value="symbols" {{ sort('symbols') }}>кол-во символов (по возр.)</option>
+            <option value="symbols desc" {{ sort('symbols desc') }}>кол-во символов (по убыв.)</option>
         </select>
         <!-- Блок с результатами -->
         <table class="results-block__table">
@@ -185,15 +152,15 @@
                 <th>id диплома</th>
                 <th>id раздела</th>
                 <th>название раздела</th>
-                <th>водность (%)</th>
-                <th>слов (шт.)</th>
-                <th>символов (шт.)</th>
+                <th>водность</th>
+                <th>слов</th>
+                <th>символов</th>
                 <th>топ часто встречающихся слов</th>
                 <th>дочерние разделы (id)</th>
             </tr>
             </thead>
+
             <tbody>
-            <!-- Здесь будут выводиться данные из базы данных -->
             {% for chapter in chapters %}
                 <tr>
                     <td>
@@ -201,7 +168,7 @@
                     </td>
                     <td>{{ chapter.id }}</td>
                     <td>{{ chapter.name }}</td>
-                    <td>{{ chapter.water_content }}</td>
+                    <td>{{ chapter.water_content }}%</td>
                     <td>{{ chapter.words }}</td>
                     <td>{{ chapter.symbols }}</td>
                     <td>{{ chapter.commonly_used_words|join(", ") }}</td>
@@ -212,77 +179,5 @@
         </table>
     </section>
 
-    <script>
-        const form = document.querySelector("form");
-        const wordsContainer = document.querySelector("#words-container");
-        const chaptersContainer = document.querySelector("#chapters-container");
-        const wordsHiddenInput = document.querySelector("#hidden-words");
-        const chaptersHiddenInput = document.querySelector("#hidden-chapters");
-
-        function addWord(word, div) {
-            let x = document.createElement('span');
-            x.classList.add('container-word');
-            x.innerText = word;
-            x.addEventListener('click', e => e.target.remove())
-            div.appendChild(x);
-        }
-
-        for (let word of wordsHiddenInput.value.split(' ')) {
-            if (word.trim() !== '') addWord(word, wordsContainer)
-        }
-        for (let chapter of chaptersHiddenInput.value.split(' ')) {
-            if (chapter.trim() !== '') addWord(chapter, chaptersContainer)
-        }
-
-        function submitForm() {
-            let wordsList = [...wordsContainer.children].map(child => child.innerText);
-            wordsHiddenInput.value = wordsList.join(' ')
-            let chapterList = [...chaptersContainer.children].map(child => child.innerText);
-            chaptersHiddenInput.value = chapterList.join(' ')
-
-            const formData = new FormData(form);
-            const params = new URLSearchParams();
-
-            for (const [key, value] of formData.entries()) {
-                if (value.trim() !== "") {
-                    console.log(value)
-                    params.append(key, value);
-                }
-            }
-
-            const url = form.action + '?' + params.toString();
-            window.location.href = url;
-        }
-
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-
-            submitForm();
-        });
-        form.addEventListener("reset", e => {
-            chaptersContainer.replaceChildren();
-            wordsContainer.replaceChildren();
-        });
-
-        const wordsButton = document.querySelector("#words_button");
-        const wordInput = document.querySelector("#words");
-        wordsButton.addEventListener('click', () => {
-            value = wordInput.value;
-            if (value.trim() !== '') {
-                addWord(value, wordsContainer);
-            }
-            wordInput.value = '';
-        });
-
-        const chaptersButton = document.querySelector("#chapters-button");
-        const chaptersInput = document.querySelector("#chapters");
-        chaptersButton.addEventListener('click', () => {
-            value = chaptersInput.value;
-            if (value.trim() !== '') {
-                addWord(value, chaptersContainer);
-            }
-            chaptersInput.value = ''
-        });
-    </script>
-
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/search.js') }}"></script>
 {% endblock %}

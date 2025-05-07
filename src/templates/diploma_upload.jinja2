@@ -8,12 +8,14 @@
     <div class="card-container">
         <div class="card">
             <h3 class="card__header">Загрузить диплом</h3>
-            <form method="post" enctype="multipart/form-data" action="/diploma">
-                <input type="file" id="diploma" name="diploma" accept=".docx" onchange="form.submit(); this.value = ''">
+            <form method="POST" enctype="multipart/form-data" action="/diploma">
+                <input type="file" id="diploma" name="diploma" accept=".docx">
                 <label class="button" for="diploma">
                     <i class="fa-solid fa-file-import fa-4x"></i>
                 </label>
             </form>
         </div>
     </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/diploma_upload.js') }}"></script>
 {% endblock %}

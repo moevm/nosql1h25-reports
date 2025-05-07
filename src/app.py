@@ -31,13 +31,25 @@ def diploma():
 
 @app.post('/diploma')
 def diploma_upload():
+    from timeit import default_timer as timer
+    start = timer()
     file = request.files['diploma']
     in_memory_file = io.BytesIO()
     file.save(in_memory_file)
-    diploma = cs.get_diploma_stats(in_memory_file)
-    id_diploma = repo.save_diploma(diploma)
+    end1 = timer()
+    try:
+        diploma = cs.get_diploma_stats(in_memory_file)
+        end2 = timer()
+        id_diploma = repo.save_diploma(diploma)
+        end3 = timer()
 
-    return redirect(url_for('diploma_statistics', diploma_id=id_diploma))
+        app.logger.info(end1 - start)
+        app.logger.info(end2 - end1)
+        app.logger.info(end3 - end2)
+
+        return redirect(url_for('diploma_statistics', diploma_id=id_diploma))
+    except Exception:
+        return 'BAD REQUEST', 400
 
 
 @app.get('/diploma/<int:diploma_id>')
@@ -92,11 +104,14 @@ def import_db():
     dump_id = max(dumps.keys()) + 1 if len(dumps.keys()) > 0 else 0
     dumps[dump_id] = in_memory_file
 
-    repo.import_by_url(
+    result = repo.import_by_url(
         f"http://{'app' if os.getenv('DOCKER_APP') else 'host.docker.internal'}:5000{url_for('send_dump', file_id=dump_id)}")
     del dumps[dump_id]
 
-    return redirect(url_for('dump'))
+    if result:
+        return 'OK', 200
+    else:
+        return 'BAD REQUEST', 400
 
 
 @app.get('/dump/file/<int:file_id>')
