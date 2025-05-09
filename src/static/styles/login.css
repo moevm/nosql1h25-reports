@@ -1,0 +1,32 @@
+.login-form {
+    margin: 0 auto;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.login-form__input {
+    height: 60px;
+    background-color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 0;
+}
+
+.login-form__submit {
+    height: 35px;
+    border: 0;
+    color: white;
+    background-color: #0488FC;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.login-form__submit:hover {
+    opacity: 0.8;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+}

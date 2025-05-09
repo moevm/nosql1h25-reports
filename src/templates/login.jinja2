@@ -1,0 +1,15 @@
+{% extends 'layout.jinja2' %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}" type="text/css"/>
+{% endblock %}
+{% block main %}
+    <form method="POST" action="{{ url_for('login') }}" class="login-form">
+        <input type="password" name="password" placeholder="Пароль администратора" minlength="3" maxlength="30"
+               class="login-form__input" required/>
+        <button class="login-form__submit">Войти</button>
+    </form>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/login.js') }}"></script>
+{% endblock %}

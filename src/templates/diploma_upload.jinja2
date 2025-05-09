@@ -8,7 +8,7 @@
     <div class="card-container">
         <div class="card">
             <h3 class="card__header">Загрузить диплом</h3>
-            <form method="POST" enctype="multipart/form-data" action="/diploma">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('diploma_upload') }}">
                 <input type="file" id="diploma" name="diploma" accept=".docx">
                 <label class="button" for="diploma">
                     <i class="fa-solid fa-file-import fa-4x"></i>

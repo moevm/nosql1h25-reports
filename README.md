@@ -21,13 +21,14 @@
 
 1. `docker compose build –no-cache && docker compose up`
 2. Основное приложение будет доступно по [localhost:5000](http://127.0.0.1:5000/)
-3. Для отладки можно использовать [дипломные работы](src/diploma_processing/testkit/docx_examples)
-4. Для отладки БД можно использовать [веб-интерфейс](http://localhost:7474)
+3. По умолчанию для входа на страницу ИМПОРТ/ЭКСПОРТ используется пароль `password`, который можно изменить через переменную окружения `ADMIN_PASSWORD` в [compose.yml](docker-compose.yml). Данные импортируются и экспортируются в формате *JSON*.
+4. Для отладки можно использовать [дипломные работы](src/diploma_processing/testkit/docx_examples)
+5. Для отладки БД можно использовать [веб-интерфейс](http://localhost:7474) (по умолчанию: пользователь - `neo4j`, пароль - `password`)
 
 ## Запуск БД
 
 1. Запустить `Docker Desktop`, если используется Windows/MacOS
-2. `docker compose up -d` (`docker-compose up -d` для Linux)
+2. `docker compose up -d`
 3. БД будет доступна по [bolt://localhost:7687](bolt://localhost:7687), веб-интерфейс по [http://localhost:7474](http://localhost:7474)
 4. `docker compose down` для завершения работы
 5. Если нужно очистить место (при использовании `Docker Desktop`). *очищаются все доп. данные Docker*
