@@ -11,7 +11,7 @@
         <div class="filters__header-block">
             <h2 class="filters__header">Фильтры</h2>
         </div>
-        <form action="/search/chapter" id="filter__form" class="filter__form" method="GET">
+        <form action="{{ url_for('search_chapter') }}" id="filter__form" class="filter__form" method="GET">
             <div class="filter-range">
                 <div class="label-box">
                     <label class="label-box__label">id диплома</label>

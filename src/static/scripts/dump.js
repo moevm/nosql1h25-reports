@@ -12,7 +12,8 @@ $(document).ready(function () {
         })
             .then(res => {
                 document.body.style.cursor = 'default';
-                if (!res.ok) alert('Неправильный формат дампа');
+                if (res.ok) alert('Дамп успешно импортирован');
+                else alert('Неправильный формат дампа');
             });
     });
 

@@ -1,12 +1,15 @@
 import io
 import os
 
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, session
 
 from src.diploma_processing.stats import CalcStats
 from src.repository.diploma_repo import Neo4jDatabase, DiplomaRepository
 
 app = Flask(__name__)
+
+app.secret_key = os.getenv('SESSION_KEY').encode() if os.getenv('SESSION_KEY') else b'example'
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD') or 'example'
 
 cs = CalcStats()
 host = os.getenv('DB_HOST') or 'bolt://localhost'
@@ -92,7 +95,21 @@ def search_chapter():
 
 @app.get('/dump')
 def dump():
-    return render_template('dump.jinja2')
+    if 'username' in session:
+        return render_template('dump.jinja2')
+    else:
+        return render_template('login.jinja2')
+
+
+@app.post('/login')
+def login():
+    user_password = request.form['password']
+
+    if user_password and user_password == ADMIN_PASSWORD:
+        session['username'] = 'OK'
+        return redirect(url_for('dump'))
+    else:
+        return 'UNAUTHORIZED', 401
 
 
 @app.post('/import')
