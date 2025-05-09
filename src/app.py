@@ -8,13 +8,13 @@ from src.repository.diploma_repo import Neo4jDatabase, DiplomaRepository
 
 app = Flask(__name__)
 
-app.secret_key = os.getenv('SESSION_KEY').encode() if os.getenv('SESSION_KEY') else b'example'
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD') or 'example'
+app.secret_key = os.getenv('SESSION_KEY', 'example').encode()
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'example')
 
 cs = CalcStats()
-host = os.getenv('DB_HOST') or 'bolt://localhost'
-user = os.getenv('DB_USER') or 'neo4j'
-password = os.getenv('DB_PASSWORD') or 'password'
+host = os.getenv('DB_HOST', 'bolt://localhost')
+user = os.getenv('DB_USER', 'neo4j')
+password = os.getenv('DB_PASSWORD', 'password')
 
 connection = Neo4jDatabase(host, user, password)
 repo = DiplomaRepository(connection)
@@ -34,21 +34,13 @@ def diploma():
 
 @app.post('/diploma')
 def diploma_upload():
-    from timeit import default_timer as timer
-    start = timer()
     file = request.files['diploma']
     in_memory_file = io.BytesIO()
     file.save(in_memory_file)
-    end1 = timer()
+
     try:
         diploma = cs.get_diploma_stats(in_memory_file)
-        end2 = timer()
         id_diploma = repo.save_diploma(diploma)
-        end3 = timer()
-
-        app.logger.info(end1 - start)
-        app.logger.info(end2 - end1)
-        app.logger.info(end3 - end2)
 
         return redirect(url_for('diploma_statistics', diploma_id=id_diploma))
     except Exception:
