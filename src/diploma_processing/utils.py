@@ -47,6 +47,7 @@ def diploma_to_dict(diploma: Diploma) -> dict:
     diploma_dict['chapters'] = []
     for e in diploma.chapters:
         diploma_dict['chapters'].append(chapter_to_dict(e))
+    diploma_dict['shingles'] = diploma.shingles.copy()
     return diploma_dict
 
 
@@ -64,6 +65,7 @@ def diploma_from_dict(diploma: dict) -> Diploma:
     chapters = []
     for e in diploma['chapters']:
         chapters.append(chapter_from_dict(e))
+    shingles = diploma['shingles']
     return Diploma(
         id=id,
         name=name,
@@ -72,7 +74,8 @@ def diploma_from_dict(diploma: dict) -> Diploma:
         year=year,
         words=words,
         load_date=load_date,
-        chapters=chapters
+        chapters=chapters,
+        shingles=shingles
     )
 
 # serialize/deserialize DocSection
@@ -153,7 +156,8 @@ def doc_to_dataclass(doc: Doc) -> Diploma:
         year=doc.year,
         words=0,
         load_date=None,
-        chapters=chapters
+        chapters=chapters,
+        shingles=[]
     )
 
 
