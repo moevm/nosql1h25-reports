@@ -26,14 +26,28 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/password
       - NEO4JLABS_PLUGINS=["apoc"]
-    ports:
-      - "127.0.0.1:7474:7474" # веб-интерфейс
-      - "127.0.0.1:7687:7687" # используется для локальной отладки
     volumes:
       - db-data:/data
       - db-plugins:/plugins
     networks:
       - backend
+    restart: unless-stopped
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+
+  db-test:
+    image: neo4j:ubi9
+    profiles: ["test"]
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4JLABS_PLUGINS=["apoc"]
+    ports:
+      - "127.0.0.1:7474:7474" # веб-интерфейс
+      - "127.0.0.1:7687:7687" # используется для локальной отладки
     restart: unless-stopped
     healthcheck:
       test: wget http://localhost:7474 || exit 1
