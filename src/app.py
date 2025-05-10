@@ -23,7 +23,7 @@ dumps = {}
 
 
 @app.get('/')
-def index():
+def diploma_index():
     return diploma()
 
 
