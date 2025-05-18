@@ -63,12 +63,15 @@ def search():
 def search_diploma():
     params = request.args.to_dict()
     params = {key: value for (key, value) in params.items() if value is not None and value != ''}
+    # TODO: убрать после поддержки пагинации на бэке
+    params.pop('page', None)
     if 'chapters' in params:
         params['chapters'] = params['chapters'].split()
 
     diplomas = repo.search_diplomas(**params)
 
-    return render_template('diploma_search.jinja2', diplomas=diplomas)
+    # TODO: убрать заглушку
+    return render_template('diploma_search.jinja2', diplomas=diplomas, total_count=8)
 
 
 @app.get('/search/chapter')

@@ -1,5 +1,6 @@
 $(document).ready(function () {
     const form = document.forms[0];
+    const page = document.getElementById('page');
 
     function addWord(word, div) {
         $('<span />').addClass('container-word').text(word).click(e => e.target.remove()).appendTo(div);
@@ -35,6 +36,11 @@ $(document).ready(function () {
     });
     form.addEventListener("reset", () => $('.words-container').children().replaceWith());
     $("#sort").change(() => form.dispatchEvent(new Event('submit')));
+    $("#page").change(() => {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', page.value);
+        window.location.href = form.action + '?' + params.toString();
+    });
 
     $(".filter-box__add-word").click(function () {
         const input = $(this).siblings('input');

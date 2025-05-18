@@ -1,6 +1,7 @@
 .results-block {
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .sort-chapter {
@@ -26,7 +27,7 @@
 
 /*Блок оформления таблицы*/
 .results-block__table {
-    width: 1120px;
+    max-width: 100%;
     border-collapse: collapse;
     background-color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень вокруг таблицы */
@@ -54,4 +55,15 @@ thead th {
 
 .results-block__table tbody td {
     max-width: 400px;
+}
+
+.pagination-block {
+    margin: 25px auto 0;
+    height: 25px;
+}
+
+.pagination-block__page {
+    height: 100%;
+    font-size: 16px;
+    border-radius: 5px;
 }

@@ -177,6 +177,18 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <div class="pagination-block">
+            <span>Страница</span>
+            <select name="page" class="pagination-block__page" id="page">
+                {% for i in range(1, total_count + 1) %}
+                    <option value={{ i }} {% if request.args.get('page', '1') == i|string %}selected{% endif %}>
+                        {{ i }}
+                    </option>
+                {% endfor %}
+            </select>
+            <span>из {{ total_count }}</span>
+        </div>
     </section>
 
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/search.js') }}"></script>
