@@ -463,10 +463,7 @@ class DiplomaRepository:
                                min_words: int = None, max_words: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None, group_by: str = "academic_supervisor",
-                               metric_type: str = "pages") -> list[dict]:
-
-        group_key1, group_key2 = ["academic_supervisor", "year"] if group_by == "academic_supervisor" \
-            else ["year", "academic_supervisor"]
+                               metric_type: str = "year") -> list[dict]:
 
         query = f"""
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
@@ -482,7 +479,7 @@ class DiplomaRepository:
           AND ($min_date IS NULL OR d.load_date >= Date($min_date))
           AND ($max_date IS NULL OR d.load_date <= Date($max_date))
           AND ($chapters IS NULL OR c.id IN $chapters)
-        WITH d.{group_key1} AS groupKey1, d.{group_key2} AS groupKey2
+        WITH d.{group_by} AS groupKey1, d.{metric_type} AS groupKey2
         ORDER BY groupKey1
         RETURN groupKey1, groupKey2, COUNT(*) AS count
         """
@@ -561,8 +558,7 @@ class DiplomaRepository:
                                min_words: int = None, max_words: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None,
-                               group_by: str = "academic_supervisor",
-                               metric_type: str = "pages") -> list[dict]:
+                               group_by: str = "academic_supervisor") -> list[dict]:
 
         query = f"""
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
