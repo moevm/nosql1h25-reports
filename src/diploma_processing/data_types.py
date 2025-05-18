@@ -1,5 +1,6 @@
 import datetime
 from dataclasses import dataclass
+from typing import Tuple
 
 
 @dataclass
@@ -25,4 +26,5 @@ class Diploma:
     words: int
     load_date: datetime
     chapters: list['Chapter']
-    shingles: list[int]
+    shingles: list[int] | None = None
+    similar_diplomas: list[Tuple[int, str, int]] | None = None

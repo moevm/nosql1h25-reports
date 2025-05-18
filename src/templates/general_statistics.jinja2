@@ -39,8 +39,8 @@
                     </section>
                 </div>
 
-                <div class="data-card__second-col card-col" style="visibility: hidden">
-                    <section class="data-card__topics-coverage">
+                <div class="data-card__second-col card-col">
+                    <section class="data-card__topics-coverage" style="display: none">
                         <h3>Раскрытие тем</h3>
                         <table class="stats-table">
                             {% for topic in diploma.topics %}
@@ -55,10 +55,10 @@
                     <section class="data-card__similar-diplomas">
                         <h3>Похожие дипломы</h3>
                         <table class="stats-table">
-                            {% for work in diploma.similar_works %}
+                            {% for work in diploma.similar_diplomas %}
                                 <tr>
-                                    <td>{{ work.name }}</td>
-                                    <td>{{ work.match }}%</td>
+                                    <td><a href="{{ url_for('diploma_statistics', diploma_id=work[0]) }}">{{ work[1] }}</a></td>
+                                    <td>{{ work[2]|round(2, 'ceil') }}%</td>
                                 </tr>
                             {% endfor %}
                         </table>

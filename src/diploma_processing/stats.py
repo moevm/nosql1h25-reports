@@ -1,25 +1,25 @@
 import functools
+import hashlib
+import math
 import re
 from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
 from typing import Union, BinaryIO
+
 import nltk
 import pymorphy2
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import hashlib
-import math
 
 from src.diploma_processing.data_types import Diploma, Chapter
 from src.diploma_processing.parsing_docx.docClasses import Doc, DocSection
 from src.diploma_processing.parsing_docx.docxParser import DocxParser
 from src.diploma_processing.utils import doc_to_dataclass
 
-
 LRU_CACHE_MAXSIZE = 2048
 SHINGLES_SIM_THRESHOLD = 95
-MAX_INT64 = 2**63
+MAX_INT64 = 2 ** 63
 
 
 class CalcStats:
@@ -56,7 +56,7 @@ class CalcStats:
         self._remove_empty_sections(doc)
         self._clean_section_names(doc)
         diploma = doc_to_dataclass(doc)
-        
+
         diploma.load_date = datetime.now()
         diploma.words = 0
         for i in range(len(diploma.chapters)):
@@ -71,7 +71,7 @@ class CalcStats:
 
         for c in diploma.chapters:
             self._calc_commonly_used_words_and_amount(c)
-        
+
         return diploma
 
     def _calc_chapters_stats(self, doc_section: DocSection, chapter: Chapter):
@@ -83,7 +83,7 @@ class CalcStats:
         chapter.commonly_used_words_amount = []
 
         # run calcs
-        water_content, words, symbols, commonly_used_words= self._count_words(doc_section)
+        water_content, words, symbols, commonly_used_words = self._count_words(doc_section)
         # add calcs results
         chapter.water_content += water_content
         chapter.words += words
@@ -127,7 +127,7 @@ class CalcStats:
             shingle_words = words[i:i + self._shingle_length]
             int_value = math.prod(shingle_words) % MAX_INT64
             shingles.append(int_value)
-        
+
         shingles = list(set(shingles))
         shingles.sort()
         diploma.shingles = shingles
@@ -138,12 +138,13 @@ class CalcStats:
             self._extract_text_recursive(sub_section, all_text)
 
     def _calc_commonly_used_words_and_amount(self, chapter: Chapter):
-        commonly_used_words, commonly_used_words_amount = self._sort_commonly_used_words_and_amount(chapter.commonly_used_words)
+        commonly_used_words, commonly_used_words_amount = self._sort_commonly_used_words_and_amount(
+            chapter.commonly_used_words)
         chapter.commonly_used_words = commonly_used_words
         chapter.commonly_used_words_amount = commonly_used_words_amount
         for c in chapter.chapters:
             self._calc_commonly_used_words_and_amount(c)
-    
+
     def _sort_commonly_used_words_and_amount(self, words: list[str]):
         # Подсчет частоты слов
         word_count = defaultdict(int)

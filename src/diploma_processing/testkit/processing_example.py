@@ -1,13 +1,12 @@
 import glob
-import time
 import sys
+import time
+
 sys.path.append('c:/Users/bhunp/Documents/nosql1h25-reports/')
 
 from src.diploma_processing.stats import CalcStats
 from src.diploma_processing.utils import save_diploma_json
 from src.diploma_processing.diploma_comparing import calc_similarity
-import src.diploma_processing.testkit
-
 
 if __name__ == "__main__":
     path_to_docx = "src/diploma_processing/testkit/docx_examples"
@@ -29,9 +28,9 @@ if __name__ == "__main__":
     for i in range(len(diplomas)):
         for j in range(len(diplomas)):
             # print(f"cmp files: \n{docx_list[i]}\n{docx_list[j]}\nsimilarity: {"{:.4f}".format(calc_similarity(diplomas[i], diplomas[j]))}%")
-            print(f"cmp files: \n{docx_list[i]}\n{docx_list[j]}\nsimilarity: {calc_similarity(diplomas[i], diplomas[j]):.4f}%")
+            print(
+                f"cmp files: \n{docx_list[i]}\n{docx_list[j]}\nsimilarity: {calc_similarity(diplomas[i], diplomas[j]):.4f}%")
     print(f"total comparing time: {time.time() - start}")
-
 
 '''
 пример вывода:

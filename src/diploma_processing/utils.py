@@ -78,6 +78,7 @@ def diploma_from_dict(diploma: dict) -> Diploma:
         shingles=shingles
     )
 
+
 # serialize/deserialize DocSection
 def doc_section_to_dict(doc_section: DocSection) -> dict:
     doc_section_dict = doc_section.__dict__.copy()
@@ -86,6 +87,7 @@ def doc_section_to_dict(doc_section: DocSection) -> dict:
     for e in doc_section.structure:
         doc_section_dict['structure'].append(doc_section_to_dict(e))
     return doc_section_dict
+
 
 def doc_section_from_dict(doc_section: dict) -> DocSection:
     name = doc_section['name']
@@ -103,6 +105,7 @@ def doc_section_from_dict(doc_section: dict) -> DocSection:
         structure=structure
     )
 
+
 # serialize/deserialize Doc
 def doc_to_dict(doc: Doc) -> dict:
     doc_dict = doc.__dict__.copy()
@@ -110,6 +113,7 @@ def doc_to_dict(doc: Doc) -> dict:
     for e in doc.structure:
         doc_dict['structure'].append(doc_section_to_dict(e))
     return doc_dict
+
 
 def doc_from_dict(doc: dict) -> Doc:
     name = doc['name']
@@ -127,6 +131,7 @@ def doc_from_dict(doc: dict) -> Doc:
         structure=structure
     )
 
+
 # make dataclasses from parsing classes
 def doc_section_to_dataclass(doc_section: DocSection) -> Chapter:
     chapters = []
@@ -143,6 +148,7 @@ def doc_section_to_dataclass(doc_section: DocSection) -> Chapter:
         commonly_used_words_amount=[],
         chapters=chapters
     )
+
 
 def doc_to_dataclass(doc: Doc) -> Diploma:
     chapters = []
@@ -162,8 +168,9 @@ def doc_to_dataclass(doc: Doc) -> Diploma:
 
 
 def save_doc_json(doc: Doc, save_path: str):
-    with open(save_path, 'w', encoding ='utf8') as json_file:
+    with open(save_path, 'w', encoding='utf8') as json_file:
         json.dump(doc_to_dict(doc), json_file, indent=4, ensure_ascii=False)
+
 
 def save_diploma_json(diploma: Diploma, save_path: str):
     with open(save_path, 'w', encoding='utf8') as json_file:

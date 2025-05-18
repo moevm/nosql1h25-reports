@@ -91,7 +91,8 @@ class DiplomaRepository:
             academic_supervisor: $academic_supervisor, 
             year: $year, 
             words: $words,
-            load_date: $load_date
+            load_date: $load_date,
+            shingles: $shingles
         })
         SET d.id = id
         RETURN d.id
@@ -102,12 +103,15 @@ class DiplomaRepository:
             "academic_supervisor": diploma.academic_supervisor,
             "year": diploma.year,
             "words": diploma.words,
-            "load_date": diploma.load_date.date()
+            "load_date": diploma.load_date.date(),
+            "shingles": diploma.shingles
         }
         result = self.database.query(query, parameters)
 
         if result:
             id_diploma = result[0][0]
+
+            self._create_similarities(id_diploma)
 
             ids = []
             for chapter in diploma.chapters:
@@ -185,9 +189,11 @@ class DiplomaRepository:
 
     def _create_similarities(self, id_diploma: int) -> None:
         query = """
-        MARCH (d:Diploma), (ds:Diploma)
-        WHERE d.id = $id
-        WITH d, ds, SIZE(apoc.coll.intersection(d.shingles, ds.shingles)) / SIZE(d.shingles) AS similarity
+        MATCH (d:Diploma), (ds:Diploma)
+        WHERE d.id = $id and ds.id <> $id and ds.shingles
+        WITH d, ds, 
+            SIZE(apoc.coll.intersection(d.shingles, ds.shingles)) * 100.0 / 
+                apoc.coll.min([SIZE(d.shingles), SIZE(ds.shingles)]) AS similarity
         CREATE (d)-[:SIMILAR_TO {similarity: similarity}]->(ds)
         """
 
@@ -195,9 +201,14 @@ class DiplomaRepository:
 
     def load_diploma_data(self, id_diploma: int) -> Diploma | None:
         query = """
+        MATCH (d:Diploma)-[r:SIMILAR_TO]-(d2:Diploma)
+        WHERE d.id = $id_diploma
+        ORDER BY r.similarity DESC
+        LIMIT 3
+        WITH collect([d2.id, d2.name, r.similarity]) as similar
         MATCH (d:Diploma)
         WHERE d.id = $id_diploma
-        RETURN d
+        RETURN d, similar
         """
         parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
@@ -206,6 +217,7 @@ class DiplomaRepository:
             return None
 
         node = result[0]["d"]
+        similar = result[0]["similar"]
 
         diploma = Diploma(
             id=node.get("id"),
@@ -218,7 +230,8 @@ class DiplomaRepository:
                 node.get("load_date").year,
                 node.get("load_date").month,
                 node.get("load_date").day),
-            chapters=[]
+            chapters=[],
+            similar_diplomas=similar
         )
 
         rels = self._load_diploma_graph(id_diploma)
