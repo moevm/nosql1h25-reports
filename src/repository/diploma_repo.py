@@ -462,16 +462,11 @@ class DiplomaRepository:
                                min_year: int = None, max_year: int = None,
                                min_words: int = None, max_words: int = None,
                                min_date: str = None, max_date: str = None,
-                               chapters: list[int] = None, group_by: str = "academic_supervisor") -> list[dict]:
+                               chapters: list[int] = None, group_by: str = "academic_supervisor",
+                               metric_type: str = "pages") -> list[dict]:
 
-        if group_by == "academic_supervisor":
-            group_key1 = "d.academic_supervisor"
-            group_key2 = "d.year"
-        elif group_by == "year":
-            group_key1 = "d.year"
-            group_key2 = "d.academic_supervisor"
-        else:
-            raise ValueError("Invalid group_by value")
+        group_key1, group_key2 = ["academic_supervisor", "year"] if group_by == "academic_supervisor" \
+            else ["year", "academic_supervisor"]
 
         query = f"""
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
@@ -487,7 +482,7 @@ class DiplomaRepository:
           AND ($min_date IS NULL OR d.load_date >= Date($min_date))
           AND ($max_date IS NULL OR d.load_date <= Date($max_date))
           AND ($chapters IS NULL OR c.id IN $chapters)
-        WITH {group_key1} AS groupKey1, {group_key2} AS groupKey2
+        WITH d.{group_key1} AS groupKey1, d.{group_key2} AS groupKey2
         ORDER BY groupKey1
         RETURN groupKey1, groupKey2, COUNT(*) AS count
         """
@@ -521,22 +516,6 @@ class DiplomaRepository:
                             group_by: str = "academic_supervisor",
                             metric_type: str = "pages") -> list[dict]:
 
-        if group_by == "academic_supervisor":
-            group_key = "d.academic_supervisor"
-        elif group_by == "year":
-            group_key = "d.year"
-        else:
-            raise ValueError("Invalid group_by value")
-
-        if metric_type == "pages":
-            metric = "d.pages"
-        elif metric_type == "words":
-            metric = "d.words"
-        elif metric_type == "minimal_disclosure":
-            metric = "d.minimal_disclosure"
-        else:
-            raise ValueError("Invalid metric_type value")
-
         query = f"""
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
         WHERE ($min_id IS NULL OR d.id >= $min_id)
@@ -551,8 +530,7 @@ class DiplomaRepository:
           AND ($min_date IS NULL OR d.load_date >= date($min_date))
           AND ($max_date IS NULL OR d.load_date <= date($max_date))
           AND ($chapters IS NULL OR c.id IN $chapters)
-        WITH {group_by} AS groupKey,
-            {metric} AS metric
+        WITH d.{group_by} AS groupKey, d.{metric_type} AS metric
         ORDER BY groupKey
         RETURN groupKey, AVG(metric) AS avg
         """
@@ -583,14 +561,8 @@ class DiplomaRepository:
                                min_words: int = None, max_words: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None,
-                               group_by: str = "academic_supervisor") -> list[dict]:
-
-        if group_by == "academic_supervisor":
-            group_key = "d.academic_supervisor"
-        elif group_by == "year":
-            group_key = "d.year"
-        else:
-            raise ValueError("Invalid group_by value")
+                               group_by: str = "academic_supervisor",
+                               metric_type: str = "pages") -> list[dict]:
 
         query = f"""
         MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
@@ -607,7 +579,7 @@ class DiplomaRepository:
           AND ($max_date IS NULL OR d.load_date <= date($max_date))
           AND ($chapters IS NULL OR c.id IN $chapters)
         WITH d, SUM(c.water_content * c.words) * 1.0 / d.words AS water_content
-        WITH {group_by} AS groupKey, water_content
+        WITH d.{group_by} AS groupKey, water_content
         ORDER BY groupKey
         RETURN groupKey, AVG(water_content) AS avg
         """
