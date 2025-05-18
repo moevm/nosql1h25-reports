@@ -10,6 +10,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import numpy as np
 import hashlib
+import math
 
 from src.diploma_processing.data_types import Diploma, Chapter
 from src.diploma_processing.parsing_docx.docClasses import Doc, DocSection
@@ -19,7 +20,7 @@ from src.diploma_processing.utils import doc_to_dataclass
 
 LRU_CACHE_MAXSIZE = 2048
 SHINGLES_SIM_THRESHOLD = 95
-MAX_INT64 = 2**63 - 1
+MAX_INT64 = 2**63
 
 
 class CalcStats:
@@ -106,43 +107,6 @@ class CalcStats:
         if len(chapter.chapters) > 0:
             chapter.water_content = int(chapter.water_content / (len(chapter.chapters) + 1))
 
-    # def _calc_shingles(self, diploma: Diploma):
-    #     all_words = []
-    #     for c in diploma.chapters:
-    #         all_words.extend(c.commonly_used_words)
-        
-    #     if len(all_words) < self._shingle_length:
-    #         diploma.shingles = []
-    #         return
-
-    #     shingles = []
-    #     for i in range(len(all_words) - self._shingle_length + 1):
-    #         # shingle = f"{all_words[i]} {all_words[i+1]} {all_words[i+2]}"
-    #         shingle = " ".join(all_words[i:i + self._shingle_length])
-    #         shingles.append(shingle)
-
-    #     shingles = self._del_sim_shingles(shingles)
-
-    #     diploma.shingles = shingles
-
-    # def _del_sim_shingles(self, shingles: list[str], threshold=SHINGLES_SIM_THRESHOLD) -> list[str]:
-    #     if not shingles:
-    #         return []
-
-    #     similarity_matrix = process.cdist(
-    #         queries=shingles,
-    #         choices=shingles,
-    #         scorer=fuzz.ratio,
-    #         workers=-1
-    #     )
-
-    #     # Считаем среднюю похожесть для каждой строки
-    #     average_similarities = np.mean(similarity_matrix, axis=1)
-    #     # Определяем строки, которые нужно удалить (те, у которых самая высокая средняя похожесть)
-    #     indices_to_remove = np.where(average_similarities >= np.percentile(average_similarities, threshold))[0]
-    #     # Создаем новый список, содержащий только строки, которые не нужно удалять
-    #     result = [s for i, s in enumerate(shingles) if i not in indices_to_remove]
-    #     return result
     def _calc_shingles(self, diploma: Diploma, doc: Doc):
         all_text = []
         for section in doc.structure:
@@ -160,18 +124,12 @@ class CalcStats:
         shingles = []
         for i in range(len(words) - self._shingle_length + 1):
             shingle_words = words[i:i + self._shingle_length]
-            shingle = " ".join(shingle_words)
-
-            # Convert shingle to integer hash
-            hash_object = hashlib.sha256(shingle.encode('utf-8'))
-            hex_dig = hash_object.hexdigest()
-            int_value = int(hex_dig, 16)  # Convert hex to integer
-
-            # Ensure the value is within the Neo4j range (signed 64-bit integer)
-            int_value = int_value % (MAX_INT64 + 1)
-
+            shingle_ints = list(map(lambda x: int(hashlib.sha256(x.encode('utf-8')).hexdigest(), 16) % (MAX_INT64), shingle_words))
+            int_value = math.prod(shingle_ints)
             shingles.append(int_value)
-
+        
+        shingles = list(set(shingles))
+        shingles.sort()
         diploma.shingles = shingles
 
     def _extract_text_recursive(self, section: DocSection, all_text: list[str]):

@@ -39,7 +39,7 @@ if __name__ == "__main__":
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
-total parsing and calculating stats time: 1.2881214618682861
+total parsing and calculating stats time: 2.0698225498199463
 cmp files: 
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
@@ -47,15 +47,15 @@ similarity: 100.0000%
 cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
-similarity: 4.6283%
+similarity: 4.6945%
 cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
-similarity: 0.6101%
+similarity: 0.6623%
 cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
-similarity: 4.6283%
+similarity: 4.6945%
 cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
@@ -63,18 +63,18 @@ similarity: 100.0000%
 cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
-similarity: 0.5662%
-cmp files:
+similarity: 0.6210%
+cmp files: 
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
-similarity: 0.6101%
+similarity: 0.6623%
 cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
-similarity: 0.5662%
+similarity: 0.6210%
 cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 similarity: 100.0000%
-total comparing time: 0.007005453109741211
+total comparing time: 0.013995170593261719
 '''
