@@ -455,3 +455,146 @@ class DiplomaRepository:
         self.database.query("MATCH (n) REMOVE n.neo4jImportId")
 
         return True if result else False
+
+    def count_grouped_diplomas(self,
+                               min_id: int = None, max_id: int = None,
+                               name: str = None, author: str = None, academic_supervisor: str = None,
+                               min_year: int = None, max_year: int = None,
+                               min_words: int = None, max_words: int = None,
+                               min_date: str = None, max_date: str = None,
+                               chapters: list[int] = None, group_by: str = "academic_supervisor",
+                               metric_type: str = "year") -> list[dict]:
+
+        query = f"""
+        MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
+        WHERE ($min_id IS NULL OR d.id >= $min_id)
+          AND ($max_id IS NULL OR d.id <= $max_id)
+          AND ($name IS NULL OR toLower(d.name) CONTAINS toLower($name))
+          AND ($author IS NULL OR toLower(d.author) CONTAINS toLower($author))
+          AND ($academic_supervisor IS NULL OR toLower(d.academic_supervisor) CONTAINS toLower($academic_supervisor))
+          AND ($min_year IS NULL OR d.year >= $min_year)
+          AND ($max_year IS NULL OR d.year <= $max_year)
+          AND ($min_words IS NULL OR d.words >= $min_words)
+          AND ($max_words IS NULL OR d.words <= $max_words)
+          AND ($min_date IS NULL OR d.load_date >= Date($min_date))
+          AND ($max_date IS NULL OR d.load_date <= Date($max_date))
+          AND ($chapters IS NULL OR c.id IN $chapters)
+        WITH d.{group_by} AS groupKey1, d.{metric_type} AS groupKey2
+        ORDER BY groupKey1
+        RETURN groupKey1, groupKey2, COUNT(*) AS count
+        """
+        parameters = {
+            "min_id": int(min_id) if min_id else None,
+            "max_id": int(max_id) if max_id else None,
+            "name": name,
+            "author": author,
+            "academic_supervisor": academic_supervisor,
+            "min_year": int(min_year) if min_year else None,
+            "max_year": int(max_year) if max_year else None,
+            "min_words": int(min_words) if min_words else None,
+            "max_words": int(max_words) if max_words else None,
+            "min_date": min_date,
+            "max_date": max_date,
+            "chapters": chapters
+        }
+
+        result = self.database.query(query, parameters)
+        if result is None:
+            return []
+        return [{"groupKey1": record["groupKey1"], "groupKey2": record["groupKey2"], "count": record["count"]} for record in result]
+
+    def get_grouped_metrics(self,
+                            min_id: int = None, max_id: int = None,
+                            name: str = None, author: str = None, academic_supervisor: str = None,
+                            min_year: int = None, max_year: int = None,
+                            min_words: int = None, max_words: int = None,
+                            min_date: str = None, max_date: str = None,
+                            chapters: list[int] = None,
+                            group_by: str = "academic_supervisor",
+                            metric_type: str = "pages") -> list[dict]:
+
+        query = f"""
+        MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
+        WHERE ($min_id IS NULL OR d.id >= $min_id)
+          AND ($max_id IS NULL OR d.id <= $max_id)
+          AND ($name IS NULL OR toLower(d.name) CONTAINS toLower($name))
+          AND ($author IS NULL OR toLower(d.author) CONTAINS toLower($author))
+          AND ($academic_supervisor IS NULL OR toLower(d.academic_supervisor) CONTAINS toLower($academic_supervisor))
+          AND ($min_year IS NULL OR d.year >= $min_year)
+          AND ($max_year IS NULL OR d.year <= $max_year)
+          AND ($min_words IS NULL OR d.words >= $min_words)
+          AND ($max_words IS NULL OR d.words <= $max_words)
+          AND ($min_date IS NULL OR d.load_date >= date($min_date))
+          AND ($max_date IS NULL OR d.load_date <= date($max_date))
+          AND ($chapters IS NULL OR c.id IN $chapters)
+        WITH d.{group_by} AS groupKey, d.{metric_type} AS metric
+        ORDER BY groupKey
+        RETURN groupKey, AVG(metric) AS avg
+        """
+        parameters = {
+            "min_id": min_id,
+            "max_id": max_id,
+            "name": name,
+            "author": author,
+            "academic_supervisor": academic_supervisor,
+            "min_year": min_year,
+            "max_year": max_year,
+            "min_words": min_words,
+            "max_words": max_words,
+            "min_date": min_date,
+            "max_date": max_date,
+            "chapters": chapters
+        }
+        result = self.database.query(query, parameters)
+        if result is None:
+            return []
+
+        return [{"groupKey": record["groupKey"], "avg": record["avg"]} for record in result]
+
+    def get_avg_water_by_group(self,
+                               min_id: int = None, max_id: int = None,
+                               name: str = None, author: str = None, academic_supervisor: str = None,
+                               min_year: int = None, max_year: int = None,
+                               min_words: int = None, max_words: int = None,
+                               min_date: str = None, max_date: str = None,
+                               chapters: list[int] = None,
+                               group_by: str = "academic_supervisor") -> list[dict]:
+
+        query = f"""
+        MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
+        WHERE ($min_id IS NULL OR d.id >= $min_id)
+          AND ($max_id IS NULL OR d.id <= $max_id)
+          AND ($name IS NULL OR toLower(d.name) CONTAINS toLower($name))
+          AND ($author IS NULL OR toLower(d.author) CONTAINS toLower($author))
+          AND ($academic_supervisor IS NULL OR toLower(d.academic_supervisor) CONTAINS toLower($academic_supervisor))
+          AND ($min_year IS NULL OR d.year >= $min_year)
+          AND ($max_year IS NULL OR d.year <= $max_year)
+          AND ($min_words IS NULL OR d.words >= $min_words)
+          AND ($max_words IS NULL OR d.words <= $max_words)
+          AND ($min_date IS NULL OR d.load_date >= date($min_date))
+          AND ($max_date IS NULL OR d.load_date <= date($max_date))
+          AND ($chapters IS NULL OR c.id IN $chapters)
+        WITH d, SUM(c.water_content * c.words) * 1.0 / d.words AS water_content
+        WITH d.{group_by} AS groupKey, water_content
+        ORDER BY groupKey
+        RETURN groupKey, AVG(water_content) AS avg
+        """
+        parameters = {
+            "min_id": min_id,
+            "max_id": max_id,
+            "name": name,
+            "author": author,
+            "academic_supervisor": academic_supervisor,
+            "min_year": min_year,
+            "max_year": max_year,
+            "min_words": min_words,
+            "max_words": max_words,
+            "min_date": min_date,
+            "max_date": max_date,
+            "chapters": chapters
+        }
+        result = self.database.query(query, parameters)
+        if result is None:
+            return []
+        return [{"groupKey": record["groupKey"], "avg": record["avg"]} for record in result]
+
