@@ -496,8 +496,11 @@ class DiplomaRepository:
             "max_date": max_date,
             "chapters": chapters
         }
+
         result = self.database.query(query, parameters)
-        return result if result else []
+        if result is None:
+            return []
+        return [{"groupKey1": record["groupKey1"], "groupKey2": record["groupKey2"], "count": record["count"]} for record in result]
 
     def get_grouped_metrics(self,
                             min_id: int = None, max_id: int = None,
