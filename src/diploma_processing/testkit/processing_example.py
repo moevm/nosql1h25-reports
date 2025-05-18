@@ -39,16 +39,16 @@ if __name__ == "__main__":
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
-total parsing and calculating stats time: 2.0698225498199463
+total parsing and calculating stats time: 1.3315200805664062
 cmp files: 
-src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
-src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
+src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx 
+src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx 
 similarity: 100.0000%
-cmp files:
-src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
+cmp files: 
+src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx 
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
 similarity: 4.6945%
-cmp files:
+cmp files: 
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 similarity: 0.6623%
@@ -64,7 +64,7 @@ cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038125ПАВЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 similarity: 0.6210%
-cmp files: 
+cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038112КОТОВ.docx
 similarity: 0.6623%
@@ -76,5 +76,5 @@ cmp files:
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 src/diploma_processing/testkit/docx_examples\\2024ВКР038342ОРЛОВ.docx
 similarity: 100.0000%
-total comparing time: 0.013995170593261719
+total comparing time: 0.008002042770385742
 '''

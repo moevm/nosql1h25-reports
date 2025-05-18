@@ -8,7 +8,6 @@ import nltk
 import pymorphy2
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import numpy as np
 import hashlib
 import math
 
@@ -121,11 +120,12 @@ class CalcStats:
             diploma.shingles = []
             return
 
+        words = list(map(lambda x: int(hashlib.sha256(x.encode('utf-8')).hexdigest(), 16), words))
+
         shingles = []
         for i in range(len(words) - self._shingle_length + 1):
             shingle_words = words[i:i + self._shingle_length]
-            shingle_ints = list(map(lambda x: int(hashlib.sha256(x.encode('utf-8')).hexdigest(), 16) % (MAX_INT64), shingle_words))
-            int_value = math.prod(shingle_ints)
+            int_value = math.prod(shingle_words) % MAX_INT64
             shingles.append(int_value)
         
         shingles = list(set(shingles))
