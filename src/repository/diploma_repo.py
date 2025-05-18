@@ -464,7 +464,7 @@ class DiplomaRepository:
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None) -> list[dict]:
         query = """
-        MATCH (d:Diploma)
+        MATCH (d:Diploma)-[:CONTAINS]->(c:Chapter)
         WHERE ($min_id IS NULL OR d.id >= $min_id)
           AND ($max_id IS NULL OR d.id <= $max_id)
           AND ($name IS NULL OR toLower(d.name) CONTAINS toLower($name))
@@ -476,8 +476,7 @@ class DiplomaRepository:
           AND ($max_words IS NULL OR d.words <= $max_words)
           AND ($min_date IS NULL OR d.load_date >= Date($min_date))
           AND ($max_date IS NULL OR d.load_date <= Date($max_date))
-        OPTIONAL MATCH (d)-[:CONTAINS]->(c:Chapter)
-        WHERE ($chapters IS NULL OR c.id IN $chapters)
+          AND ($chapters IS NULL OR c.id IN $chapters)
         WITH d.academic_supervisor/d.year AS groupKey1, d.year/d.academic_supervisor AS groupKey2
         ORDER BY groupKey1
         RETURN groupKey1, groupKey2, COUNT(*) AS count
