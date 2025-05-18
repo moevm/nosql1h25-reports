@@ -4,24 +4,26 @@ from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
 from typing import Union, BinaryIO
-
 import nltk
 import pymorphy2
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import hashlib
+import math
 
 from src.diploma_processing.data_types import Diploma, Chapter
 from src.diploma_processing.parsing_docx.docClasses import Doc, DocSection
 from src.diploma_processing.parsing_docx.docxParser import DocxParser
 from src.diploma_processing.utils import doc_to_dataclass
 
+
 LRU_CACHE_MAXSIZE = 2048
+SHINGLES_SIM_THRESHOLD = 95
+MAX_INT64 = 2**63
 
 
-# класс нужен из-за необходимости скачивать пакеты nltk
-# если будет возможность, в целом можно не заниматься проверкой пакетов каждый раз
 class CalcStats:
-    def __init__(self, max_common_words=5):
+    def __init__(self, max_common_words=5, shingle_length=3):
         try:
             nltk.data.find('tokenizers/punkt')
         except LookupError:
@@ -39,6 +41,7 @@ class CalcStats:
         self._max_common_words = max_common_words
         self._morph = pymorphy2.MorphAnalyzer()
         self._CLEAN_NAME_REGEX = re.compile(r"^[\s!#$%&*+,-./:;=?@\\^_|~]+|[\s!#$%&*+,-./:;=?@\\^_|~]+$")
+        self._shingle_length = shingle_length
 
     def get_diploma_stats(self, file: str | Union[BinaryIO, BytesIO]) -> Diploma:
         try:
@@ -53,6 +56,7 @@ class CalcStats:
         self._remove_empty_sections(doc)
         self._clean_section_names(doc)
         diploma = doc_to_dataclass(doc)
+        
         diploma.load_date = datetime.now()
         diploma.words = 0
         for i in range(len(diploma.chapters)):
@@ -61,6 +65,13 @@ class CalcStats:
             self._calc_chapters_stats(doc_section, chapter)
             if chapter.words:
                 diploma.words += chapter.words
+
+        # self._calc_shingles(diploma)
+        self._calc_shingles(diploma, doc)
+
+        for c in diploma.chapters:
+            self._calc_commonly_used_words_and_amount(c)
+        
         return diploma
 
     def _calc_chapters_stats(self, doc_section: DocSection, chapter: Chapter):
@@ -72,13 +83,12 @@ class CalcStats:
         chapter.commonly_used_words_amount = []
 
         # run calcs
-        water_content, words, symbols, commonly_used_words, commonly_used_words_amount = self._count_words(doc_section)
+        water_content, words, symbols, commonly_used_words= self._count_words(doc_section)
         # add calcs results
         chapter.water_content += water_content
         chapter.words += words
         chapter.symbols += symbols
         chapter.commonly_used_words.extend(commonly_used_words)  # Use extend to add lists
-        chapter.commonly_used_words_amount.extend(commonly_used_words_amount)  # Use extend to add lists
 
         # run calcs for children
         for i in range(len(chapter.chapters)):
@@ -91,22 +101,58 @@ class CalcStats:
             chapter.words += chapter_i.words
             chapter.symbols += chapter_i.symbols
             chapter.commonly_used_words.extend(chapter_i.commonly_used_words)
-            chapter.commonly_used_words_amount.extend(chapter_i.commonly_used_words_amount)
-
-        # recalc commonly_used_words
-        if len(chapter.commonly_used_words) > self._max_common_words:
-            word_count = defaultdict(int)
-            for word, count in zip(chapter.commonly_used_words, chapter.commonly_used_words_amount):
-                word_count[word] += count
-            sorted_words = sorted(word_count.keys(), key=lambda x: word_count[x], reverse=True)
-            sorted_counts = [word_count[word] for word in sorted_words]
-
-            chapter.commonly_used_words = sorted_words[:self._max_common_words]
-            chapter.commonly_used_words_amount = sorted_counts[:self._max_common_words]
 
         # avg for water_content - Moved this to avoid division by zero when chapter has no subchapters
         if len(chapter.chapters) > 0:
             chapter.water_content = int(chapter.water_content / (len(chapter.chapters) + 1))
+
+    def _calc_shingles(self, diploma: Diploma, doc: Doc):
+        all_text = []
+        for section in doc.structure:
+            self._extract_text_recursive(section, all_text)
+
+        words = []
+        for text in all_text:
+            words.extend(word_tokenize(text))
+        words = [word.lower() for word in words if word.isalpha()]
+
+        if len(words) < self._shingle_length:
+            diploma.shingles = []
+            return
+
+        words = list(map(lambda x: int(hashlib.sha256(x.encode('utf-8')).hexdigest(), 16), words))
+
+        shingles = []
+        for i in range(len(words) - self._shingle_length + 1):
+            shingle_words = words[i:i + self._shingle_length]
+            int_value = math.prod(shingle_words) % MAX_INT64
+            shingles.append(int_value)
+        
+        shingles = list(set(shingles))
+        shingles.sort()
+        diploma.shingles = shingles
+
+    def _extract_text_recursive(self, section: DocSection, all_text: list[str]):
+        all_text.append(section.text)
+        for sub_section in section.structure:
+            self._extract_text_recursive(sub_section, all_text)
+
+    def _calc_commonly_used_words_and_amount(self, chapter: Chapter):
+        commonly_used_words, commonly_used_words_amount = self._sort_commonly_used_words_and_amount(chapter.commonly_used_words)
+        chapter.commonly_used_words = commonly_used_words
+        chapter.commonly_used_words_amount = commonly_used_words_amount
+        for c in chapter.chapters:
+            self._calc_commonly_used_words_and_amount(c)
+    
+    def _sort_commonly_used_words_and_amount(self, words: list[str]):
+        # Подсчет частоты слов
+        word_count = defaultdict(int)
+        for word in words:
+            word_count[word] += 1
+        # Сортировка слов по частоте в порядке убывания
+        sorted_words = sorted(word_count.keys(), key=lambda x: word_count[x], reverse=True)
+        sorted_counts = [word_count[word] for word in sorted_words]
+        return sorted_words[:self._max_common_words], sorted_counts[:self._max_common_words]
 
     @functools.lru_cache(maxsize=LRU_CACHE_MAXSIZE)  # Кэшируем результаты
     def _normalize_word(self, word):
@@ -122,10 +168,9 @@ class CalcStats:
         # Удаление незначимых символов (например, знаков препинания)
         words = [word.lower() for word in words if word.isalpha()]
         if len(words) == 0:
-            return 0, 0, 0, [], []  # Changed water content to zero here because zero length text has no content
+            return 0, 0, 0, []
 
         # Приведение слов к нормальной форме с помощью pymorphy2
-        # normalized_words = [self._morph.parse(word)[0].normal_form for word in words]
         normalized_words = [self._normalize_word(word) for word in words]
 
         # Удаление стоп-слов и незначимых символов (например, знаков препинания)
@@ -134,12 +179,9 @@ class CalcStats:
         word_count = defaultdict(int)
         for word in filtered_words:
             word_count[word] += 1
-        # Сортировка слов по частоте в порядке убывания
-        sorted_words = sorted(word_count.keys(), key=lambda x: word_count[x], reverse=True)
-        sorted_counts = [word_count[word] for word in sorted_words]
-        water_content = int(len(filtered_words) / len(words) * 100) if len(words) > 0 else 0
-        return water_content, len(words), len(text), sorted_words[:self._max_common_words], sorted_counts[
-                                                                                            :self._max_common_words]
+        sorted_counts = [word_count[word] for word in filtered_words]
+        water_content = int((1 - len(filtered_words) / len(words)) * 100) if len(words) > 0 else 0
+        return water_content, len(words), len(text), filtered_words
 
     def _remove_empty_sections(self, doc: Doc):
         """Removes sections with no name from the document structure."""
@@ -165,10 +207,7 @@ class CalcStats:
         def clean_name(name: str) -> str:
             if not name:
                 return name
-            # # Remove leading and trailing whitespace and punctuation
-            # cleaned_name = re.sub(r"^[\s\W]+|[\s\W]+$", "", name)
             # Remove leading and trailing whitespace and punctuation, EXCEPT parentheses and quotes
-            # cleaned_name = re.sub(r"^[\s!#$%&*+,-./:;=?@\\^_|~]+|[\s!#$%&*+,-./:;=?@\\^_|~]+$", "", name)
             cleaned_name = self._CLEAN_NAME_REGEX.sub("", name)
             return cleaned_name
 

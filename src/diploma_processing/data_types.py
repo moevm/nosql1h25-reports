@@ -25,3 +25,4 @@ class Diploma:
     words: int
     load_date: datetime
     chapters: list['Chapter']
+    shingles: list[int]
