@@ -17,3 +17,29 @@
     min-width: 230px;
 }
 
+.stackedBarChart {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+
+    flex-grow: 1;
+    min-height: 300px;
+    max-height: 80vh;
+    height: 100%;
+}
+
+.stackedBarChart__chart-container {
+    display: flex;
+    flex-grow: 1;
+    width: 90%;
+    height: 90%;
+    min-height: 300px;
+    max-height: 90%;
+}
+
+.stackedBarChart__chart {
+    width: 100% !important;
+    height: 100% !important;
+}

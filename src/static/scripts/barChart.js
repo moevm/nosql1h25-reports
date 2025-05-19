@@ -5,6 +5,7 @@ new Chart(ctx, {
     type: 'bar',
     data: data,
     options: {
+        maintainAspectRatio: false,
         plugins: {
             title: {
                 display: true,
