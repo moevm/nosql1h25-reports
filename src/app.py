@@ -71,7 +71,7 @@ def search_diploma():
     diplomas = repo.search_diplomas(**params)
 
     # TODO: убрать заглушку
-    return render_template('diploma_search.jinja2', diplomas=diplomas, total_count=8)
+    return render_template('diploma_search.jinja2', diplomas=diplomas, total_count=100)
 
 
 @app.get('/search/chapter')
@@ -85,7 +85,29 @@ def search_chapter():
 
     chapters = repo.search_chapters(**params)
 
-    return render_template('chapter_search.jinja2', chapters=chapters)
+    return render_template('chapter_search.jinja2', chapters=chapters, total_count=100)
+
+
+@app.get('/search/stats')
+def search_stats():
+    params = request.args.to_dict()
+    if 'chapters' in params:
+        params['chapters'] = params['chapters'].split()
+
+    diplomas = repo.search_diplomas(**params)
+    #Сырые данные
+    title = 'Тестовая диаграмма'
+    labels = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль']
+    raw_data_labels = ['Dataset 1', 'Dataset 2', 'Dataset 3']
+    raw_data = [[65, 59, 80, 81, 56, 55, 40],[28, 48, 40, 19, 86, 27, 90],[45, 25, 16, 36, 67, 18, 76]]
+    datasets = {
+        'title': title,
+        'labels': labels,
+        'data_labels': raw_data_labels,
+        'data': raw_data,
+    }
+
+    return render_template('customized_statistics.jinja2', diplomas=diplomas, data=datasets)
 
 
 @app.get('/dump')

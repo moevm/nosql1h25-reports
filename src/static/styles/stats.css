@@ -1,0 +1,19 @@
+.filters__selectors {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 10px;
+}
+
+.filters__selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100%;
+    align-items: center;
+}
+
+.filters__select {
+    min-width: 230px;
+}
+
