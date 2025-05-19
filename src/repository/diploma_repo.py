@@ -1,4 +1,5 @@
 import io
+import math
 from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
@@ -7,6 +8,8 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
 
 from src.diploma_processing.data_types import *
+
+PAGE_SIZE = 20
 
 
 class Neo4jDatabase:
@@ -72,7 +75,7 @@ def _get_search_diploma_params(
         min_year: int = None, max_year: int = None,
         min_words: int = None, max_words: int = None,
         min_date: str = None, max_date: str = None,
-        chapters: list[int] = None
+        chapters: list[int] = None, page: int = 1
 ):
     return {
         "min_id": int(min_id) if min_id else None,
@@ -86,7 +89,8 @@ def _get_search_diploma_params(
         "max_words": int(max_words) if max_words else None,
         "min_date": min_date,
         "max_date": max_date,
-        "chapters": list(map(int, chapters)) if chapters else None
+        "chapters": list(map(int, chapters)) if chapters else None,
+        "page": int(page) - 1
     }
 
 
@@ -108,6 +112,57 @@ def _get_search_diploma_query(add_water: bool = False):
       AND ($min_date IS NULL OR d.load_date >= Date($min_date))
       AND ($max_date IS NULL OR d.load_date <= Date($max_date))
       AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
+    """
+
+
+def _get_search_chapters_params(
+        min_id: int = None, max_id: int = None,
+        min_id_diploma: int = None, max_id_diploma: int = None,
+        name: str = None,
+        min_words: int = None, max_words: int = None,
+        min_symbols: int = None, max_symbols: int = None,
+        min_water_content: float = None, max_water_content: float = None,
+        words: list[str] = None,
+        chapters: list[int] = None, page: int = 1
+):
+    return {
+        "min_id": int(min_id) if min_id else None,
+        "max_id": int(max_id) if max_id else None,
+        "min_id_diploma": int(min_id_diploma) if min_id_diploma else None,
+        "max_id_diploma": int(max_id_diploma) if max_id_diploma else None,
+        "name": name,
+        "min_words": int(min_words) if min_words else None,
+        "max_words": int(max_words) if max_words else None,
+        "min_symbols": int(min_symbols) if min_symbols else None,
+        "max_symbols": int(max_symbols) if max_symbols else None,
+        "min_water_content": int(min_water_content) if min_water_content else None,
+        "max_water_content": int(max_water_content) if max_water_content else None,
+        "words": words,
+        "chapters": list(map(int, chapters)) if chapters else None,
+        "page": int(page) - 1
+    }
+
+
+def _get_search_chapters_query():
+    return """
+        MATCH (c:Chapter)-[:CONTAINS*0..1]->(c1:Chapter)
+        ORDER BY c1.id
+        WITH c, [id in COLLECT(c1.id) WHERE id <> c.id] AS chapters
+        WHERE ($min_id IS NULL OR c.id >= $min_id)
+          AND ($max_id IS NULL OR c.id <= $max_id)
+          AND ($min_id_diploma IS NULL OR c.id_diploma >= $min_id_diploma)
+          AND ($max_id_diploma IS NULL OR c.id_diploma <= $max_id_diploma)
+          AND ($name IS NULL OR toLower(c.name) CONTAINS toLower($name))
+          AND ($min_words IS NULL OR c.words >= $min_words)
+          AND ($max_words IS NULL OR c.words <= $max_words)
+          AND ($min_symbols IS NULL OR c.symbols >= $min_symbols)
+          AND ($max_symbols IS NULL OR c.symbols <= $max_symbols)
+          AND ($min_water_content IS NULL OR c.water_content >= $min_water_content)
+          AND ($max_water_content IS NULL OR c.water_content <= $max_water_content)
+          AND ($words IS NULL OR ANY(word IN $words WHERE 
+            ANY(com_word IN c.commonly_used_words WHERE toLower(com_word) CONTAINS toLower(word))
+          ))
+          AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
     """
 
 
@@ -341,15 +396,26 @@ class DiplomaRepository:
                         min_words: int = None, max_words: int = None,
                         min_date: str = None, max_date: str = None,
                         chapters: list[int] = None,
-                        order_by: str = None) -> list[Diploma]:
+                        order_by: str = None, page: int = 1) -> Tuple[list[Diploma], int]:
+        parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
+                                                min_words, max_words, min_date, max_date, chapters, page)
+
         query = _get_search_diploma_query()
+
+        result = self.database.query(query + "RETURN count(*);", parameters)
+        count = 0
+        if result:
+            count = result[0][0]
+
         if order_by:
             query += f"\nORDER BY d.{order_by}"
 
-        query += "\nRETURN d{.*, chapters: chapters} AS diploma"
+        query += f"""
+        \nSKIP {PAGE_SIZE} * $page LIMIT {PAGE_SIZE}
+        RETURN {{id: d.id, name: d.name, author: d.author, academic_supervisor: d.academic_supervisor, 
+            year: d.year, words: d.words, load_date: d.load_date, chapters: chapters}} AS diploma;
+        """
 
-        parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
-                                                min_words, max_words, min_date, max_date, chapters)
         result = self.database.query(query, parameters)
 
         if result is not None:
@@ -369,8 +435,8 @@ class DiplomaRepository:
                     chapters=record.get("chapters", [])
                 )
                 diplomas.append(diploma)
-            return diplomas
-        return []
+            return diplomas, math.ceil(count / PAGE_SIZE)
+        return [], math.ceil(count / PAGE_SIZE)
 
     def search_chapters(self,
                         min_id: int = None, max_id: int = None,
@@ -381,48 +447,28 @@ class DiplomaRepository:
                         min_water_content: float = None, max_water_content: float = None,
                         words: list[str] = None,
                         chapters: list[int] = None,
-                        order_by: str = None) -> list[Chapter]:
-        query = """
-        MATCH (c:Chapter)-[:CONTAINS*0..1]->(c1:Chapter)
-        ORDER BY c1.id
-        WITH c, [id in COLLECT(c1.id) WHERE id <> c.id] AS chapters
-        WHERE ($min_id IS NULL OR c.id >= $min_id)
-          AND ($max_id IS NULL OR c.id <= $max_id)
-          AND ($min_id_diploma IS NULL OR c.id_diploma >= $min_id_diploma)
-          AND ($max_id_diploma IS NULL OR c.id_diploma <= $max_id_diploma)
-          AND ($name IS NULL OR toLower(c.name) CONTAINS toLower($name))
-          AND ($min_words IS NULL OR c.words >= $min_words)
-          AND ($max_words IS NULL OR c.words <= $max_words)
-          AND ($min_symbols IS NULL OR c.symbols >= $min_symbols)
-          AND ($max_symbols IS NULL OR c.symbols <= $max_symbols)
-          AND ($min_water_content IS NULL OR c.water_content >= $min_water_content)
-          AND ($max_water_content IS NULL OR c.water_content <= $max_water_content)
-          AND ($words IS NULL OR ANY(word IN $words WHERE 
-            ANY(com_word IN c.commonly_used_words WHERE toLower(com_word) CONTAINS toLower(word))
-          ))
-          AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
-        """
+                        order_by: str = None, page: int = 1) -> Tuple[list[Chapter], int]:
+        parameters = _get_search_chapters_params(min_id, max_id, min_id_diploma, max_id_diploma, name, min_words,
+                                                 max_words, min_symbols, max_symbols, min_water_content,
+                                                 max_water_content, words, chapters, page)
+
+        query = _get_search_chapters_query()
+
+        result = self.database.query(query + "RETURN count(*);", parameters)
+        count = 0
+        if result:
+            count = result[0][0]
+
         if order_by:
             query += f"\nORDER BY c.{order_by}"
 
-        query += "\nRETURN c{.*, chapters: [id in chapters WHERE id <> c.id]} AS chapter"
+        query += f"""
+        \nSKIP {PAGE_SIZE} * $page LIMIT {PAGE_SIZE}
+        RETURN c{{.*, chapters: [id in chapters WHERE id <> c.id]}} AS chapter
+        """
 
-        parameters = {
-            "min_id": int(min_id) if min_id else None,
-            "max_id": int(max_id) if max_id else None,
-            "min_id_diploma": int(min_id_diploma) if min_id_diploma else None,
-            "max_id_diploma": int(max_id_diploma) if max_id_diploma else None,
-            "name": name,
-            "min_words": int(min_words) if min_words else None,
-            "max_words": int(max_words) if max_words else None,
-            "min_symbols": int(min_symbols) if min_symbols else None,
-            "max_symbols": int(max_symbols) if max_symbols else None,
-            "min_water_content": int(min_water_content) if min_water_content else None,
-            "max_water_content": int(max_water_content) if max_water_content else None,
-            "words": words,
-            "chapters": list(map(int, chapters)) if chapters else None
-        }
         result = self.database.query(query, parameters)
+        print(result)
 
         if result is not None:
             chapters = []
@@ -439,8 +485,8 @@ class DiplomaRepository:
                     chapters=record.get("chapters", [])
                 )
                 chapters.append(chapter)
-            return chapters
-        return []
+            return chapters, math.ceil(count / PAGE_SIZE)
+        return [], math.ceil(count / PAGE_SIZE)
 
     def export(self) -> BytesIO | None:
         query = """

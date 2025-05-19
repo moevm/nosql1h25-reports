@@ -19,9 +19,10 @@
 
 ## Инструкция для запуска
 
-1. `docker compose build –no-cache && docker compose up`
+1. `docker compose build –-no-cache && docker compose up -d`
 2. Основное приложение будет доступно по [localhost:5000](http://127.0.0.1:5000/)
-3. По умолчанию для входа на страницу ИМПОРТ/ЭКСПОРТ используется пароль `password`, который можно изменить через переменную окружения `ADMIN_PASSWORD` в [compose.yml](docker-compose.yml). Данные импортируются и экспортируются в формате *JSON*.
+3. По умолчанию для входа на страницу ИМПОРТ/ЭКСПОРТ используется пароль `password`, который можно изменить через переменную окружения `ADMIN_PASSWORD` в [compose.yml](docker-compose.yml).  
+   Данные импортируются и экспортируются в формате *JSON*.
 4. Для отладки можно использовать [дипломные работы](src/diploma_processing/testkit/docx_examples)
 5. Для отладки БД можно использовать [веб-интерфейс](http://localhost:7474) (по умолчанию: пользователь - `neo4j`, пароль - `password`)
 
