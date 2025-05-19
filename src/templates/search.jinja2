@@ -1,6 +1,10 @@
 {% extends 'layout.jinja2' %}
 
-{% block main %}
+{% block head %}
+    {{ super() }}
+    <title>ДИПЛОМАЛ - Поиск</title>
+{% endblock %}
+{% block main %}   
     <div class="card-container">
         <div class="card">
             <h3 class="card__header">Поиск по дипломам</h3>
