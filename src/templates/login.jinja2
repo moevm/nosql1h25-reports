@@ -3,7 +3,7 @@
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}" type="text/css"/>
-     <title>ДИПЛОМАЛ - Авторизация</title>
+    <title>ДИПЛОМАЛ - Авторизация</title>
 {% endblock %}
 {% block main %}
     <form method="POST" action="{{ url_for('login') }}" class="login-form">
