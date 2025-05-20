@@ -1,0 +1,46 @@
+.filters__selectors {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 10px;
+}
+
+.filters__selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100%;
+    align-items: center;
+}
+
+.filters__select {
+    min-width: 230px;
+}
+
+.stackedBarChart {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+
+    flex-grow: 1;
+    min-height: 300px;
+    max-height: 80vh;
+    height: 100%;
+}
+
+.stackedBarChart__chart-container {
+    display: flex;
+    flex-grow: 1;
+    width: 90%;
+    height: 90%;
+    min-height: 300px;
+    min-width: 400px;
+    max-height: 90%;
+}
+
+.stackedBarChart__chart {
+    width: 100% !important;
+    height: 100% !important;
+}

@@ -1,0 +1,182 @@
+{% extends "layout.jinja2" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/filter.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/stats.css') }}" type="text/css"/>
+{% endblock %}
+
+{% block main %}
+    <section class="filters">
+        <div class="filters__header-block">
+            <h2 class="filters__header">Фильтры</h2>
+        </div>
+        <form action="{{ url_for('search_stats') }}" id="filter__form-stats" class="filter__form" method="GET">
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label">id</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="min_id">от</label>
+                    <input class="filter-box__input" type="number" min="0" id="min_id" name="min_id"
+                           value="{{ request.args.get('min_id', '') }}">
+                    <label class="filter-box__label" for="max_id">до</label>
+                    <input class="filter-box__input" type="number" min="0" id="max_id" name="max_id"
+                           value="{{ request.args.get('max_id', '') }}">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="chapters">id подразделов</label>
+                </div>
+                <div class="list-card">
+                    <div class="filter-box">
+                        <input class="filter-box__input append-input" type="number" id="chapters"
+                               placeholder="Добавить" min="0">
+                        <button type="button" class="filter-box__add-word" id="chapters-button">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="words-container" id="chapters-container"></div>
+                    <input type="hidden" name="chapters" id="hidden-chapters"
+                           value="{{ request.args.get('chapters', '') }}">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="name">название темы</label>
+                </div>
+                <div class="filter-box">
+                    <input class="filter-box__input long-input" type="text" id="name" name="name"
+                           value="{{ request.args.get('name', '') }}" placeholder="Название темы">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="author">автор</label>
+                </div>
+                <div class="filter-box">
+                    <input class="filter-box__input long-input" type="text" id="author" name="author"
+                           value="{{ request.args.get('author', '') }}" placeholder="Автор">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label" for="academic_supervisor">научный руководитель</label>
+                </div>
+                <div class="filter-box">
+                    <input class="filter-box__input long-input" type="text" id="academic_supervisor"
+                           name="academic_supervisor"
+                           value="{{ request.args.get('academic_supervisor', '') }}"
+                           placeholder="Имя руководителя">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label">год</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="min_year">от</label>
+                    <input class="filter-box__input" type="number" min="1970" max="2025" id="min_year" name="min_year"
+                           value="{{ request.args.get('min_year', '') }}">
+                    <label class="filter-box__label" for="max_year">до</label>
+                    <input class="filter-box__input" type="number" min="1970" max="2025" id="max_year" name="max_year"
+                           value="{{ request.args.get('max_year', '') }}">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label">слова</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="min_words">от</label>
+                    <input class="filter-box__input" type="number" min="0" id="min_words" name="min_words"
+                           value="{{ request.args.get('min_words', '') }}">
+                    <label class="filter-box__label" for="max_words">до</label>
+                    <input class="filter-box__input" type="number" min="0" id="max_words" name="max_words"
+                           value="{{ request.args.get('max_words', '') }}">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
+                    <label class="label-box__label">дата загрузки</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="min_date">от</label>
+                    <input class="filter-box__input" type="date" id="min_date" name="min_date"
+                           value="{{ request.args.get('min_date', '') }}">
+                    <label class="filter-box__label" for="max_date">до</label>
+                    <input class="filter-box__input" type="date" id="max_date" name="max_date"
+                           value="{{ request.args.get('max_date', '') }}">
+                </div>
+            </div>
+
+            <button type="reset" class="search-button reset-button filters__header-block">Сбросить фильтры</button>
+        </form>
+    </section>
+
+    <section class="filters">
+        <div class="filters__header-block">
+            <h2 class="filters__header">Атрибуты</h2>
+        </div>
+
+        <div class="filters__selectors">
+            <div class="filters__selector">
+                <div class="filters__label-box">
+                    <label class="filters__header">X</label>
+                </div>
+                <select id="select-X" name="group_by" form="filter__form-stats" class="filters__select">
+                    <option value="year" {{ sort('year') }}>год</option>
+                    <option value="academic_supervisor" {{ sort('academic_supervisor') }}>научный руководитель</option>
+                </select>
+            </div>
+            <div class="filters__selector">
+                <div class="filters__label-box">
+                    <label class="filters__label">Y</label>
+                </div>
+                <select id="select-Y" name="metric_type" form="filter__form-stats" class="filters__select">
+                    <option value="water" {{ sort('') }}>средняя водность</option>
+                    <option value="words" {{ sort('words') }}>среднее количество слов</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="search-button filters__header-block">Построить статистику</button>
+    </section>
+
+    <section class="stackedBarChart">
+        <div class="stackedBarChart__chart-container">
+            <canvas id="barChart" class="stackedBarChart__chart"></canvas>
+        </div>
+    </section>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+    <script>
+        function transformChartData(datasetsRaw) {
+            const rawLabels = datasetsRaw.data_labels;
+            const rawData = datasetsRaw.data;
+
+            const datasets = rawLabels.map((label, index) => {
+                return {
+                    label: label,
+                    data: rawData[index],
+                };
+            });
+
+            return {
+                title: datasetsRaw.title,
+                labels: datasetsRaw.labels,
+                datasets: datasets
+            };
+        }
+
+        const data = transformChartData({{ data }})
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../static/scripts/barChart.js"></script>
+{% endblock %}
