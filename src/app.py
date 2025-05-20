@@ -87,16 +87,39 @@ def search_chapter():
 
 @app.get('/search/stats')
 def search_stats():
+    metrics = {'words': 'слов, шт', 'water_content': 'водность, %'}
+
     params = request.args.to_dict()
     if 'chapters' in params:
         params['chapters'] = params['chapters'].split()
 
-    diplomas = repo.search_diplomas(**params)
-    #Сырые данные
-    title = 'Тестовая диаграмма'
-    labels = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль']
-    raw_data_labels = ['Dataset 1', 'Dataset 2', 'Dataset 3']
-    raw_data = [[65, 59, 80, 81, 56, 55, 40],[28, 48, 40, 19, 86, 27, 90],[45, 25, 16, 36, 67, 18, 76]]
+    group = params.get('group_by', None)
+    metric = params.get('metric_type', None)
+
+    if group is None or metric is None:
+        return render_template('customized_statistics.jinja2', data={})
+
+    title = 'Статистика по годам' if group == 'year' else 'Статистика по научным руководителям'
+    data = repo.get_avg_water_by_group(**params) if metric == 'water_content' else repo.count_grouped_diplomas(
+        **params) if metric in ['year', 'academic_supervisor'] else repo.get_grouped_metrics(**params)
+
+    if not data or len(data) == 0:
+        return render_template('customized_statistics.jinja2', data={})
+
+    labels = sorted(list(set(map(lambda x: x['key1'], data))))
+    raw_data_labels = sorted(list(set(map(lambda x: x['key2'], data)))) if 'key2' in data[0] else [metrics[metric]]
+
+    raw_data = []
+    for i in range(len(raw_data_labels)):
+        raw_data.append([0] * len(labels))
+    if 'key2' in data[0]:
+        for value in data:
+            first_index = raw_data_labels.index(value['key2'])
+            second_index = labels.index(value['key1'])
+            raw_data[first_index][second_index] = value['count']
+    else:
+        raw_data = [list(map(lambda x: x['avg'], data))]
+
     datasets = {
         'title': title,
         'labels': labels,
@@ -104,7 +127,7 @@ def search_stats():
         'data': raw_data,
     }
 
-    return render_template('customized_statistics.jinja2', diplomas=diplomas, data=datasets)
+    return render_template('customized_statistics.jinja2', data=datasets)
 
 
 @app.get('/dump')

@@ -563,7 +563,7 @@ class DiplomaRepository:
         if result is None:
             return []
 
-        return [{"key": record["groupKey"], "avg": record["avg"]} for record in result]
+        return [{"key1": record["groupKey"], "avg": record["avg"]} for record in result]
 
     def get_avg_water_by_group(self,
                                min_id: int = None, max_id: int = None,
@@ -572,7 +572,8 @@ class DiplomaRepository:
                                min_words: int = None, max_words: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None,
-                               group_by: str = "academic_supervisor") -> list[dict]:
+                               group_by: str = "academic_supervisor",
+                               metric_type: str = "water_content") -> list[dict]:
         query = _get_search_diploma_query(add_water=True)
         query += f"""
         WITH d.{group_by} AS groupKey, water_content
@@ -585,4 +586,4 @@ class DiplomaRepository:
         result = self.database.query(query, parameters)
         if result is None:
             return []
-        return [{"key": record["groupKey"], "avg": record["avg"]} for record in result]
+        return [{"key1": record["groupKey"], "avg": record["avg"]} for record in result]

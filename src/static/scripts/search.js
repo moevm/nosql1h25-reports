@@ -34,7 +34,13 @@ $(document).ready(function () {
         if (params.toString() !== '') window.location.href = form.action + '?' + params.toString();
         else window.location.href = form.action;
     });
-    form.addEventListener("reset", () => $('.words-container').children().replaceWith());
+    form.addEventListener("reset", () => {
+        $('.words-container').children().replaceWith();
+
+        Array.from(form.elements).forEach((input) => {
+            input.setAttribute('value', '');
+        });
+    });
     $("#sort").change(() => form.dispatchEvent(new Event('submit')));
     $("#page").change(() => {
         const params = new URLSearchParams(window.location.search);
