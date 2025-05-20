@@ -157,14 +157,19 @@ def import_db():
 
     dump_id = max(dumps.keys()) + 1 if len(dumps.keys()) > 0 else 0
     dumps[dump_id] = in_memory_file
+    dumps[dump_id + 1] = repo.export()
 
     result = repo.import_by_url(
         f"http://{'app' if os.getenv('DOCKER_APP') else 'host.docker.internal'}:5000{url_for('send_dump', file_id=dump_id)}")
     del dumps[dump_id]
 
     if result:
-        return 'OK', 200
+        del dumps[dump_id + 1]
+        return {'nodes': result[0], 'relationships': result[1]}
     else:
+        repo.import_by_url(
+            f"http://{'app' if os.getenv('DOCKER_APP') else 'host.docker.internal'}:5000{url_for('send_dump', file_id=dump_id + 1)}")
+        del dumps[dump_id + 1]
         return 'BAD REQUEST', 400
 
 

@@ -508,16 +508,21 @@ class DiplomaRepository:
 
         return None
 
-    def import_by_url(self, url: str) -> bool:
+    def import_by_url(self, url: str) -> Tuple[int, int] | None:
         query = """
         CALL apoc.import.json($url, {nodePropertyMappings: {Diploma: {load_date: 'Localdate'}}})
+        YIELD nodes, relationships
+        RETURN nodes, relationships;
         """
 
         self.database.query("MATCH (n) DETACH DELETE n")
         result = self.database.query(query, {"url": url})
         self.database.query("MATCH (n) REMOVE n.neo4jImportId")
 
-        return True if result else False
+        if result is not None:
+            return result[0]["nodes"], result[0]["relationships"]
+        else:
+            return None
 
     def count_grouped_diplomas(self,
                                min_id: int = None, max_id: int = None,

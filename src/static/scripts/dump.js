@@ -12,9 +12,13 @@ $(document).ready(function () {
         })
             .then(res => {
                 document.body.style.cursor = 'default';
-                if (res.ok) alert('Дамп успешно импортирован');
-                else alert('Неправильный формат дампа');
-            });
+                if (res.ok) return res.json();
+                else throw new Error();
+            })
+            .then(json => {
+                alert(`Дамп успешно импортирован.\nИмпортировано ${json.nodes} сущностей и ${json.relationships} связей.`);
+            })
+            .catch(() => alert('Неправильный формат дампа'));
     });
 
     $('#dump').change(e => {
