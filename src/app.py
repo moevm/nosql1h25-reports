@@ -71,7 +71,7 @@ def search_diploma():
     diplomas = repo.search_diplomas(**params)
 
     # TODO: убрать заглушку
-    return render_template('diploma_search.jinja2', diplomas=diplomas, total_count=100)
+    return render_template('diploma_search.jinja2', diplomas=diplomas, total_count=8)
 
 
 @app.get('/search/chapter')
@@ -85,7 +85,7 @@ def search_chapter():
 
     chapters = repo.search_chapters(**params)
 
-    return render_template('chapter_search.jinja2', chapters=chapters, total_count=100)
+    return render_template('chapter_search.jinja2', chapters=chapters)
 
 
 @app.get('/search/stats')
