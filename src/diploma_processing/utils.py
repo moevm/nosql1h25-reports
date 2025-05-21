@@ -58,6 +58,7 @@ def diploma_from_dict(diploma: dict) -> Diploma:
     academic_supervisor = diploma['academic_supervisor']
     year = diploma['year']
     words = diploma['words']
+    pages = diploma['pages']
     if diploma.get('load_date') and diploma['load_date']:
         load_date = datetime.fromisoformat(diploma['load_date'])
     else:
@@ -72,6 +73,7 @@ def diploma_from_dict(diploma: dict) -> Diploma:
         author=author,
         academic_supervisor=academic_supervisor,
         year=year,
+        pages=pages,
         words=words,
         load_date=load_date,
         chapters=chapters,
@@ -120,6 +122,8 @@ def doc_from_dict(doc: dict) -> Doc:
     author = doc['author']
     academic_supervisor = doc['academic_supervisor']
     year = doc['year']
+    pages = doc['pages']
+    words = doc['words']
     structure = []
     for e in doc['structure']:
         structure.append(doc_section_from_dict(e))
@@ -128,7 +132,9 @@ def doc_from_dict(doc: dict) -> Doc:
         author=author,
         academic_supervisor=academic_supervisor,
         year=year,
-        structure=structure
+        pages=pages,
+        words=words,
+        structure=structure,
     )
 
 
@@ -160,7 +166,8 @@ def doc_to_dataclass(doc: Doc) -> Diploma:
         author=doc.author,
         academic_supervisor=doc.academic_supervisor,
         year=doc.year,
-        words=0,
+        pages=doc.pages,
+        words=doc.words,
         load_date=None,
         chapters=chapters,
         shingles=[]

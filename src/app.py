@@ -43,7 +43,8 @@ def diploma_upload():
         id_diploma = repo.save_diploma(diploma)
 
         return redirect(url_for('diploma_statistics', diploma_id=id_diploma))
-    except Exception:
+    except Exception as e:
+        app.logger.error('Error while diploma processing', e)
         return 'BAD REQUEST', 400
 
 
@@ -87,7 +88,7 @@ def search_chapter():
 
 @app.get('/search/stats')
 def search_stats():
-    metrics = {'words': 'слов, шт', 'water_content': 'водность, %'}
+    metrics = {'words': 'слов, шт', 'water_content': 'водность, %', 'pages': 'страниц, шт'}
 
     params = request.args.to_dict()
     if 'chapters' in params:

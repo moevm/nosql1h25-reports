@@ -24,6 +24,7 @@ class Diploma:
     academic_supervisor: str | None  # None, если не получилось извлечь руководителя
     year: int
     words: int
+    pages: int
     load_date: datetime
     chapters: list['Chapter']
     shingles: list[int] | None = None
