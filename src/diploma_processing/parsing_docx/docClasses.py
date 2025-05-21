@@ -4,6 +4,8 @@ class Doc:
         self.author = None
         self.academic_supervisor = None # научный реководитель
         self.year = None
+        self.pages = None
+        self.words = None
 
         self.structure = [] # структура всего документа - список разделов,
                             # стостоит из объектов разделов (DocSectoin)

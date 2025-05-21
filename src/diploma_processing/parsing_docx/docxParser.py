@@ -1,4 +1,6 @@
 import os
+import re
+import zipfile
 from io import BytesIO
 from typing import Union, BinaryIO
 
@@ -80,6 +82,7 @@ class DocxParser:
         self._read_structure(doc)
         self._read_info(doc)
         self._make_doc_structure_accurate(doc)
+        self._read_doc_properties(doc)
 
         return doc
 
@@ -275,3 +278,13 @@ class DocxParser:
                 doc.structure.pop(i)
                 index_end -= 1
             doc.structure.insert(i, chapt)
+
+    def _read_doc_properties(self, doc: Doc):
+        docx_object = zipfile.ZipFile(self.file)
+        docx_property_file_data = docx_object.read('docProps/app.xml').decode()
+
+        page_count = re.search(r"<Pages>(\d+)</Pages>", docx_property_file_data).group(1)
+        word_count = re.search(r"<Words>(\d+)</Words>", docx_property_file_data).group(1)
+
+        doc.pages = int(page_count)
+        doc.words = int(word_count)

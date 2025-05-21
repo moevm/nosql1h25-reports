@@ -73,6 +73,7 @@ def _get_search_diploma_params(
         min_id: int = None, max_id: int = None,
         name: str = None, author: str = None, academic_supervisor: str = None,
         min_year: int = None, max_year: int = None,
+        min_pages: int = None, max_pages: int = None,
         min_words: int = None, max_words: int = None,
         min_date: str = None, max_date: str = None,
         chapters: list[int] = None, page: int = 1
@@ -85,6 +86,8 @@ def _get_search_diploma_params(
         "academic_supervisor": academic_supervisor,
         "min_year": int(min_year) if min_year else None,
         "max_year": int(max_year) if max_year else None,
+        "min_pages": int(min_pages) if min_pages else None,
+        "max_pages": int(max_pages) if max_pages else None,
         "min_words": int(min_words) if min_words else None,
         "max_words": int(max_words) if max_words else None,
         "min_date": min_date,
@@ -107,6 +110,8 @@ def _get_search_diploma_query(add_water: bool = False):
       AND ($academic_supervisor IS NULL OR toLower(d.academic_supervisor) CONTAINS toLower($academic_supervisor))
       AND ($min_year IS NULL OR d.year >= $min_year)
       AND ($max_year IS NULL OR d.year <= $max_year)
+      AND ($min_pages IS NULL OR d.pages >= $min_pages)
+      AND ($max_pages IS NULL OR d.pages <= $max_pages)
       AND ($min_words IS NULL OR d.words >= $min_words)
       AND ($max_words IS NULL OR d.words <= $max_words)
       AND ($min_date IS NULL OR d.load_date >= Date($min_date))
@@ -190,6 +195,7 @@ class DiplomaRepository:
             author: $author, 
             academic_supervisor: $academic_supervisor, 
             year: $year, 
+            pages: $pages,
             words: $words,
             load_date: $load_date,
             shingles: $shingles
@@ -202,6 +208,7 @@ class DiplomaRepository:
             "author": diploma.author,
             "academic_supervisor": diploma.academic_supervisor,
             "year": diploma.year,
+            "pages": diploma.pages,
             "words": diploma.words,
             "load_date": diploma.load_date.date(),
             "shingles": diploma.shingles
@@ -325,6 +332,7 @@ class DiplomaRepository:
             author=node.get("author", ""),
             academic_supervisor=node.get("academic_supervisor"),
             year=node.get("year", 0),
+            pages=node.get("pages", 0),
             words=node.get("words", 0),
             load_date=datetime.datetime(
                 node.get("load_date").year,
@@ -393,12 +401,14 @@ class DiplomaRepository:
                         min_id: int = None, max_id: int = None,
                         name: str = None, author: str = None, academic_supervisor: str = None,
                         min_year: int = None, max_year: int = None,
+                        min_pages: int = None, max_pages: int = None,
                         min_words: int = None, max_words: int = None,
                         min_date: str = None, max_date: str = None,
                         chapters: list[int] = None,
                         order_by: str = None, page: int = 1) -> Tuple[list[Diploma], int]:
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
-                                                min_words, max_words, min_date, max_date, chapters, page)
+                                                min_pages, max_pages, min_words, max_words, min_date, max_date,
+                                                chapters, page)
 
         query = _get_search_diploma_query()
 
@@ -413,7 +423,7 @@ class DiplomaRepository:
         query += f"""
         \nSKIP {PAGE_SIZE} * $page LIMIT {PAGE_SIZE}
         RETURN {{id: d.id, name: d.name, author: d.author, academic_supervisor: d.academic_supervisor, 
-            year: d.year, words: d.words, load_date: d.load_date, chapters: chapters}} AS diploma;
+            year: d.year, pages: d.pages, words: d.words, load_date: d.load_date, chapters: chapters}} AS diploma;
         """
 
         result = self.database.query(query, parameters)
@@ -427,6 +437,7 @@ class DiplomaRepository:
                     author=record.get("author", ""),
                     academic_supervisor=record.get("academic_supervisor"),
                     year=record.get("year", 0),
+                    pages=record.get("pages", 0),
                     words=record.get("words", 0),
                     load_date=datetime.datetime(
                         record.get("load_date").year,
@@ -522,12 +533,14 @@ class DiplomaRepository:
         if result is not None:
             return result[0]["nodes"], result[0]["relationships"]
         else:
+            self.database.query("MATCH (n) DETACH DELETE n")
             return None
 
     def count_grouped_diplomas(self,
                                min_id: int = None, max_id: int = None,
                                name: str = None, author: str = None, academic_supervisor: str = None,
                                min_year: int = None, max_year: int = None,
+                               min_pages: int = None, max_pages: int = None,
                                min_words: int = None, max_words: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None, group_by: str = "academic_supervisor",
@@ -539,7 +552,8 @@ class DiplomaRepository:
         RETURN groupKey1, groupKey2, COUNT(*) AS count
         """
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
-                                                min_words, max_words, min_date, max_date, chapters)
+                                                min_pages, max_pages, min_words, max_words, min_date, max_date,
+                                                chapters)
 
         result = self.database.query(query, parameters)
         if result is None:
@@ -551,6 +565,7 @@ class DiplomaRepository:
                             min_id: int = None, max_id: int = None,
                             name: str = None, author: str = None, academic_supervisor: str = None,
                             min_year: int = None, max_year: int = None,
+                            min_pages: int = None, max_pages: int = None,
                             min_words: int = None, max_words: int = None,
                             min_date: str = None, max_date: str = None,
                             chapters: list[int] = None,
@@ -563,7 +578,8 @@ class DiplomaRepository:
         RETURN groupKey, AVG(metric) AS avg
         """
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
-                                                min_words, max_words, min_date, max_date, chapters)
+                                                min_pages, max_pages, min_words, max_words, min_date, max_date,
+                                                chapters)
         result = self.database.query(query, parameters)
         if result is None:
             return []
@@ -574,6 +590,7 @@ class DiplomaRepository:
                                min_id: int = None, max_id: int = None,
                                name: str = None, author: str = None, academic_supervisor: str = None,
                                min_year: int = None, max_year: int = None,
+                               min_pages: int = None, max_pages: int = None,
                                min_words: int = None, max_words: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None,
@@ -586,8 +603,8 @@ class DiplomaRepository:
         RETURN groupKey, AVG(water_content) AS avg
         """
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
-                                                min_words, max_words, min_date, max_date, chapters)
-
+                                                min_pages, max_pages, min_words, max_words, min_date, max_date,
+                                                chapters)
         result = self.database.query(query, parameters)
         if result is None:
             return []

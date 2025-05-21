@@ -10,6 +10,7 @@ test_diploma = (
         academic_supervisor='Научруков А.А.',
         year=2024,
         words=24,
+        pages=5,
         load_date=datetime.datetime.fromisoformat('2025-04-25T20:01:25.807687'),
         chapters=[
             Chapter(
@@ -93,6 +94,7 @@ test_diploma = (
         academic_supervisor='Научруков Б.Б.',
         year=2025,
         words=36,
+        pages=7,
         load_date=datetime.datetime.fromisoformat('2025-04-25T20:14:56.709861'),
         chapters=[
             Chapter(

@@ -58,13 +58,12 @@ class CalcStats:
         diploma = doc_to_dataclass(doc)
 
         diploma.load_date = datetime.now()
-        diploma.words = 0
+        diploma.words = doc.words
+        diploma.pages = doc.pages
         for i in range(len(diploma.chapters)):
             doc_section = doc.structure[i]
             chapter = diploma.chapters[i]
             self._calc_chapters_stats(doc_section, chapter)
-            if chapter.words:
-                diploma.words += chapter.words
 
         # self._calc_shingles(diploma)
         self._calc_shingles(diploma, doc)

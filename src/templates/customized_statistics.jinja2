@@ -92,6 +92,20 @@
 
             <div class="filter-range">
                 <div class="label-box">
+                    <label class="label-box__label">страницы</label>
+                </div>
+                <div class="filter-box">
+                    <label class="filter-box__label" for="min_pages">от</label>
+                    <input class="filter-box__input" type="number" min="0" id="min_pages" name="min_pages"
+                           value="{{ request.args.get('min_pages', '') }}">
+                    <label class="filter-box__label" for="max_pages">до</label>
+                    <input class="filter-box__input" type="number" min="0" id="max_pages" name="max_pages"
+                           value="{{ request.args.get('max_pages', '') }}">
+                </div>
+            </div>
+
+            <div class="filter-range">
+                <div class="label-box">
                     <label class="label-box__label">слова</label>
                 </div>
                 <div class="filter-box">
@@ -150,6 +164,7 @@
                 <select name="metric_type" form="filter__form-stats" class="filters__select">
                     <option value="academic_supervisor" {{ sel_y("academic_supervisor") }}>научный руководитель</option>
                     <option value="year" {{ sel_y("year") }}>год</option>
+                    <option value="pages" {{ sel_y("pages") }}>среднее количество страниц</option>
                     <option value="words" {{ sel_y("words") }}>среднее количество слов</option>
                     <option value="water_content" {{ sel_y("water_content") }}>средняя водность</option>
                 </select>
