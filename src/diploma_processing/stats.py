@@ -289,7 +289,7 @@ class CalcStats:
         i = 0
         while i < len(diploma.disclosure_keys):
             if diploma.disclosure_keys[i] in self._disclosure_keys_to_remove:
-                print(diploma.disclosure_keys.pop(i))
+                # print(diploma.disclosure_keys.pop(i))
                 i -= 1
             i += 1
 
