@@ -59,10 +59,13 @@ def diploma_from_dict(diploma: dict) -> Diploma:
     year = diploma['year']
     words = diploma['words']
     pages = diploma['pages']
+    minimal_disclosure = diploma['minimal_disclosure']
     if diploma.get('load_date') and diploma['load_date']:
         load_date = datetime.fromisoformat(diploma['load_date'])
     else:
         load_date = diploma['load_date']
+    disclosure_keys = diploma['disclosure_keys']
+    disclosure_persentage = diploma['disclosure_persentage']
     chapters = []
     for e in diploma['chapters']:
         chapters.append(chapter_from_dict(e))
@@ -75,7 +78,10 @@ def diploma_from_dict(diploma: dict) -> Diploma:
         year=year,
         pages=pages,
         words=words,
+        minimal_disclosure=minimal_disclosure,
         load_date=load_date,
+        disclosure_keys=disclosure_keys,
+        disclosure_persentage=disclosure_persentage,
         chapters=chapters,
         shingles=shingles
     )
@@ -168,7 +174,10 @@ def doc_to_dataclass(doc: Doc) -> Diploma:
         year=doc.year,
         pages=doc.pages,
         words=doc.words,
+        minimal_disclosure=0,
         load_date=None,
+        disclosure_keys=[],
+        disclosure_persentage=[],
         chapters=chapters,
         shingles=[]
     )

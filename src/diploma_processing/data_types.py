@@ -25,7 +25,10 @@ class Diploma:
     year: int
     words: int
     pages: int
+    minimal_disclosure: int
     load_date: datetime
+    disclosure_keys: list[str]
+    disclosure_persentage: list[int]
     chapters: list['Chapter']
     shingles: list[int] | None = None
     similar_diplomas: list[Tuple[int, str, int]] | None = None
