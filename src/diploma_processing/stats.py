@@ -52,6 +52,7 @@ class CalcStats:
             'актуальность',
             'обзор предметный область',
         ]
+        self._disclosure_word_min_count = 5
 
     def get_diploma_stats(self, file: str | Union[BinaryIO, BytesIO]) -> Diploma:
         try:
@@ -250,15 +251,11 @@ class CalcStats:
         ]
         return processed_words
 
-    def _collect_chapter_names_recursive(self, chapters: list[Chapter], names_list: list[str]):
-        """
-        Recursively collects all chapter names from a list of Chapter objects.
-        """
+    def _collect_main_chapters_names(self, chapters: list[Chapter], names_list: list[str]):
         for chapter in chapters:
-            if chapter.name:
-                names_list.append(chapter.name)
-            if chapter.chapters: # If there are sub-chapters
-                self._collect_chapter_names_recursive(chapter.chapters, names_list)
+            if chapter.name.strip().lower() == 'структура' and chapter.chapters:
+                for c in chapter.chapters:
+                    names_list.append(c.name)
     
     def _extract_text_recursive_normalized(self, chapters: list[Chapter], all_text: list[str]):
         for chepter in chapters:
@@ -277,7 +274,7 @@ class CalcStats:
         
         chapter_names_flat = []
         if diploma.chapters:
-            self._collect_chapter_names_recursive(diploma.chapters, chapter_names_flat)
+            self._collect_main_chapters_names(diploma.chapters, chapter_names_flat)
         source_texts_for_keys.extend(chapter_names_flat)
 
         processed_keys = []
@@ -285,36 +282,37 @@ class CalcStats:
             words = self._process_text_for_disclosure(text_item)
             processed_keys.append(words)
         
-        diploma.disclosure_keys = list(set([" ".join(words) for words in processed_keys]))
         i = 0
-        while i < len(diploma.disclosure_keys):
-            if diploma.disclosure_keys[i] in self._disclosure_keys_to_remove:
-                # print(diploma.disclosure_keys.pop(i))
+        while i < len(processed_keys):
+            if " ".join(processed_keys[i]) in self._disclosure_keys_to_remove:
+                source_texts_for_keys.pop(i)
+                processed_keys.pop(i)
                 i -= 1
             i += 1
+        diploma.disclosure_keys = source_texts_for_keys
 
         # B. Prepare Full Diploma Text
         processed_total_diploma_words = []
         self._extract_text_recursive_normalized(diploma.chapters, processed_total_diploma_words)
 
-
         # C. Calculate Percentages
         diploma.disclosure_persentage = []
-        
+
         if not processed_total_diploma_words or not diploma.disclosure_keys:
             diploma.disclosure_persentage = [0] * len(diploma.disclosure_keys)
             return
-        
-        unique_text_words = set(processed_total_diploma_words)
-        for key in diploma.disclosure_keys:
-            key_words = key.split()
+
+        word_count = defaultdict(int)
+        for word in processed_total_diploma_words:
+            word_count[word] += 1
+
+        for i, words in enumerate(processed_keys):
             count_of_key_words_in_text = 0
-            for key_word in key_words:
-                if key_word in unique_text_words:
-                    count_of_key_words_in_text += 1
+            for word in words:
+                count_of_key_words_in_text += word_count.get(word, 0)
             percentage = 0
-            if len(key_words) > 0:
-                percentage = int((count_of_key_words_in_text / len(key_words) * 100))
+            if count_of_key_words_in_text >= len(words) * self._disclosure_word_min_count:
+                percentage = 100
+            else:
+                percentage = int((count_of_key_words_in_text / (len(words) * self._disclosure_word_min_count) * 100))
             diploma.disclosure_persentage.append(percentage)
-        
-        diploma.minimal_disclosure = min(diploma.disclosure_persentage)
