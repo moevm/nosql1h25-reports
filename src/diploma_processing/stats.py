@@ -316,3 +316,5 @@ class CalcStats:
             else:
                 percentage = int((count_of_key_words_in_text / (len(words) * self._disclosure_word_min_count) * 100))
             diploma.disclosure_persentage.append(percentage)
+        
+        diploma.minimal_disclosure = min(diploma.disclosure_persentage)
