@@ -81,7 +81,7 @@ def diploma_from_dict(diploma: dict) -> Diploma:
         minimal_disclosure=minimal_disclosure,
         load_date=load_date,
         disclosure_keys=disclosure_keys,
-        disclosure_persentage=disclosure_persentage,
+        disclosure_percentage=disclosure_persentage,
         chapters=chapters,
         shingles=shingles
     )
@@ -177,7 +177,7 @@ def doc_to_dataclass(doc: Doc) -> Diploma:
         minimal_disclosure=0,
         load_date=None,
         disclosure_keys=[],
-        disclosure_persentage=[],
+        disclosure_percentage=[],
         chapters=chapters,
         shingles=[]
     )

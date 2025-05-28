@@ -88,7 +88,12 @@ def search_chapter():
 
 @app.get('/search/stats')
 def search_stats():
-    metrics = {'words': 'слов, шт', 'water_content': 'водность, %', 'pages': 'страниц, шт'}
+    metrics = {
+        'words': 'слов, шт',
+        'water_content': 'водность, %',
+        'pages': 'страниц, шт',
+        'disclosure': 'раскрытость, %'
+    }
 
     params = request.args.to_dict()
     if 'chapters' in params:
@@ -101,8 +106,10 @@ def search_stats():
         return render_template('customized_statistics.jinja2', data={})
 
     title = 'Статистика по годам' if group == 'year' else 'Статистика по научным руководителям'
-    data = repo.get_avg_water_by_group(**params) if metric == 'water_content' else repo.count_grouped_diplomas(
-        **params) if metric in ['year', 'academic_supervisor'] else repo.get_grouped_metrics(**params)
+    data = repo.get_avg_water_by_group(**params) \
+        if metric == 'water_content' else repo.get_avg_disclosure_by_group(**params) \
+        if metric == 'disclosure' else repo.count_grouped_diplomas(**params) \
+        if metric in ['year', 'academic_supervisor'] else repo.get_grouped_metrics(**params)
 
     if not data or len(data) == 0:
         return render_template('customized_statistics.jinja2', data={})
