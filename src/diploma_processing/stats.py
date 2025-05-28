@@ -327,6 +327,8 @@ class CalcStats:
         for key_string in diploma.disclosure_keys:
             if isinstance(key_string, str):
                 # Remove leading punctuation and whitespace using the defined regex
+                if key_string.lower().startswith('глава '):
+                    key_string = key_string[key_string.find('.'):]
                 cleaned_key_string = self._LEADING_PUNCT_REGEX.sub("", key_string)
                 cleaned_display_keys.append(cleaned_key_string)
             else:
