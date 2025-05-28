@@ -52,7 +52,7 @@ class CalcStats:
             'актуальность',
             'обзор предметный область',
         ]
-        self._disclosure_word_min_count = 5
+        self._disclosure_word_min_count = 10
         self._LEADING_PUNCT_REGEX = re.compile(r"^[\s!#$%&*+,-./:;=?@\\^_|~1234567890]+")
 
     def get_diploma_stats(self, file: str | Union[BinaryIO, BytesIO]) -> Diploma:
@@ -311,6 +311,8 @@ class CalcStats:
             count_of_key_words_in_text = 0
             for word in words:
                 count_of_key_words_in_text += word_count.get(word, 0)
+                if count_of_key_words_in_text > self._disclosure_word_min_count:
+                    count_of_key_words_in_text = self._disclosure_word_min_count
             percentage = 0
             if count_of_key_words_in_text >= len(words) * self._disclosure_word_min_count:
                 percentage = 100
