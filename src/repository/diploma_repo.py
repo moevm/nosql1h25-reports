@@ -76,7 +76,9 @@ def _get_search_diploma_params(
         min_pages: int = None, max_pages: int = None,
         min_words: int = None, max_words: int = None,
         min_date: str = None, max_date: str = None,
-        chapters: list[int] = None, page: int = 1
+        chapters: list[int] = None,
+        min_minimal_disclosure: int = None, max_minimal_disclosure: int = None,
+        page: int = 1,
 ):
     return {
         "min_id": int(min_id) if min_id else None,
@@ -90,10 +92,12 @@ def _get_search_diploma_params(
         "max_pages": int(max_pages) if max_pages else None,
         "min_words": int(min_words) if min_words else None,
         "max_words": int(max_words) if max_words else None,
+        "min_minimal_disclosure": int(min_minimal_disclosure) if min_minimal_disclosure else None,
+        "max_minimal_disclosure": int(max_minimal_disclosure) if max_minimal_disclosure else None,
         "min_date": min_date,
         "max_date": max_date,
         "chapters": list(map(int, chapters)) if chapters else None,
-        "page": int(page) - 1
+        "page": int(page) - 1,
     }
 
 
@@ -117,6 +121,8 @@ def _get_search_diploma_query(add_water: bool = False):
       AND ($min_date IS NULL OR d.load_date >= Date($min_date))
       AND ($max_date IS NULL OR d.load_date <= Date($max_date))
       AND ($chapters IS NULL OR ANY(chapter IN $chapters WHERE chapter IN chapters))
+      AND ($min_minimal_disclosure IS NULL OR d.minimal_disclosure >= $min_minimal_disclosure)
+      AND ($max_minimal_disclosure IS NULL OR d.minimal_disclosure <= $max_minimal_disclosure)
     """
 
 
@@ -198,7 +204,10 @@ class DiplomaRepository:
             pages: $pages,
             words: $words,
             load_date: $load_date,
-            shingles: $shingles
+            shingles: $shingles,
+            minimal_disclosure: $minimal_disclosure,
+            disclosure_keys: $disclosure_keys,
+            disclosure_percentage: $disclosure_percentage
         })
         SET d.id = id
         RETURN d.id
@@ -211,7 +220,10 @@ class DiplomaRepository:
             "pages": diploma.pages,
             "words": diploma.words,
             "load_date": diploma.load_date.date(),
-            "shingles": diploma.shingles
+            "shingles": diploma.shingles,
+            "minimal_disclosure": diploma.minimal_disclosure,
+            "disclosure_keys": diploma.disclosure_keys,
+            "disclosure_percentage": diploma.disclosure_percentage
         }
         result = self.database.query(query, parameters)
 
@@ -315,7 +327,10 @@ class DiplomaRepository:
         WITH collect([d2.id, d2.name, r.similarity]) as similar
         MATCH (d:Diploma)
         WHERE d.id = $id_diploma
-        RETURN d, similar
+        RETURN similar, {id: d.id, name: d.name, author: d.author, academic_supervisor: d.academic_supervisor, 
+            year: d.year, pages: d.pages, words: d.words, load_date: d.load_date, 
+            minimal_disclosure: d.minimal_disclosure, disclosure_keys: d.disclosure_keys, 
+            disclosure_percentage: d.disclosure_percentage} AS d
         """
         parameters = {"id_diploma": id_diploma}
         result = self.database.query(query, parameters)
@@ -339,7 +354,10 @@ class DiplomaRepository:
                 node.get("load_date").month,
                 node.get("load_date").day),
             chapters=[],
-            similar_diplomas=similar
+            similar_diplomas=similar,
+            minimal_disclosure=node.get("minimal_disclosure", 0),
+            disclosure_keys=node.get("disclosure_keys", []),
+            disclosure_percentage=node.get("disclosure_percentage", [])
         )
 
         rels = self._load_diploma_graph(id_diploma)
@@ -403,12 +421,13 @@ class DiplomaRepository:
                         min_year: int = None, max_year: int = None,
                         min_pages: int = None, max_pages: int = None,
                         min_words: int = None, max_words: int = None,
+                        min_minimal_disclosure: int = None, max_minimal_disclosure: int = None,
                         min_date: str = None, max_date: str = None,
                         chapters: list[int] = None,
                         order_by: str = None, page: int = 1) -> Tuple[list[Diploma], int]:
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
                                                 min_pages, max_pages, min_words, max_words, min_date, max_date,
-                                                chapters, page)
+                                                chapters, min_minimal_disclosure, max_minimal_disclosure, page)
 
         query = _get_search_diploma_query()
 
@@ -423,7 +442,9 @@ class DiplomaRepository:
         query += f"""
         \nSKIP {PAGE_SIZE} * $page LIMIT {PAGE_SIZE}
         RETURN {{id: d.id, name: d.name, author: d.author, academic_supervisor: d.academic_supervisor, 
-            year: d.year, pages: d.pages, words: d.words, load_date: d.load_date, chapters: chapters}} AS diploma;
+            year: d.year, pages: d.pages, words: d.words, load_date: d.load_date, chapters: chapters,
+            minimal_disclosure: d.minimal_disclosure, disclosure_keys: d.disclosure_keys, 
+            disclosure_percentage: d.disclosure_percentage}} AS diploma;
         """
 
         result = self.database.query(query, parameters)
@@ -443,7 +464,10 @@ class DiplomaRepository:
                         record.get("load_date").year,
                         record.get("load_date").month,
                         record.get("load_date").day),
-                    chapters=record.get("chapters", [])
+                    chapters=record.get("chapters", []),
+                    minimal_disclosure=record.get("minimal_disclosure", 0),
+                    disclosure_keys=record.get("disclosure_keys", []),
+                    disclosure_percentage=record.get("disclosure_percentage", [])
                 )
                 diplomas.append(diploma)
             return diplomas, math.ceil(count / PAGE_SIZE)
@@ -542,6 +566,7 @@ class DiplomaRepository:
                                min_year: int = None, max_year: int = None,
                                min_pages: int = None, max_pages: int = None,
                                min_words: int = None, max_words: int = None,
+                               min_minimal_disclosure: int = None, max_minimal_disclosure: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None, group_by: str = "academic_supervisor",
                                metric_type: str = "year") -> list[dict]:
@@ -553,7 +578,7 @@ class DiplomaRepository:
         """
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
                                                 min_pages, max_pages, min_words, max_words, min_date, max_date,
-                                                chapters)
+                                                chapters, min_minimal_disclosure, max_minimal_disclosure)
 
         result = self.database.query(query, parameters)
         if result is None:
@@ -567,6 +592,7 @@ class DiplomaRepository:
                             min_year: int = None, max_year: int = None,
                             min_pages: int = None, max_pages: int = None,
                             min_words: int = None, max_words: int = None,
+                            min_minimal_disclosure: int = None, max_minimal_disclosure: int = None,
                             min_date: str = None, max_date: str = None,
                             chapters: list[int] = None,
                             group_by: str = "academic_supervisor",
@@ -579,7 +605,7 @@ class DiplomaRepository:
         """
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
                                                 min_pages, max_pages, min_words, max_words, min_date, max_date,
-                                                chapters)
+                                                chapters, min_minimal_disclosure, max_minimal_disclosure)
         result = self.database.query(query, parameters)
         if result is None:
             return []
@@ -592,6 +618,7 @@ class DiplomaRepository:
                                min_year: int = None, max_year: int = None,
                                min_pages: int = None, max_pages: int = None,
                                min_words: int = None, max_words: int = None,
+                               min_minimal_disclosure: int = None, max_minimal_disclosure: int = None,
                                min_date: str = None, max_date: str = None,
                                chapters: list[int] = None,
                                group_by: str = "academic_supervisor",
@@ -604,7 +631,33 @@ class DiplomaRepository:
         """
         parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year, max_year,
                                                 min_pages, max_pages, min_words, max_words, min_date, max_date,
-                                                chapters)
+                                                chapters, min_minimal_disclosure, max_minimal_disclosure)
+        result = self.database.query(query, parameters)
+        if result is None:
+            return []
+        return [{"key1": record["groupKey"], "avg": record["avg"]} for record in result]
+
+    def get_avg_disclosure_by_group(self,
+                               min_id: int = None, max_id: int = None,
+                               name: str = None, author: str = None, academic_supervisor: str = None,
+                               min_year: int = None, max_year: int = None,
+                               min_pages: int = None, max_pages: int = None,
+                               min_words: int = None, max_words: int = None,
+                               min_minimal_disclosure: int = None, max_minimal_disclosure: int = None,
+                               min_date: str = None, max_date: str = None,
+                               chapters: list[int] = None,
+                               group_by: str = "academic_supervisor",
+                               metric_type: str = "water_content") -> list[dict]:
+        query = _get_search_diploma_query()
+        query += f"""
+        WITH d.{group_by} AS groupKey, apoc.coll.avg(d.disclosure_percentage) as disclosure
+        ORDER BY groupKey
+        RETURN groupKey, AVG(disclosure) AS avg
+        """
+        parameters = _get_search_diploma_params(min_id, max_id, name, author, academic_supervisor, min_year,
+                                                max_year,
+                                                min_pages, max_pages, min_words, max_words, min_date, max_date,
+                                                chapters, min_minimal_disclosure, max_minimal_disclosure)
         result = self.database.query(query, parameters)
         if result is None:
             return []

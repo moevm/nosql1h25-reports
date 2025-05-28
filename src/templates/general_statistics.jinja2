@@ -45,13 +45,13 @@
                 </div>
 
                 <div class="data-card__second-col card-col">
-                    <section class="data-card__topics-coverage" style="display: none">
+                    <section class="data-card__topics-coverage">
                         <h3>Раскрытие тем</h3>
                         <table class="stats-table">
-                            {% for topic in diploma.topics %}
+                            {% for i in range(diploma.disclosure_keys| length) %}
                                 <tr>
-                                    <td>{{ topic.name }}</td>
-                                    <td>{{ topic.coverage }}%</td>
+                                    <td>{{ diploma.disclosure_keys[i] }}</td>
+                                    <td>{{ diploma.disclosure_percentage[i] }}%</td>
                                 </tr>
                             {% endfor %}
                         </table>
@@ -62,7 +62,9 @@
                         <table class="stats-table">
                             {% for work in diploma.similar_diplomas %}
                                 <tr>
-                                    <td><a href="{{ url_for('diploma_statistics', diploma_id=work[0]) }}">{{ work[1] }}</a></td>
+                                    <td>
+                                        <a href="{{ url_for('diploma_statistics', diploma_id=work[0]) }}">{{ work[1] }}</a>
+                                    </td>
                                     <td>{{ work[2]|round(2, 'ceil') }}%</td>
                                 </tr>
                             {% endfor %}

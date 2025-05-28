@@ -107,15 +107,15 @@
 
             <div class="filter-range">
                 <div class="label-box">
-                    <label class="label-box__label">слова</label>
+                    <label class="label-box__label">минимальная раскрытость</label>
                 </div>
                 <div class="filter-box">
-                    <label class="filter-box__label" for="min_words">от</label>
-                    <input class="filter-box__input" type="number" min="0" id="min_words" name="min_words"
-                           value="{{ request.args.get('min_words', '') }}">
-                    <label class="filter-box__label" for="max_words">до</label>
-                    <input class="filter-box__input" type="number" min="0" id="max_words" name="max_words"
-                           value="{{ request.args.get('max_words', '') }}">
+                    <label class="filter-box__label" for="min_minimal_disclosure">от</label>
+                    <input class="filter-box__input" type="number" min="0" max="100" id="min_minimal_disclosure"
+                           name="min_minimal_disclosure" value="{{ request.args.get('min_minimal_disclosure', '') }}">
+                    <label class="filter-box__label" for="max_minimal_disclosure">до</label>
+                    <input class="filter-box__input" type="number" min="0" max="100" id="max_minimal_disclosure"
+                           name="max_minimal_disclosure" value="{{ request.args.get('max_minimal_disclosure', '') }}">
                 </div>
             </div>
 
@@ -163,6 +163,7 @@
                 <th>год</th>
                 <th>страницы</th>
                 <th>слова</th>
+                <th>раскрытие тем</th>
                 <th>дата загрузки</th>
             </tr>
             </thead>
@@ -177,6 +178,7 @@
                     <td>{{ diploma.year }}</td>
                     <td>{{ diploma.pages }}</td>
                     <td>{{ diploma.words }}</td>
+                    <td>{{ diploma.disclosure_percentage|join(", ") }}</td>
                     <td>{{ diploma.load_date.strftime('%d.%m.%Y') }}</td>
                 </tr>
             {% endfor %}
