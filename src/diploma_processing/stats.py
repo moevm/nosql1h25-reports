@@ -53,6 +53,7 @@ class CalcStats:
             'обзор предметный область',
         ]
         self._disclosure_word_min_count = 5
+        self._LEADING_PUNCT_REGEX = re.compile(r"^[\s!#$%&*+,-./:;=?@\\^_|~1234567890]+")
 
     def get_diploma_stats(self, file: str | Union[BinaryIO, BytesIO]) -> Diploma:
         try:
@@ -318,3 +319,14 @@ class CalcStats:
             diploma.disclosure_persentage.append(percentage)
         
         diploma.minimal_disclosure = min(diploma.disclosure_persentage) if diploma.disclosure_persentage else 0
+
+        # Clean leading non-alpha symbols from diploma.disclosure_keys for display
+        cleaned_display_keys = []
+        for key_string in diploma.disclosure_keys:
+            if isinstance(key_string, str):
+                # Remove leading punctuation and whitespace using the defined regex
+                cleaned_key_string = self._LEADING_PUNCT_REGEX.sub("", key_string)
+                cleaned_display_keys.append(cleaned_key_string)
+            else:
+                cleaned_display_keys.append(key_string) # Keep non-strings (e.g. None) as is
+        diploma.disclosure_keys = cleaned_display_keys
